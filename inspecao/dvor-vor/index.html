@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content">
-<meta name="theme-color" content="#b3262d">
+<meta name="theme-color" content="#071a2d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="IV-PLANNER">
@@ -13,7 +13,7 @@
 <!-- TESTE GNSS: núcleo de coordenadas restaurado do index.8 funcional -->
 <meta name="iv-planner-build" content="3.0">
 <style>
-  :root{color-scheme:light dark;--bg:#eeeeef;--panel:#fafafa;--text:#252629;--muted:#696b70;--border:#b8b9bd;--accent:#b3262d;--blue:#1473e6;--red:#c62830;--danger:#9f1f25;--soft:#e2e2e4}
+  :root{color-scheme:dark;--bg:#071a2d;--panel:#0c2943;--text:#f4f8fb;--muted:#a9bed0;--border:#31516b;--accent:#1683bd;--blue:#53b8e9;--red:#ef5961;--danger:#ff7a80;--soft:#123a59}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
   button,input,select,textarea{font:inherit}
@@ -28,6 +28,8 @@
   label>input,label>select,label>textarea{margin-top:4px;color:var(--text)}
   .app{max-width:1500px;margin:auto;padding:18px}
   .topbar{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:14px}
+  .back-to-inspection{display:inline-flex;align-items:center;min-height:38px;padding:7px 11px;border:1px solid var(--border);border-radius:9px;background:var(--panel);color:var(--text);font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap}
+  .back-to-inspection:active{background:var(--soft);transform:scale(.98)}
   h1{font-size:24px;margin:0 0 4px;font-weight:600}
   h2{font-size:17px;margin:0 0 12px;font-weight:600}
   .subtitle,.muted{color:var(--muted)}
@@ -89,7 +91,7 @@
   .gnss-status{margin-top:10px;padding:10px;border:1px solid var(--border);border-radius:9px;background:var(--bg);font-size:13px;line-height:1.5}
   .gnss-status strong{font-size:15px}
   .gnss-warning{font-size:12px;color:var(--muted);margin-top:8px}
-  @media(prefers-color-scheme:dark){:root{--bg:#161719;--panel:#232427;--text:#f1f1f2;--muted:#a7a8ac;--border:#55575c;--accent:#d13a42;--blue:#56a6ff;--red:#ef535a;--danger:#ff6b71;--soft:#343538}}
+  @media(prefers-color-scheme:light){:root{--bg:#eaf2f8;--panel:#ffffff;--text:#10283c;--muted:#577087;--border:#b7c9d7;--accent:#116f9f;--blue:#147fb8;--red:#c63d45;--danger:#a7282e;--soft:#dceaf4}}
 
 
   /* IV-PLANNER — otimização mobile/iPhone */
@@ -98,6 +100,7 @@
     body{-webkit-text-size-adjust:100%}
     .app{max-width:none;padding:7px 8px calc(72px + env(safe-area-inset-bottom));}
     .topbar{margin:0 2px 7px;display:block}
+    .back-to-inspection{position:absolute;top:max(7px,env(safe-area-inset-top));right:8px;min-height:34px;padding:5px 8px;font-size:10px}
     h1{font-size:19px;line-height:1.05;margin:0;font-weight:700;letter-spacing:.2px}
     .subtitle{font-size:11px;line-height:1.2;margin-top:2px}
     h2{font-size:15px;margin-bottom:8px}
@@ -311,6 +314,7 @@
       <h1>IV-PLANNER</h1>
       <div class="subtitle">Planejamento e acompanhamento da inspeção</div>
     </div>
+    <a class="back-to-inspection" href="../" aria-label="Voltar para Inspeção em Voo">‹ Inspeção em Voo</a>
   </div>
 
   <nav class="page-nav" aria-label="Páginas do aplicativo">
