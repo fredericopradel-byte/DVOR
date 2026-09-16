@@ -42,7 +42,7 @@
   </div>
   <section class="mapwrap" aria-label="Mapa meteorológico">
     <div id="map"></div>
-    <div class="layers"><button class="layer active" type="button">Aeródromos</button><button class="layer" type="button" disabled title="Próxima etapa">SIGMET</button><button class="layer" type="button" disabled title="Próxima etapa">Radar</button></div>
+    <div class="layers"><button class="layer active" type="button">Aeródromos</button><button class="layer" id="sigmetBtn" type="button">SIGMET</button><button class="layer" type="button" disabled title="Próxima etapa">Radar</button></div>
     <div class="legend"><span><i class="dot vfr"></i>VFR</span><span><i class="dot mvfr"></i>MVFR</span><span><i class="dot ifr"></i>IFR</span><span><i class="dot lifr"></i>LIFR</span></div>
   </section>
   <div class="status" id="status" role="status"></div>
@@ -58,7 +58,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
 (() => {
-  const API = 'https://iv-planner-weather.fredericopradel.workers.dev/weather';
+  const WORKER = 'https://iv-planner-weather.fredericopradel.workers.dev';
   const stations = {
     SBGL:{name:'Rio de Janeiro / Galeão',lat:-22.81,lon:-43.25},SBRJ:{name:'Rio de Janeiro / Santos Dumont',lat:-22.91,lon:-43.16},SBBR:{name:'Brasília',lat:-15.87,lon:-47.92},SBSP:{name:'São Paulo / Congonhas',lat:-23.63,lon:-46.66},SBGR:{name:'São Paulo / Guarulhos',lat:-23.43,lon:-46.47},SBEG:{name:'Manaus',lat:-3.04,lon:-60.05},SBCF:{name:'Belo Horizonte / Confins',lat:-19.63,lon:-43.97},SBPA:{name:'Porto Alegre',lat:-30.00,lon:-51.17},SBRF:{name:'Recife',lat:-8.13,lon:-34.92},SBSV:{name:'Salvador',lat:-12.91,lon:-38.33},SBFZ:{name:'Fortaleza',lat:-3.78,lon:-38.53},SBBE:{name:'Belém',lat:-1.38,lon:-48.48}
   };
@@ -67,6 +67,18 @@
   const map = L.map('map',{zoomControl:true,minZoom:3}).setView([-14.5,-52.5],4);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(map);
   const markerLayer = L.layerGroup().addTo(map);
+  const sigmetLayer = L.geoJSON(null,{
+    style:feature=>({color:feature.properties?.hazard==='CONVECTIVE'?'#ff5d64':'#f6c945',weight:2,fillColor:feature.properties?.hazard==='CONVECTIVE'?'#ff5d64':'#f6c945',fillOpacity:.19}),
+    onEachFeature:(feature,layer)=>{
+      const p=feature.properties||{};
+      const from=p.validTimeFrom?new Date(p.validTimeFrom).toLocaleString('pt-BR',{timeZone:'UTC',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+      const to=p.validTimeTo?new Date(p.validTimeTo).toLocaleString('pt-BR',{timeZone:'UTC',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+      const low=p.altitudeLow1!=null?`FL${Math.round(p.altitudeLow1/100)}`:'SFC';
+      const high=p.altitudeHi1!=null?`FL${Math.round(p.altitudeHi1/100)}`:'—';
+      layer.bindPopup(`<div style="min-width:230px;color:#17191b"><b>${p.airSigmetType||'SIGMET'} ${p.seriesId||''}</b><br><b>Fenômeno:</b> ${p.hazard||'—'}<br><b>Validade:</b> ${from}–${to} UTC<br><b>Níveis:</b> ${low} / ${high}${p.movementDir!=null?`<br><b>Movimento:</b> ${String(p.movementDir).padStart(3,'0')}° / ${p.movementSpd||0} kt`:''}<hr style="border:0;border-top:1px solid #ccd0d3"><div style="white-space:pre-wrap;font:11px/1.35 ui-monospace,monospace">${escapeHtml(p.rawAirSigmet||'Mensagem original indisponível')}</div></div>`,{maxWidth:330});
+    }
+  });
+  let sigmetsLoaded=false;
   let selectedMarker;
 
   function markerIcon(code,category='vfr'){
@@ -85,7 +97,7 @@
   function categoryClass(cat){return ({VFR:'vfr',MVFR:'mvfr',IFR:'ifr',LIFR:'lifr'})[cat]||'vfr'}
   function setLoading(on){el('searchBtn').disabled=on;el('searchBtn').textContent=on?'Buscando…':'Buscar'}
   async function getWeather(code){
-    const response=await fetch(`${API}?icao=${encodeURIComponent(code)}`,{cache:'no-store'});
+    const response=await fetch(`${WORKER}/weather?icao=${encodeURIComponent(code)}`,{cache:'no-store'});
     const data=await response.json().catch(()=>({}));
     if(!response.ok)throw new Error(data.error||`Falha ${response.status}`);
     return data;
@@ -124,8 +136,31 @@
   function renderCached(c){
     const metar=c.metar,taf=c.taf,cat=category(metar),cls=categoryClass(cat);el('flightBadge').textContent=cat;el('flightBadge').style.background=`var(--${cls==='vfr'?'green':cls==='mvfr'?'blue':cls==='ifr'?'red':'lifr'})`;el('stationTitle').textContent=c.code;el('stationMeta').textContent='Consulta armazenada';el('metarRaw').textContent=metar?.rawOb||'METAR não disponível.';el('tafRaw').textContent=taf?.rawTAF||'TAF não disponível.';el('updated').textContent=`Salvo em\n${new Date(c.saved).toLocaleString('pt-BR')}`;el('weather').classList.add('show')
   }
+  function escapeHtml(value){return String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]))}
+  function geometryTouchesBrazil(feature){
+    const values=feature.geometry?.coordinates?.flat(4)||[];
+    for(let i=0;i<values.length;i+=2){const lon=Number(values[i]),lat=Number(values[i+1]);if(lon>=-75&&lon<=-30&&lat>=-35&&lat<=8)return true}
+    return false;
+  }
+  async function toggleSigmets(){
+    const button=el('sigmetBtn');
+    if(map.hasLayer(sigmetLayer)){map.removeLayer(sigmetLayer);button.classList.remove('active');return}
+    button.classList.add('active');
+    if(sigmetsLoaded){sigmetLayer.addTo(map);return}
+    button.disabled=true;button.textContent='Carregando…';showStatus('Consultando SIGMET vigentes…');
+    try{
+      const response=await fetch(`${WORKER}/sigmets`,{cache:'no-store'});const data=await response.json().catch(()=>({}));
+      if(!response.ok)throw new Error(data.error||`Falha ${response.status}`);
+      const features=(data.features||[]).filter(geometryTouchesBrazil);
+      sigmetLayer.clearLayers();sigmetLayer.addData({type:'FeatureCollection',features}).addTo(map);sigmetsLoaded=true;
+      if(features.length)showStatus(`${features.length} área${features.length===1?'':'s'} SIGMET vigente${features.length===1?'':'s'} sobre o Brasil.`);
+      else showStatus('Nenhum SIGMET vigente sobre o Brasil neste momento.');
+    }catch(error){button.classList.remove('active');showStatus('Não foi possível consultar os SIGMET agora.',true)}
+    finally{button.disabled=false;button.textContent='SIGMET'}
+  }
   el('searchForm').addEventListener('submit',e=>{e.preventDefault();loadWeather(el('icao').value)});
   document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>loadWeather(c.dataset.icao)));
+  el('sigmetBtn').addEventListener('click',toggleSigmets);
   document.querySelectorAll('.copybtn').forEach(b=>b.addEventListener('click',async()=>{await navigator.clipboard.writeText(el(b.dataset.copy).textContent);const old=b.textContent;b.textContent='Copiado';setTimeout(()=>b.textContent=old,1200)}));
   el('locateBtn').addEventListener('click',()=>{if(!navigator.geolocation){showStatus('Localização não disponível neste aparelho.',true);return}showStatus('Obtendo sua posição…');navigator.geolocation.getCurrentPosition(p=>{hideStatus();map.flyTo([p.coords.latitude,p.coords.longitude],7);L.circleMarker([p.coords.latitude,p.coords.longitude],{radius:7,color:'#fff',weight:3,fillColor:'#0aa4ef',fillOpacity:1}).addTo(map).bindPopup('Sua posição').openPopup()},()=>showStatus('Não foi possível obter sua posição. Verifique a permissão de localização.',true),{enableHighAccuracy:true,timeout:12000})});
 })();
