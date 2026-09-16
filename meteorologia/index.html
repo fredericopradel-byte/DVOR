@@ -18,11 +18,13 @@
     .chips{display:flex;gap:8px;overflow:auto;padding:0 0 12px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}.chip{border:1px solid var(--line);background:var(--panel);color:#dce0e3;border-radius:999px;padding:8px 13px;font-size:.8rem;font-weight:700;white-space:nowrap;cursor:pointer}.chip.active{border-color:var(--blue);background:rgba(10,164,239,.14);color:#63c9fa}
     .mapwrap{position:relative;height:min(54svh,520px);min-height:360px;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#202629;box-shadow:var(--shadow)}#map{height:100%;width:100%}.leaflet-container{background:#202629;font-family:inherit}.leaflet-control-zoom a{background:#24282b!important;color:#fff!important;border-color:#4d5359!important}.leaflet-control-attribution{background:rgba(24,27,29,.78)!important;color:#aeb5bc!important}.leaflet-control-attribution a{color:#62c9fa!important}
     .legend{position:absolute;z-index:500;left:10px;bottom:22px;display:flex;gap:7px;padding:8px 10px;border:1px solid rgba(255,255,255,.14);border-radius:11px;background:rgba(24,27,29,.86);backdrop-filter:blur(8px);font-size:.67rem;color:#d6dade}.legend span{display:flex;align-items:center;gap:4px}.dot{width:7px;height:7px;border-radius:50%}.vfr{background:var(--green)}.mvfr{background:#42a5f5}.ifr{background:var(--red)}.lifr{background:#d16bdf}
-    .layers{position:absolute;z-index:500;right:10px;top:10px;display:grid;gap:7px}.layer{border:1px solid rgba(255,255,255,.15);border-radius:11px;background:rgba(24,27,29,.9);color:#dce0e3;padding:9px 11px;font-size:.72rem;font-weight:800;backdrop-filter:blur(8px)}.layer:disabled{color:#737b81}.layer.active{color:#66ccfb;border-color:#078dd1}
+    .layers{position:absolute;z-index:500;right:10px;top:10px;display:grid;gap:7px}.layer{border:1px solid rgba(255,255,255,.15);border-radius:11px;background:rgba(24,27,29,.9);color:#dce0e3;padding:9px 11px;font-size:.72rem;font-weight:800;backdrop-filter:blur(8px);cursor:pointer}.layer:disabled{color:#737b81}.layer.active{color:#66ccfb;border-color:#078dd1;background:rgba(6,48,68,.92)}
+    .layer-options{display:none;margin-top:12px;border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden}.layer-options.show{display:block}.option-row{display:none;align-items:center;gap:12px;padding:13px 14px}.option-row.show{display:flex}.option-row+.option-row{border-top:1px solid rgba(255,255,255,.09)}.option-info{min-width:0;margin-right:auto}.option-info strong{display:block;color:#e8edf0;font-size:.84rem}.option-info small{display:block;margin-top:3px;color:var(--muted);font-size:.68rem;line-height:1.3}.option-row select{max-width:170px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:#e8edf0;padding:7px;font-size:.7rem}.opacity{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:.68rem;white-space:nowrap}.opacity input{width:72px;accent-color:var(--blue)}
     .status{display:none;margin-top:12px;padding:13px 15px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:.87rem}.status.show{display:block}.status.error{border-color:rgba(255,93,100,.55);color:#ff9da1}
     .weather{display:none;margin-top:12px;gap:12px}.weather.show{display:grid}.place{display:flex;align-items:flex-start;gap:12px;padding:16px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.035));box-shadow:var(--shadow)}.badge{min-width:54px;height:38px;padding:0 8px;border-radius:10px;display:grid;place-items:center;background:var(--green);color:#072d1d;font-size:.74rem;font-weight:900}.place h2{font-size:1.2rem;margin:0}.place p{margin:5px 0 0;color:var(--muted);font-size:.78rem}.updated{margin-left:auto;color:var(--muted);font-size:.7rem;text-align:right}
     .reports{display:grid;gap:12px}.report{padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}.reporthead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}.report h3{margin:0;font-size:.88rem;letter-spacing:.08em;color:#73cff9}.copybtn{border:0;background:transparent;color:var(--muted);padding:4px 0;font-size:.76rem;cursor:pointer}.raw{margin:0;color:#f1f3f4;font:600 .88rem/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;overflow-wrap:anywhere}.empty{color:var(--muted);font-size:.86rem}.notice{margin:14px 2px 0;color:#858d93;font-size:.72rem;line-height:1.45;text-align:center}
     .wx-marker{width:35px;height:35px;border:3px solid #fff;border-radius:50% 50% 50% 8px;transform:rotate(-45deg);display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.42)}.wx-marker b{transform:rotate(45deg);font-size:8px;color:#071a12}.wx-marker.mvfr b,.wx-marker.ifr b,.wx-marker.lifr b{color:#fff}.leaflet-div-icon{background:transparent;border:0}
+    @media(max-width:560px){.option-row{align-items:flex-start;flex-wrap:wrap}.option-info{width:100%}.option-row select{flex:1;max-width:none}.opacity{margin-left:auto}}
     @media(min-width:760px){.app{padding-left:24px;padding-right:24px}.weather.show{grid-template-columns:310px 1fr}.place{grid-column:1}.reports{grid-column:2;grid-row:1/3}.mapwrap{min-height:470px}}
   </style>
 </head>
@@ -42,8 +44,19 @@
   </div>
   <section class="mapwrap" aria-label="Mapa meteorológico">
     <div id="map"></div>
-    <div class="layers"><button class="layer active" type="button">Aeródromos</button><button class="layer" id="sigmetBtn" type="button">SIGMET</button><button class="layer" type="button" disabled title="Próxima etapa">Radar</button></div>
+    <div class="layers"><button class="layer active" id="aerodromesBtn" type="button">Aeródromos</button><button class="layer" id="radarBtn" type="button">Radar</button><button class="layer" id="satelliteBtn" type="button">Satélite</button></div>
     <div class="legend"><span><i class="dot vfr"></i>VFR</span><span><i class="dot mvfr"></i>MVFR</span><span><i class="dot ifr"></i>IFR</span><span><i class="dot lifr"></i>LIFR</span></div>
+  </section>
+  <section class="layer-options" id="layerOptions" aria-label="Ajustes das camadas meteorológicas">
+    <div class="option-row" id="radarOptions">
+      <div class="option-info"><strong>Radar meteorológico</strong><small id="radarTime">Aguardando imagem</small></div>
+      <label class="opacity">Opacidade <input id="radarOpacity" type="range" min="0.2" max="1" step="0.05" value="0.7"></label>
+    </div>
+    <div class="option-row" id="satelliteOptions">
+      <div class="option-info"><strong>Satélite GOES-East</strong><small>NASA GIBS · imagem mais recente disponível</small></div>
+      <select id="satelliteMode" aria-label="Produto de satélite"><option value="ir">Infravermelho (Banda 13)</option><option value="airmass">Massas de ar</option></select>
+      <label class="opacity">Opacidade <input id="satelliteOpacity" type="range" min="0.2" max="1" step="0.05" value="0.55"></label>
+    </div>
   </section>
   <div class="status" id="status" role="status"></div>
   <section class="weather" id="weather">
@@ -67,18 +80,12 @@
   const map = L.map('map',{zoomControl:true,minZoom:3}).setView([-14.5,-52.5],4);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(map);
   const markerLayer = L.layerGroup().addTo(map);
-  const sigmetLayer = L.geoJSON(null,{
-    style:feature=>({color:feature.properties?.hazard==='CONVECTIVE'?'#ff5d64':'#f6c945',weight:2,fillColor:feature.properties?.hazard==='CONVECTIVE'?'#ff5d64':'#f6c945',fillOpacity:.19}),
-    onEachFeature:(feature,layer)=>{
-      const p=feature.properties||{};
-      const from=p.validTimeFrom?new Date(p.validTimeFrom).toLocaleString('pt-BR',{timeZone:'UTC',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
-      const to=p.validTimeTo?new Date(p.validTimeTo).toLocaleString('pt-BR',{timeZone:'UTC',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
-      const low=p.altitudeLow1!=null?`FL${Math.round(p.altitudeLow1/100)}`:'SFC';
-      const high=p.altitudeHi1!=null?`FL${Math.round(p.altitudeHi1/100)}`:'—';
-      layer.bindPopup(`<div style="min-width:230px;color:#17191b"><b>${p.airSigmetType||'SIGMET'} ${p.seriesId||''}</b><br><b>Fenômeno:</b> ${p.hazard||'—'}<br><b>Validade:</b> ${from}–${to} UTC<br><b>Níveis:</b> ${low} / ${high}${p.movementDir!=null?`<br><b>Movimento:</b> ${String(p.movementDir).padStart(3,'0')}° / ${p.movementSpd||0} kt`:''}<hr style="border:0;border-top:1px solid #ccd0d3"><div style="white-space:pre-wrap;font:11px/1.35 ui-monospace,monospace">${escapeHtml(p.rawAirSigmet||'Mensagem original indisponível')}</div></div>`,{maxWidth:330});
-    }
-  });
-  let sigmetsLoaded=false;
+  const SATELLITE_URLS = {
+    ir:'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/GOES-East_ABI_Band13_Clean_Infrared/default/default/GoogleMapsCompatible_Level6/{z}/{y}/{x}.png',
+    airmass:'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/GOES-East_ABI_Air_Mass/default/default/GoogleMapsCompatible_Level6/{z}/{y}/{x}.png'
+  };
+  let radarLayer=null;
+  let satelliteLayer=null;
   let selectedMarker;
 
   function markerIcon(code,category='vfr'){
@@ -88,6 +95,36 @@
 
   function showStatus(message,error=false){status.textContent=message;status.className=`status show${error?' error':''}`}
   function hideStatus(){status.className='status'}
+  function updateLayerOptions(){
+    const radarOn=radarLayer&&map.hasLayer(radarLayer),satelliteOn=satelliteLayer&&map.hasLayer(satelliteLayer);
+    el('radarOptions').classList.toggle('show',Boolean(radarOn));el('satelliteOptions').classList.toggle('show',Boolean(satelliteOn));
+    el('layerOptions').classList.toggle('show',Boolean(radarOn||satelliteOn));
+  }
+  async function toggleRadar(){
+    const button=el('radarBtn');
+    if(radarLayer&&map.hasLayer(radarLayer)){map.removeLayer(radarLayer);button.classList.remove('active');updateLayerOptions();return}
+    button.disabled=true;button.textContent='Carregando…';showStatus('Carregando a imagem de radar mais recente…');
+    try{
+      const response=await fetch('https://api.rainviewer.com/public/weather-maps.json',{cache:'no-store'});
+      if(!response.ok)throw new Error(`Falha ${response.status}`);
+      const data=await response.json();const frames=data.radar?.past||[];const frame=frames[frames.length-1];
+      if(!data.host||!frame?.path)throw new Error('Imagem indisponível');
+      if(radarLayer)map.removeLayer(radarLayer);
+      radarLayer=L.tileLayer(`${data.host}${frame.path}/256/{z}/{x}/{y}/2/1_1.png`,{opacity:Number(el('radarOpacity').value),maxZoom:19,maxNativeZoom:10,zIndex:350,attribution:'Radar &copy; RainViewer'}).addTo(map);
+      el('radarTime').textContent=`Imagem de ${new Date(frame.time*1000).toLocaleString('pt-BR',{timeZone:'UTC',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})} UTC`;
+      button.classList.add('active');hideStatus();
+    }catch(error){button.classList.remove('active');showStatus('Não foi possível carregar a imagem de radar agora.',true)}
+    finally{button.disabled=false;button.textContent='Radar';updateLayerOptions()}
+  }
+  function createSatelliteLayer(){
+    const mode=el('satelliteMode').value;
+    return L.tileLayer(SATELLITE_URLS[mode],{opacity:Number(el('satelliteOpacity').value),maxZoom:19,maxNativeZoom:6,zIndex:300,attribution:'GOES-East &copy; NASA EOSDIS/GIBS'});
+  }
+  function toggleSatellite(){
+    const button=el('satelliteBtn');
+    if(satelliteLayer&&map.hasLayer(satelliteLayer)){map.removeLayer(satelliteLayer);button.classList.remove('active');updateLayerOptions();return}
+    satelliteLayer=createSatelliteLayer().addTo(map);button.classList.add('active');updateLayerOptions();
+  }
   function category(m){
     if(!m)return '—';
     if(m.fltCat)return m.fltCat;
@@ -136,31 +173,14 @@
   function renderCached(c){
     const metar=c.metar,taf=c.taf,cat=category(metar),cls=categoryClass(cat);el('flightBadge').textContent=cat;el('flightBadge').style.background=`var(--${cls==='vfr'?'green':cls==='mvfr'?'blue':cls==='ifr'?'red':'lifr'})`;el('stationTitle').textContent=c.code;el('stationMeta').textContent='Consulta armazenada';el('metarRaw').textContent=metar?.rawOb||'METAR não disponível.';el('tafRaw').textContent=taf?.rawTAF||'TAF não disponível.';el('updated').textContent=`Salvo em\n${new Date(c.saved).toLocaleString('pt-BR')}`;el('weather').classList.add('show')
   }
-  function escapeHtml(value){return String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]))}
-  function geometryTouchesBrazil(feature){
-    const values=feature.geometry?.coordinates?.flat(4)||[];
-    for(let i=0;i<values.length;i+=2){const lon=Number(values[i]),lat=Number(values[i+1]);if(lon>=-75&&lon<=-30&&lat>=-35&&lat<=8)return true}
-    return false;
-  }
-  async function toggleSigmets(){
-    const button=el('sigmetBtn');
-    if(map.hasLayer(sigmetLayer)){map.removeLayer(sigmetLayer);button.classList.remove('active');return}
-    button.classList.add('active');
-    if(sigmetsLoaded){sigmetLayer.addTo(map);return}
-    button.disabled=true;button.textContent='Carregando…';showStatus('Consultando SIGMET vigentes…');
-    try{
-      const response=await fetch(`${WORKER}/sigmets`,{cache:'no-store'});const data=await response.json().catch(()=>({}));
-      if(!response.ok)throw new Error(data.error||`Falha ${response.status}`);
-      const features=(data.features||[]).filter(geometryTouchesBrazil);
-      sigmetLayer.clearLayers();sigmetLayer.addData({type:'FeatureCollection',features}).addTo(map);sigmetsLoaded=true;
-      if(features.length)showStatus(`${features.length} área${features.length===1?'':'s'} SIGMET vigente${features.length===1?'':'s'} sobre o Brasil.`);
-      else showStatus('Nenhum SIGMET vigente sobre o Brasil neste momento.');
-    }catch(error){button.classList.remove('active');showStatus('Não foi possível consultar os SIGMET agora.',true)}
-    finally{button.disabled=false;button.textContent='SIGMET'}
-  }
   el('searchForm').addEventListener('submit',e=>{e.preventDefault();loadWeather(el('icao').value)});
   document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>loadWeather(c.dataset.icao)));
-  el('sigmetBtn').addEventListener('click',toggleSigmets);
+  el('aerodromesBtn').addEventListener('click',()=>{const button=el('aerodromesBtn');if(map.hasLayer(markerLayer)){map.removeLayer(markerLayer);button.classList.remove('active')}else{markerLayer.addTo(map);button.classList.add('active')}});
+  el('radarBtn').addEventListener('click',toggleRadar);
+  el('satelliteBtn').addEventListener('click',toggleSatellite);
+  el('radarOpacity').addEventListener('input',e=>radarLayer?.setOpacity(Number(e.target.value)));
+  el('satelliteOpacity').addEventListener('input',e=>satelliteLayer?.setOpacity(Number(e.target.value)));
+  el('satelliteMode').addEventListener('change',()=>{if(!satelliteLayer||!map.hasLayer(satelliteLayer))return;map.removeLayer(satelliteLayer);satelliteLayer=createSatelliteLayer().addTo(map)});
   document.querySelectorAll('.copybtn').forEach(b=>b.addEventListener('click',async()=>{await navigator.clipboard.writeText(el(b.dataset.copy).textContent);const old=b.textContent;b.textContent='Copiado';setTimeout(()=>b.textContent=old,1200)}));
   el('locateBtn').addEventListener('click',()=>{if(!navigator.geolocation){showStatus('Localização não disponível neste aparelho.',true);return}showStatus('Obtendo sua posição…');navigator.geolocation.getCurrentPosition(p=>{hideStatus();map.flyTo([p.coords.latitude,p.coords.longitude],7);L.circleMarker([p.coords.latitude,p.coords.longitude],{radius:7,color:'#fff',weight:3,fillColor:'#0aa4ef',fillOpacity:1}).addTo(map).bindPopup('Sua posição').openPopup()},()=>showStatus('Não foi possível obter sua posição. Verifique a permissão de localização.',true),{enableHighAccuracy:true,timeout:12000})});
 })();
