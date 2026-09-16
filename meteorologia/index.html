@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#17191b">
+  <title>Meteorologia | IV-PLANNER</title>
+  <link rel="icon" type="image/png" href="../icon-512.png">
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <style>
+    :root{color-scheme:dark;--ink:#17191b;--panel:#24272a;--panel2:#1d2022;--blue:#0aa4ef;--line:#4d5359;--muted:#aeb5bc;--green:#32c77d;--yellow:#f6c945;--red:#ff5d64;--shadow:0 16px 35px rgba(0,0,0,.24)}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#17191b;color:#fff}button,input{font:inherit}
+    body{background:radial-gradient(circle at 100% 0,#44494d 0,transparent 30%),linear-gradient(155deg,#151719,#292c2f)}
+    .app{width:min(1080px,100%);min-height:100svh;margin:auto;padding:max(18px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+    header{display:flex;align-items:center;gap:12px;margin-bottom:16px}.back{width:44px;height:44px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.055);color:#fff;font-size:28px;display:grid;place-items:center;text-decoration:none;-webkit-tap-highlight-color:transparent}.heading{min-width:0}.heading h1{font-size:1.4rem;line-height:1.1;margin:0}.heading p{margin:4px 0 0;color:var(--muted);font-size:.82rem}.live{margin-left:auto;display:flex;align-items:center;gap:7px;color:var(--muted);font-size:.75rem;white-space:nowrap}.live i{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(50,199,125,.12)}
+    .search{display:flex;gap:9px;margin-bottom:12px}.searchbox{flex:1;display:flex;align-items:center;gap:9px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:0 13px}.searchbox svg{width:19px;color:var(--muted);flex:0 0 auto}.search input{width:100%;height:50px;border:0;outline:0;background:transparent;color:#fff;text-transform:uppercase;font-weight:700;letter-spacing:.05em}.search input::placeholder{text-transform:none;font-weight:500;letter-spacing:0;color:#818990}.search button,.locate{height:50px;border:0;border-radius:15px;background:var(--blue);color:#062335;font-weight:800;padding:0 18px;cursor:pointer}.search button:disabled{opacity:.55}.locate{width:50px;padding:0;background:var(--panel);border:1px solid var(--line);color:var(--blue);font-size:21px}
+    .chips{display:flex;gap:8px;overflow:auto;padding:0 0 12px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}.chip{border:1px solid var(--line);background:var(--panel);color:#dce0e3;border-radius:999px;padding:8px 13px;font-size:.8rem;font-weight:700;white-space:nowrap;cursor:pointer}.chip.active{border-color:var(--blue);background:rgba(10,164,239,.14);color:#63c9fa}
+    .mapwrap{position:relative;height:min(54svh,520px);min-height:360px;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#202629;box-shadow:var(--shadow)}#map{height:100%;width:100%}.leaflet-container{background:#202629;font-family:inherit}.leaflet-control-zoom a{background:#24282b!important;color:#fff!important;border-color:#4d5359!important}.leaflet-control-attribution{background:rgba(24,27,29,.78)!important;color:#aeb5bc!important}.leaflet-control-attribution a{color:#62c9fa!important}
+    .legend{position:absolute;z-index:500;left:10px;bottom:22px;display:flex;gap:7px;padding:8px 10px;border:1px solid rgba(255,255,255,.14);border-radius:11px;background:rgba(24,27,29,.86);backdrop-filter:blur(8px);font-size:.67rem;color:#d6dade}.legend span{display:flex;align-items:center;gap:4px}.dot{width:7px;height:7px;border-radius:50%}.vfr{background:var(--green)}.mvfr{background:#42a5f5}.ifr{background:var(--red)}.lifr{background:#d16bdf}
+    .layers{position:absolute;z-index:500;right:10px;top:10px;display:grid;gap:7px}.layer{border:1px solid rgba(255,255,255,.15);border-radius:11px;background:rgba(24,27,29,.9);color:#dce0e3;padding:9px 11px;font-size:.72rem;font-weight:800;backdrop-filter:blur(8px)}.layer:disabled{color:#737b81}.layer.active{color:#66ccfb;border-color:#078dd1}
+    .status{display:none;margin-top:12px;padding:13px 15px;border:1px solid var(--line);border-radius:14px;background:var(--panel);color:var(--muted);font-size:.87rem}.status.show{display:block}.status.error{border-color:rgba(255,93,100,.55);color:#ff9da1}
+    .weather{display:none;margin-top:12px;gap:12px}.weather.show{display:grid}.place{display:flex;align-items:flex-start;gap:12px;padding:16px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.035));box-shadow:var(--shadow)}.badge{min-width:54px;height:38px;padding:0 8px;border-radius:10px;display:grid;place-items:center;background:var(--green);color:#072d1d;font-size:.74rem;font-weight:900}.place h2{font-size:1.2rem;margin:0}.place p{margin:5px 0 0;color:var(--muted);font-size:.78rem}.updated{margin-left:auto;color:var(--muted);font-size:.7rem;text-align:right}
+    .reports{display:grid;gap:12px}.report{padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:var(--shadow)}.reporthead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}.report h3{margin:0;font-size:.88rem;letter-spacing:.08em;color:#73cff9}.copybtn{border:0;background:transparent;color:var(--muted);padding:4px 0;font-size:.76rem;cursor:pointer}.raw{margin:0;color:#f1f3f4;font:600 .88rem/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;overflow-wrap:anywhere}.empty{color:var(--muted);font-size:.86rem}.notice{margin:14px 2px 0;color:#858d93;font-size:.72rem;line-height:1.45;text-align:center}
+    .wx-marker{width:35px;height:35px;border:3px solid #fff;border-radius:50% 50% 50% 8px;transform:rotate(-45deg);display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.42)}.wx-marker b{transform:rotate(45deg);font-size:8px;color:#071a12}.wx-marker.mvfr b,.wx-marker.ifr b,.wx-marker.lifr b{color:#fff}.leaflet-div-icon{background:transparent;border:0}
+    @media(min-width:760px){.app{padding-left:24px;padding-right:24px}.weather.show{grid-template-columns:310px 1fr}.place{grid-column:1}.reports{grid-column:2;grid-row:1/3}.mapwrap{min-height:470px}}
+  </style>
+</head>
+<body><main class="app">
+  <header>
+    <a class="back" href="../" aria-label="Voltar">‹</a>
+    <div class="heading"><h1>Meteorologia</h1><p>Condições aeronáuticas em tempo real</p></div>
+    <div class="live"><i></i><span>Dados online</span></div>
+  </header>
+  <form class="search" id="searchForm">
+    <label class="searchbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="icao" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Código ICAO (ex.: SBGL)" aria-label="Código ICAO"></label>
+    <button id="searchBtn" type="submit">Buscar</button>
+    <button class="locate" id="locateBtn" type="button" aria-label="Mostrar minha localização">⌖</button>
+  </form>
+  <div class="chips" aria-label="Atalhos">
+    <button class="chip" data-icao="SBGL">SBGL</button><button class="chip" data-icao="SBBR">SBBR</button><button class="chip" data-icao="SBSP">SBSP</button><button class="chip" data-icao="SBEG">SBEG</button><button class="chip" data-icao="SBCF">SBCF</button><button class="chip" data-icao="SBPA">SBPA</button><button class="chip" data-icao="SBRF">SBRF</button>
+  </div>
+  <section class="mapwrap" aria-label="Mapa meteorológico">
+    <div id="map"></div>
+    <div class="layers"><button class="layer active" type="button">Aeródromos</button><button class="layer" type="button" disabled title="Próxima etapa">SIGMET</button><button class="layer" type="button" disabled title="Próxima etapa">Radar</button></div>
+    <div class="legend"><span><i class="dot vfr"></i>VFR</span><span><i class="dot mvfr"></i>MVFR</span><span><i class="dot ifr"></i>IFR</span><span><i class="dot lifr"></i>LIFR</span></div>
+  </section>
+  <div class="status" id="status" role="status"></div>
+  <section class="weather" id="weather">
+    <article class="place"><div class="badge" id="flightBadge">—</div><div><h2 id="stationTitle">—</h2><p id="stationMeta">—</p></div><div class="updated" id="updated"></div></article>
+    <div class="reports">
+      <article class="report"><div class="reporthead"><h3>METAR</h3><button class="copybtn" type="button" data-copy="metarRaw">Copiar</button></div><p class="raw" id="metarRaw"></p></article>
+      <article class="report"><div class="reporthead"><h3>TAF</h3><button class="copybtn" type="button" data-copy="tafRaw">Copiar</button></div><p class="raw" id="tafRaw"></p></article>
+    </div>
+  </section>
+  <p class="notice">Informação destinada ao planejamento. Confirme os produtos meteorológicos nos canais operacionais oficiais antes do voo.</p>
+</main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+(() => {
+  const API = 'https://aviationweather.gov/api/data';
+  const stations = {
+    SBGL:{name:'Rio de Janeiro / Galeão',lat:-22.81,lon:-43.25},SBBR:{name:'Brasília',lat:-15.87,lon:-47.92},SBSP:{name:'São Paulo / Congonhas',lat:-23.63,lon:-46.66},SBGR:{name:'São Paulo / Guarulhos',lat:-23.43,lon:-46.47},SBEG:{name:'Manaus',lat:-3.04,lon:-60.05},SBCF:{name:'Belo Horizonte / Confins',lat:-19.63,lon:-43.97},SBPA:{name:'Porto Alegre',lat:-30.00,lon:-51.17},SBRF:{name:'Recife',lat:-8.13,lon:-34.92},SBSV:{name:'Salvador',lat:-12.91,lon:-38.33},SBFZ:{name:'Fortaleza',lat:-3.78,lon:-38.53},SBBE:{name:'Belém',lat:-1.38,lon:-48.48}
+  };
+  const el = id => document.getElementById(id);
+  const status = el('status');
+  const map = L.map('map',{zoomControl:true,minZoom:3}).setView([-14.5,-52.5],4);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(map);
+  const markerLayer = L.layerGroup().addTo(map);
+  let selectedMarker;
+
+  function markerIcon(code,category='vfr'){
+    return L.divIcon({className:'',html:`<div class="wx-marker ${category}" style="background:var(--${category==='vfr'?'green':category==='mvfr'?'blue':category==='ifr'?'red':'lifr'})"><b>${code.slice(2)}</b></div>`,iconSize:[35,35],iconAnchor:[9,32]});
+  }
+  Object.entries(stations).forEach(([code,s])=>L.marker([s.lat,s.lon],{icon:markerIcon(code)}).addTo(markerLayer).bindTooltip(code,{direction:'top'}).on('click',()=>loadWeather(code)));
+
+  function showStatus(message,error=false){status.textContent=message;status.className=`status show${error?' error':''}`}
+  function hideStatus(){status.className='status'}
+  function category(m){
+    if(!m)return '—';
+    if(m.fltCat)return m.fltCat;
+    const vis=Number(m.visib),ceil=Number(m.clouds?.filter(c=>['BKN','OVC','VV'].includes(c.cover)).map(c=>c.base).sort((a,b)=>a-b)[0]);
+    if((vis<1)||(ceil&&ceil<5))return 'LIFR'; if((vis<3)||(ceil&&ceil<10))return 'IFR'; if((vis<=5)||(ceil&&ceil<=30))return 'MVFR'; return 'VFR';
+  }
+  function categoryClass(cat){return ({VFR:'vfr',MVFR:'mvfr',IFR:'ifr',LIFR:'lifr'})[cat]||'vfr'}
+  function setLoading(on){el('searchBtn').disabled=on;el('searchBtn').textContent=on?'Buscando…':'Buscar'}
+  async function getProduct(product,code){
+    const response=await fetch(`${API}/${product}?ids=${encodeURIComponent(code)}&format=json`,{cache:'no-store'});
+    if(!response.ok)throw new Error(`Falha ${response.status}`);
+    return response.json();
+  }
+  async function loadWeather(value){
+    const code=value.trim().toUpperCase();
+    if(!/^[A-Z]{4}$/.test(code)){showStatus('Digite um indicador ICAO válido com quatro letras.',true);return}
+    el('icao').value=code;setLoading(true);showStatus(`Consultando METAR e TAF de ${code}…`);
+    document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active',c.dataset.icao===code));
+    try{
+      const [metarResult,tafResult]=await Promise.allSettled([getProduct('metar',code),getProduct('taf',code)]);
+      const metar=metarResult.status==='fulfilled'?metarResult.value?.[0]:null;
+      const taf=tafResult.status==='fulfilled'?tafResult.value?.[0]:null;
+      if(!metar&&!taf)throw new Error('Nenhum produto encontrado');
+      const known=stations[code]||{}; const lat=Number(metar?.lat??taf?.lat??known.lat); const lon=Number(metar?.lon??taf?.lon??known.lon);
+      const cat=category(metar);const cls=categoryClass(cat);
+      el('flightBadge').textContent=cat;el('flightBadge').style.background=`var(--${cls==='vfr'?'green':cls==='mvfr'?'blue':cls==='ifr'?'red':'lifr'})`;
+      el('flightBadge').style.color=cls==='vfr'?'#072d1d':'#fff';
+      el('stationTitle').textContent=`${code} · ${known.name||metar?.name||'Estação meteorológica'}`;
+      el('stationMeta').textContent=[metar?.temp!=null?`${Math.round(metar.temp)} °C`:null,metar?.wdir!=null&&metar?.wspd!=null?`${String(Math.round(metar.wdir)).padStart(3,'0')}° / ${Math.round(metar.wspd)} kt`:null,metar?.altim!=null?`${Math.round(metar.altim)} hPa`:null].filter(Boolean).join('  •  ')||'Dados brutos disponíveis abaixo';
+      el('metarRaw').textContent=metar?.rawOb||'METAR não disponível para esta estação.';
+      el('tafRaw').textContent=taf?.rawTAF||'TAF não disponível para esta estação.';
+      const obs=metar?.reportTime||metar?.obsTime;el('updated').textContent=obs?`Observação\n${new Date(obs).toLocaleString('pt-BR',{timeZone:'UTC',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})} UTC`:'Consulta atual';
+      el('weather').classList.add('show');hideStatus();
+      if(Number.isFinite(lat)&&Number.isFinite(lon)){
+        if(selectedMarker)selectedMarker.remove();
+        selectedMarker=L.marker([lat,lon],{icon:markerIcon(code,cls),zIndexOffset:1000}).addTo(map).bindPopup(`<b>${code}</b><br>${cat}`).openPopup();map.flyTo([lat,lon],7,{duration:.8});
+      }
+      localStorage.setItem('iv-weather-last',JSON.stringify({code,metar,taf,saved:Date.now()}));
+    }catch(error){
+      const cached=JSON.parse(localStorage.getItem('iv-weather-last')||'null');
+      if(cached?.code===code){showStatus('Sem conexão. Exibindo a última consulta salva neste aparelho.',true);renderCached(cached)}
+      else showStatus(`Não foi possível obter dados de ${code}. Verifique a conexão ou o indicador ICAO.`,true);
+    }finally{setLoading(false)}
+  }
+  function renderCached(c){
+    const metar=c.metar,taf=c.taf,cat=category(metar),cls=categoryClass(cat);el('flightBadge').textContent=cat;el('flightBadge').style.background=`var(--${cls==='vfr'?'green':cls==='mvfr'?'blue':cls==='ifr'?'red':'lifr'})`;el('stationTitle').textContent=c.code;el('stationMeta').textContent='Consulta armazenada';el('metarRaw').textContent=metar?.rawOb||'METAR não disponível.';el('tafRaw').textContent=taf?.rawTAF||'TAF não disponível.';el('updated').textContent=`Salvo em\n${new Date(c.saved).toLocaleString('pt-BR')}`;el('weather').classList.add('show')
+  }
+  el('searchForm').addEventListener('submit',e=>{e.preventDefault();loadWeather(el('icao').value)});
+  document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>loadWeather(c.dataset.icao)));
+  document.querySelectorAll('.copybtn').forEach(b=>b.addEventListener('click',async()=>{await navigator.clipboard.writeText(el(b.dataset.copy).textContent);const old=b.textContent;b.textContent='Copiado';setTimeout(()=>b.textContent=old,1200)}));
+  el('locateBtn').addEventListener('click',()=>{if(!navigator.geolocation){showStatus('Localização não disponível neste aparelho.',true);return}showStatus('Obtendo sua posição…');navigator.geolocation.getCurrentPosition(p=>{hideStatus();map.flyTo([p.coords.latitude,p.coords.longitude],7);L.circleMarker([p.coords.latitude,p.coords.longitude],{radius:7,color:'#fff',weight:3,fillColor:'#0aa4ef',fillOpacity:1}).addTo(map).bindPopup('Sua posição').openPopup()},()=>showStatus('Não foi possível obter sua posição. Verifique a permissão de localização.',true),{enableHighAccuracy:true,timeout:12000})});
+})();
+</script>
+</body></html>

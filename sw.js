@@ -1,11 +1,13 @@
-const CACHE = 'iv-planner-v4-visual-unificado';
+const CACHE = 'iv-planner-v5-meteorologia';
 
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './meteorologia/',
+  './meteorologia/index.html'
 ];
 
 self.addEventListener('install', event => {
@@ -47,12 +49,13 @@ self.addEventListener('fetch', event => {
           if (response && response.ok) {
             const copy = response.clone();
             caches.open(CACHE)
-              .then(cache => cache.put('./index.html', copy));
+              .then(cache => cache.put(request, copy));
           }
           return response;
         })
         .catch(async () => {
           return (
+            (await caches.match(request)) ||
             (await caches.match('./index.html')) ||
             (await caches.match('./'))
           );
