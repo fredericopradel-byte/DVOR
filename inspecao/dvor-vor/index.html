@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>IV-PLANNER</title>
 <!-- TESTE GNSS: núcleo de coordenadas restaurado do index.8 funcional -->
-<meta name="iv-planner-build" content="3.0">
+<meta name="iv-planner-build" content="3.1-visual-unificado">
 <style>
   :root{color-scheme:dark;--bg:#17191b;--panel:#272a2d;--text:#f4f5f6;--muted:#adb3b9;--border:#51565b;--accent:#666d73;--blue:#737a80;--red:#a94f55;--danger:#e1797e;--soft:#34383c}
   *{box-sizing:border-box}
@@ -309,16 +309,34 @@
   :root{color-scheme:dark!important;--bg:#17191b!important;--panel:#272a2d!important;--text:#f4f5f6!important;--muted:#adb3b9!important;--border:#51565b!important;--accent:#087fbd!important;--blue:#00a8ff!important;--red:#ff3045!important;--danger:#ff5b69!important;--soft:#34383c!important}
   html,body{background:#17191b!important}
 
+  /* Sistema visual unificado com o módulo Legacy */
+  :root{--bg:#17191b!important;--panel:#24272a!important;--text:#f5f7f9!important;--muted:#aeb5bc!important;--border:#4d5359!important;--accent:#078dd1!important;--blue:#00a8ff!important;--red:#ff3045!important;--danger:#ff5b69!important;--soft:#34383c!important;--blue2:#0aa4ef;--green:#39d98a;--amber:#ffb020;--shadow:0 16px 35px rgba(0,0,0,.24)}
+  html{scroll-behavior:smooth}body{min-height:100svh;background:radial-gradient(circle at 100% 0,#44494d 0,transparent 30%),linear-gradient(155deg,#151719,#292c2f)!important;background-attachment:fixed!important;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
+  .app{width:min(1100px,100%);max-width:none;padding:18px 18px calc(96px + env(safe-area-inset-bottom))}
+  .topbar{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:14px;margin:0 0 22px!important;position:static!important}
+  .back-to-inspection{position:static!important;display:grid!important;place-items:center;width:42px;height:42px;min-height:42px;padding:0!important;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.05)!important;color:#fff!important;font-size:1.7rem!important;font-weight:500;text-decoration:none;flex:0 0 auto}
+  .module-brand small{display:block;color:var(--blue2);font-size:.68rem;font-weight:800;letter-spacing:.16em}.module-brand strong{display:block;font-size:1.18rem;font-style:italic;letter-spacing:-.03em}.module-brand span{display:block;color:var(--muted);font-size:.72rem;margin-top:3px}
+  h1{font-size:clamp(1.9rem,7vw,2.7rem);font-weight:750}h2{font-size:1.05rem;font-weight:750}.page-heading h2,.summary h2{letter-spacing:-.01em}
+  .panel{background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.035));border:1px solid var(--border);border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+  button{border:1px solid var(--border);border-radius:13px;background:#303438;color:var(--text);font-weight:700;transition:transform .14s,background .14s,border-color .14s;-webkit-tap-highlight-color:transparent}button:active{transform:scale(.975)}button.primary{background:var(--accent);border-color:var(--blue2);color:#fff}button.danger{color:#ff8993}
+  input,select,textarea{border:1px solid #596067;border-radius:13px;background:#191b1d;color:#fff;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(10,164,239,.16)}label{color:var(--muted);font-weight:650}
+  .coord-box,.gnss-status,.activity-fields,.flight-step-panel{background:rgba(0,0,0,.16);border-color:var(--border);border-radius:14px}.activity-fields h3,.coord-title{color:var(--text)}
+  .type-choice button.active,.direction-choice button.selected{background:var(--accent);border-color:var(--blue2);color:#fff}
+  .saved-missions{border-color:rgba(255,255,255,.1)}.saved-mission-item{background:rgba(0,0,0,.18);border-radius:12px}.saved-mission-item.current{border-color:var(--blue2);background:rgba(7,141,209,.12)}
+  .page-nav{position:fixed!important;z-index:100;left:50%!important;right:auto!important;top:auto!important;bottom:14px!important;transform:translateX(-50%);width:min(620px,calc(100% - 28px));margin:0!important;padding:7px!important;display:grid;grid-template-columns:repeat(4,1fr);gap:5px!important;border:1px solid rgba(255,255,255,.13)!important;border-radius:18px;background:rgba(22,24,26,.94)!important;backdrop-filter:blur(18px);box-shadow:0 12px 30px rgba(0,0,0,.34)!important}
+  .page-nav button{min-height:47px;border:0!important;border-radius:11px!important;background:transparent!important;color:#929aa1!important;padding:7px 3px 5px!important;font-size:.7rem!important;font-weight:750}.page-nav button::before{content:"";display:block;width:8px;height:8px;border-radius:50%;background:#5c6369;margin:0 auto 5px}.page-nav button.active{background:rgba(7,141,209,.18)!important;color:#fff!important}.page-nav button.active::before{background:var(--blue2);box-shadow:0 0 10px var(--blue2)}
+  .exec-card{border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));padding:11px}.exec-card.is-active{border-color:var(--blue2);box-shadow:0 0 0 2px rgba(10,164,239,.3),var(--shadow)}.exec-card.is-next{box-shadow:0 0 0 1px rgba(255,255,255,.24)}.exec-placeholder{border-radius:16px;border-color:rgba(10,164,239,.55);background:rgba(7,141,209,.08)}.state-badge,.tx-badge{border-radius:999px}.tx-badge.tx1{background:#00a8ff}.tx-badge.tx2{background:#ff3045}
+  .step-now.active-tx1{border-color:#00a8ff}.step-now.active-tx2{border-color:#ff3045}.swatch.blue{background:#00a8ff}.swatch.red{background:#ff3045}
+  #rose-panel:fullscreen{background:radial-gradient(circle at 100% 0,#44494d 0,transparent 30%),linear-gradient(155deg,#151719,#292c2f);padding:18px}.rose-toolbar button{background:#303438}.gnss-warning{color:#8f969c;letter-spacing:.025em}
+  @media(max-width:570px){.app{padding:10px 10px calc(82px + env(safe-area-inset-bottom))}.topbar{margin:0 2px 16px!important}.module-brand span{display:none}.panel{padding:11px;border-radius:17px;margin-bottom:10px}.page-nav{left:0!important;right:0!important;bottom:0!important;transform:none;width:100%;border-left:0!important;border-right:0!important;border-bottom:0!important;border-radius:0!important;padding:7px 8px calc(7px + env(safe-area-inset-bottom))!important}.page-nav button{min-height:46px!important}.coord-box{border-radius:12px}.exec-card{border-radius:14px}}
+
 </style>
 </head>
 <body>
 <main class="app">
   <div class="topbar">
-    <div>
-      <h1>IV-PLANNER</h1>
-      <div class="subtitle">Planejamento e acompanhamento da inspeção</div>
-    </div>
-    <a class="back-to-inspection" href="../" aria-label="Voltar para Inspeção em Voo">‹ Inspeção em Voo</a>
+    <a class="back-to-inspection" href="../" aria-label="Voltar para Inspeção em Voo">‹</a>
+    <div class="module-brand"><small>IV-PLANNER</small><strong>DVOR / VOR</strong><span>Planejamento e acompanhamento da inspeção</span></div>
   </div>
 
   <nav class="page-nav" aria-label="Páginas do aplicativo">

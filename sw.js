@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v3';
+const CACHE = 'iv-planner-v4-visual-unificado';
 
 const APP_SHELL = [
   './',
