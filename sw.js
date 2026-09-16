@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v5-meteorologia';
+const CACHE = 'iv-planner-v6-localidades';
 
 const APP_SHELL = [
   './',
@@ -7,7 +7,10 @@ const APP_SHELL = [
   './icon-192.png',
   './icon-512.png',
   './meteorologia/',
-  './meteorologia/index.html'
+  './meteorologia/index.html',
+  './localidades/',
+  './localidades/index.html',
+  './prevoo/legacy-data.js'
 ];
 
 self.addEventListener('install', event => {
