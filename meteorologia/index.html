@@ -38,7 +38,7 @@
     <button class="locate" id="locateBtn" type="button" aria-label="Mostrar minha localização">⌖</button>
   </form>
   <div class="chips" aria-label="Atalhos">
-    <button class="chip" data-icao="SBGL">SBGL</button><button class="chip" data-icao="SBBR">SBBR</button><button class="chip" data-icao="SBSP">SBSP</button><button class="chip" data-icao="SBEG">SBEG</button><button class="chip" data-icao="SBCF">SBCF</button><button class="chip" data-icao="SBPA">SBPA</button><button class="chip" data-icao="SBRF">SBRF</button>
+    <button class="chip" data-icao="SBGL">SBGL</button><button class="chip" data-icao="SBRJ">SBRJ</button><button class="chip" data-icao="SBBR">SBBR</button><button class="chip" data-icao="SBSP">SBSP</button><button class="chip" data-icao="SBEG">SBEG</button><button class="chip" data-icao="SBCF">SBCF</button><button class="chip" data-icao="SBPA">SBPA</button><button class="chip" data-icao="SBRF">SBRF</button>
   </div>
   <section class="mapwrap" aria-label="Mapa meteorológico">
     <div id="map"></div>
@@ -58,9 +58,9 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 <script>
 (() => {
-  const API = 'https://aviationweather.gov/api/data';
+  const API = 'https://iv-planner-weather.fredericopradel.workers.dev/weather';
   const stations = {
-    SBGL:{name:'Rio de Janeiro / Galeão',lat:-22.81,lon:-43.25},SBBR:{name:'Brasília',lat:-15.87,lon:-47.92},SBSP:{name:'São Paulo / Congonhas',lat:-23.63,lon:-46.66},SBGR:{name:'São Paulo / Guarulhos',lat:-23.43,lon:-46.47},SBEG:{name:'Manaus',lat:-3.04,lon:-60.05},SBCF:{name:'Belo Horizonte / Confins',lat:-19.63,lon:-43.97},SBPA:{name:'Porto Alegre',lat:-30.00,lon:-51.17},SBRF:{name:'Recife',lat:-8.13,lon:-34.92},SBSV:{name:'Salvador',lat:-12.91,lon:-38.33},SBFZ:{name:'Fortaleza',lat:-3.78,lon:-38.53},SBBE:{name:'Belém',lat:-1.38,lon:-48.48}
+    SBGL:{name:'Rio de Janeiro / Galeão',lat:-22.81,lon:-43.25},SBRJ:{name:'Rio de Janeiro / Santos Dumont',lat:-22.91,lon:-43.16},SBBR:{name:'Brasília',lat:-15.87,lon:-47.92},SBSP:{name:'São Paulo / Congonhas',lat:-23.63,lon:-46.66},SBGR:{name:'São Paulo / Guarulhos',lat:-23.43,lon:-46.47},SBEG:{name:'Manaus',lat:-3.04,lon:-60.05},SBCF:{name:'Belo Horizonte / Confins',lat:-19.63,lon:-43.97},SBPA:{name:'Porto Alegre',lat:-30.00,lon:-51.17},SBRF:{name:'Recife',lat:-8.13,lon:-34.92},SBSV:{name:'Salvador',lat:-12.91,lon:-38.33},SBFZ:{name:'Fortaleza',lat:-3.78,lon:-38.53},SBBE:{name:'Belém',lat:-1.38,lon:-48.48}
   };
   const el = id => document.getElementById(id);
   const status = el('status');
@@ -84,10 +84,11 @@
   }
   function categoryClass(cat){return ({VFR:'vfr',MVFR:'mvfr',IFR:'ifr',LIFR:'lifr'})[cat]||'vfr'}
   function setLoading(on){el('searchBtn').disabled=on;el('searchBtn').textContent=on?'Buscando…':'Buscar'}
-  async function getProduct(product,code){
-    const response=await fetch(`${API}/${product}?ids=${encodeURIComponent(code)}&format=json`,{cache:'no-store'});
-    if(!response.ok)throw new Error(`Falha ${response.status}`);
-    return response.json();
+  async function getWeather(code){
+    const response=await fetch(`${API}?icao=${encodeURIComponent(code)}`,{cache:'no-store'});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(data.error||`Falha ${response.status}`);
+    return data;
   }
   async function loadWeather(value){
     const code=value.trim().toUpperCase();
@@ -95,9 +96,9 @@
     el('icao').value=code;setLoading(true);showStatus(`Consultando METAR e TAF de ${code}…`);
     document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active',c.dataset.icao===code));
     try{
-      const [metarResult,tafResult]=await Promise.allSettled([getProduct('metar',code),getProduct('taf',code)]);
-      const metar=metarResult.status==='fulfilled'?metarResult.value?.[0]:null;
-      const taf=tafResult.status==='fulfilled'?tafResult.value?.[0]:null;
+      const result=await getWeather(code);
+      const metar=result.metar||null;
+      const taf=result.taf||null;
       if(!metar&&!taf)throw new Error('Nenhum produto encontrado');
       const known=stations[code]||{}; const lat=Number(metar?.lat??taf?.lat??known.lat); const lon=Number(metar?.lon??taf?.lon??known.lon);
       const cat=category(metar);const cls=categoryClass(cat);
