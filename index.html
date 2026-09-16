@@ -3,26 +3,26 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#071a2d">
-  <title>GEIV</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23071a2d'/%3E%3Cpath d='M9 34l19-5 9-16 5 1-3 16 14 5v4l-15-2-3 13h-5l-2-13-19 1z' fill='%23fff'/%3E%3C/svg%3E">
+  <meta name="theme-color" content="#17191b">
+  <title>IV-PLANNER</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317191b'/%3E%3Ccircle cx='32' cy='32' r='21' fill='none' stroke='%23d9dde1' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23fff'/%3E%3Cpath d='M32 8v14M32 42v14M8 32h14M42 32h14M32 32l13-13' stroke='%23fff' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
   <style>
-    :root{color-scheme:dark;--navy:#071a2d;--blue:#0c3459;--cyan:#53b8e9;--line:rgba(255,255,255,.13);--muted:#a9bed0}
-    *{box-sizing:border-box} body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 80% 0,#135180 0,transparent 33%),linear-gradient(160deg,#061522,#092744 65%,#071a2d);color:#fff}
+    :root{color-scheme:dark;--ink:#17191b;--silver:#d9dde1;--line:rgba(255,255,255,.16);--muted:#adb3b9}
+    *{box-sizing:border-box} body{margin:0;min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 82% 0,#4a4e52 0,transparent 34%),linear-gradient(160deg,#151719,#292c2f 62%,#111315);color:#fff}
     main{width:min(760px,100%);min-height:100svh;margin:auto;padding:max(34px,env(safe-area-inset-top)) 20px max(28px,env(safe-area-inset-bottom));display:flex;flex-direction:column}
-    .brand{display:flex;align-items:center;gap:14px;margin:8px 4px 46px}.mark{width:52px;height:52px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.07);display:grid;place-items:center;font-size:25px}.eyebrow{margin:0 0 3px;color:var(--cyan);font-size:.75rem;font-weight:800;letter-spacing:.16em}.brand h1{font-size:1.55rem;margin:0;letter-spacing:.02em}
+    .brand{display:flex;align-items:center;gap:15px;margin:8px 4px 46px}.mark{width:58px;height:58px;display:grid;place-items:center;filter:drop-shadow(0 7px 15px rgba(0,0,0,.25))}.mark svg{width:58px;height:58px;display:block}.brand h1{font-size:1.4rem;margin:0;font-weight:800;letter-spacing:.14em}.brand h1 span{color:var(--silver);font-weight:500}
     .intro{margin:0 4px 24px}.intro h2{font-size:clamp(1.75rem,6vw,2.6rem);line-height:1.05;margin:0 0 10px}.intro p{margin:0;color:var(--muted);font-size:1rem}
-    nav{display:grid;gap:14px}.card{display:flex;align-items:center;gap:17px;min-height:106px;padding:20px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(135deg,rgba(255,255,255,.105),rgba(255,255,255,.045));color:#fff;text-decoration:none;box-shadow:0 16px 38px rgba(0,0,0,.2);transition:transform .16s ease,border-color .16s ease,background .16s ease;-webkit-tap-highlight-color:transparent}.card:active{transform:scale(.985);background:rgba(255,255,255,.13)}.icon{width:54px;height:54px;flex:0 0 auto;border-radius:17px;background:#fff;color:var(--navy);display:grid;place-items:center;font-size:27px}.copy{flex:1}.copy strong{display:block;font-size:1.13rem;margin-bottom:5px}.copy span{display:block;color:var(--muted);font-size:.9rem;line-height:1.35}.arrow{font-size:1.65rem;color:var(--cyan)}
-    footer{margin-top:auto;padding-top:32px;text-align:center;color:#7793aa;font-size:.75rem;letter-spacing:.08em}
+    nav{display:grid;gap:14px}.card{display:flex;align-items:center;gap:17px;min-height:106px;padding:20px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(135deg,rgba(255,255,255,.105),rgba(255,255,255,.045));color:#fff;text-decoration:none;box-shadow:0 16px 38px rgba(0,0,0,.2);transition:transform .16s ease,border-color .16s ease,background .16s ease;-webkit-tap-highlight-color:transparent}.card:active{transform:scale(.985);background:rgba(255,255,255,.13)}.icon{width:54px;height:54px;flex:0 0 auto;border-radius:17px;background:#f3f4f5;color:var(--ink);display:grid;place-items:center;font-size:27px}.copy{flex:1}.copy strong{display:block;font-size:1.13rem;margin-bottom:5px}.copy span{display:block;color:var(--muted);font-size:.9rem;line-height:1.35}.arrow{font-size:1.65rem;color:var(--silver)}
+    footer{margin-top:auto;padding-top:32px;text-align:center;color:#8f969c;font-size:.75rem;letter-spacing:.08em}
     @media(min-width:620px){nav{grid-template-columns:1fr 1fr}.card{min-height:160px;align-items:flex-start;position:relative}.arrow{position:absolute;right:20px;bottom:18px}}
   </style>
 </head>
 <body><main>
-  <header class="brand"><div class="mark" aria-hidden="true">✦</div><div><p class="eyebrow">FORÇA AÉREA BRASILEIRA</p><h1>GEIV</h1></div></header>
+  <header class="brand"><div class="mark" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="23" fill="none" stroke="#d9dde1" stroke-width="3"/><circle cx="32" cy="32" r="4" fill="#fff"/><path d="M32 6v15M32 43v15M6 32h15M43 32h15M32 32l15-15" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></svg></div><div><h1><span>IV</span>‑PLANNER</h1></div></header>
   <section class="intro"><h2>Ferramentas de voo</h2><p>Selecione uma área operacional.</p></section>
   <nav aria-label="Menu principal">
     <a class="card" href="prevoo/"><span class="icon" aria-hidden="true">✈</span><span class="copy"><strong>Pré-voo</strong><span>Legacy e Hawker</span></span><span class="arrow" aria-hidden="true">›</span></a>
     <a class="card" href="inspecao/"><span class="icon" aria-hidden="true">⌁</span><span class="copy"><strong>Inspeção em Voo</strong><span>PAPI, DVOR/VOR, ILS, Radar e PAR</span></span><span class="arrow" aria-hidden="true">›</span></a>
   </nav>
-  <footer>GRUPO ESPECIAL DE INSPEÇÃO EM VOO</footer>
+  <footer>PLANEJAMENTO E INSPEÇÃO EM VOO</footer>
 </main></body></html>
