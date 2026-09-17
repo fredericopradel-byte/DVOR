@@ -309,6 +309,18 @@
   :root{color-scheme:dark!important;--bg:#17191b!important;--panel:#272a2d!important;--text:#f4f5f6!important;--muted:#adb3b9!important;--border:#51565b!important;--accent:#087fbd!important;--blue:#00a8ff!important;--red:#ff3045!important;--danger:#ff5b69!important;--soft:#34383c!important}
   html,body{background:#17191b!important}
 
+  /* Mapa operacional alinhado ao visual atual do PAPI. */
+  #rose-panel{overflow:hidden}
+  #rose{border:1px solid rgba(255,255,255,.14);border-radius:16px;background-color:#101619;
+    background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+    background-size:30px 30px;box-shadow:inset 0 0 32px rgba(0,0,0,.26)}
+  .grid-circle{stroke:rgba(255,255,255,.32);stroke-dasharray:7 7}.axis{stroke:rgba(255,255,255,.2);stroke-dasharray:5 7}
+  .map-gesture-hint{margin:4px 0 7px;color:var(--muted);font-size:.64rem;text-align:center}
+  .rose-toolbar{justify-content:flex-start;padding:7px;border:1px solid rgba(255,255,255,.11);border-radius:14px;background:rgba(0,0,0,.16)}
+  .rose-toolbar button{min-height:38px;border-radius:10px}.rose-toolbar .map-readout{margin-left:auto;padding:0 7px;color:var(--muted);font-size:.68rem;white-space:nowrap}
+  .flight-step-panel{border-color:rgba(255,255,255,.14);background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));border-radius:15px;padding:10px}
+  .step-controls button{border-radius:10px}.step-controls #step-complete{background:var(--accent);border-color:var(--blue2)}
+
   /* Sistema visual unificado com o módulo Legacy */
   :root{--bg:#17191b!important;--panel:#24272a!important;--text:#f5f7f9!important;--muted:#aeb5bc!important;--border:#4d5359!important;--accent:#078dd1!important;--blue:#00a8ff!important;--red:#ff3045!important;--danger:#ff5b69!important;--soft:#34383c!important;--blue2:#0aa4ef;--green:#39d98a;--amber:#ffb020;--shadow:0 16px 35px rgba(0,0,0,.24)}
   html{scroll-behavior:smooth}body{min-height:100svh;background:radial-gradient(circle at 100% 0,#44494d 0,transparent 30%),linear-gradient(155deg,#151719,#292c2f)!important;background-attachment:fixed!important;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
@@ -329,6 +341,7 @@
   .step-now.active-tx1{border-color:#00a8ff}.step-now.active-tx2{border-color:#ff3045}.swatch.blue{background:#00a8ff}.swatch.red{background:#ff3045}
   #rose-panel:fullscreen{background:radial-gradient(circle at 100% 0,#44494d 0,transparent 30%),linear-gradient(155deg,#151719,#292c2f);padding:18px}.rose-toolbar button{background:#303438}.gnss-warning{color:#8f969c;letter-spacing:.025em}
   @media(max-width:570px){.app{padding:10px 10px calc(82px + env(safe-area-inset-bottom))}.topbar{margin:0 2px 16px!important}.module-brand span{display:none}.panel{padding:11px;border-radius:17px;margin-bottom:10px}.page-nav{left:0!important;right:0!important;bottom:0!important;transform:none;width:100%;border-left:0!important;border-right:0!important;border-bottom:0!important;border-radius:0!important;padding:7px 8px calc(7px + env(safe-area-inset-bottom))!important}.page-nav button{min-height:46px!important}.coord-box{border-radius:12px}.exec-card{border-radius:14px}}
+  @media(max-width:570px){.rose-toolbar{display:grid!important;grid-template-columns:34px 40px 34px 1fr 1fr!important}.rose-toolbar .map-readout{grid-column:1/-1;margin:0;text-align:center;font-size:9px}.map-gesture-hint{font-size:9px}}
 
 </style>
 </head>
@@ -389,6 +402,7 @@
       <div class="mission-actions">
         <button id="new-mission" type="button">Nova missão</button>
         <button id="import-btn" type="button">Importar missão</button>
+        <button id="export-mission" type="button">Exportar missão</button>
         <button id="save-mission" type="button">Salvar missão</button>
         <button class="primary" id="mission-ok" type="button">OK</button>
         <input id="import-file" type="file" accept="application/json,.json" hidden>
@@ -398,9 +412,9 @@
 
   <section class="app-page" id="page-plan" hidden>
     <section class="panel">
-      <h2 id="form-title">Adicionar atividade</h2>
+      <h2 id="form-title">Adicionar passagem</h2>
       <form id="activity-form" novalidate>
-        <div class="type-choice" aria-label="Tipo de atividade">
+        <div class="type-choice" aria-label="Tipo de passagem">
           <button id="choose-radial" class="active" type="button">Inserir radial</button>
           <button id="choose-arc" type="button">Inserir arco DME</button>
         </div>
@@ -438,7 +452,7 @@
         </div>
         <div id="form-error" class="error" role="alert"></div>
         <div class="form-actions">
-          <button class="primary" id="save-activity" type="submit">Adicionar atividade</button>
+          <button class="primary" id="save-activity" type="submit">Adicionar passagem</button>
           <button id="cancel-edit" type="button" hidden>Cancelar edição</button>
         </div>
       </form>
@@ -456,23 +470,24 @@
         <span id="zoom-level" class="zoom-level" aria-live="polite">100%</span>
         <button id="zoom-in" type="button" aria-label="Aumentar zoom">+</button>
         <button id="zoom-fit" type="button">Ajustar à missão</button>
-        <button id="zoom-fullscreen" type="button">Tela cheia</button>
         <button id="center-aircraft" type="button" title="Centralizar na aeronave">✈ ANV</button>
         <button id="center-aid" type="button" title="Centralizar no auxílio">◎ AUX</button>
+        <span id="map-readout" class="map-readout" aria-live="polite">Zoom 100% · Giro 0°</span>
       </div>
+      <div class="map-gesture-hint">Arraste para deslocar · use dois dedos para zoom e giro</div>
       <div class="flight-step-panel" id="flight-step-panel">
         <div class="step-now">
           <span class="step-kicker">ATUAL</span>
-          <strong id="active-step-text">Nenhuma etapa ativa</strong>
+          <strong id="active-step-text">Nenhuma passagem ativa</strong>
         </div>
         <div class="step-next">
           <span class="step-kicker">PRÓXIMA</span>
           <span id="next-step-text">—</span>
         </div>
-        <div class="step-controls" aria-label="Controles da etapa ativa">
-          <button id="step-prev" type="button" title="Etapa anterior">←</button>
+        <div class="step-controls" aria-label="Controles da passagem ativa">
+          <button id="step-prev" type="button" title="Passagem anterior">←</button>
           <button class="primary" id="step-complete" type="button">Concluir</button>
-          <button id="step-next" type="button" title="Próxima etapa">→</button>
+          <button id="step-next" type="button" title="Próxima passagem">→</button>
           <button id="step-undo" type="button" title="Desfazer última conclusão">↶</button>
         </div>
       </div>
@@ -484,7 +499,7 @@
       <svg id="rose" viewBox="0 0 500 500" role="img" aria-labelledby="rose-title rose-desc">
         <title id="rose-title">Mapa de radiais da missão</title>
         <desc id="rose-desc">Radiais planejadas no TX1 aparecem em azul e no TX2 em vermelho.</desc>
-        <g id="rose-grid"></g><g id="rose-lines"></g><g id="aircraft-layer"></g>
+        <g id="map-world"><g id="rose-grid"></g><g id="rose-lines"></g><g id="aircraft-layer"></g></g>
       </svg>
       <div class="legend">
         <span><span class="swatch blue"></span>TX1</span>
@@ -513,7 +528,7 @@
   const center=250, radius=190;
   let editingId=null, selectedId=null;
   let mission={savedMissionId:null,metadata:{name:'',number:'',date:'',stationLat:'',stationLon:'',magVar:'',magVarDir:'W'},activities:[],activeId:null};
-  let viewZoom=1, viewX=center, viewY=center, lastPinch=null;
+  let viewZoom=1, viewX=center, viewY=center, viewRotation=0, lastPinch=null, lastAngle=null;
   const pointers=new Map();
   let currentPage='mission';
   let gnssWatchId=null, lastPosition=null;
@@ -791,7 +806,7 @@
     if(!now||!next)return;
     wrap.classList.remove('active-tx1','active-tx2');
     if(a){now.textContent=`${String(activeIndex()+1).padStart(2,'0')} · ${segmentText(a)} · ${a.tx}`;wrap.classList.add(a.tx==='TX2'?'active-tx2':'active-tx1');}
-    else now.textContent='Missão concluída / nenhuma etapa ativa';
+    else now.textContent='Missão concluída / nenhuma passagem ativa';
     next.textContent=n?`${String(mission.activities.indexOf(n)+1).padStart(2,'0')} · ${segmentText(n)} · ${n.tx}`:'—';
     const i=activeIndex();
     $('#step-complete').disabled=!a||Boolean(a&&a.done);
@@ -802,7 +817,7 @@
   function renderTable(){
     ensureActive();
     const list=$('#execution-list');if(!list)return;list.replaceChildren();
-    if(!mission.activities.length){const e=document.createElement('div');e.className='empty';e.textContent='Nenhuma atividade cadastrada.';list.append(e);}
+    if(!mission.activities.length){const e=document.createElement('div');e.className='empty';e.textContent='Nenhuma passagem cadastrada.';list.append(e);}
     const nxt=nextStep();
     mission.activities.forEach((a,index)=>{
       const card=document.createElement('div');card.className='exec-card';card.dataset.id=a.id;
@@ -842,7 +857,7 @@
       list.append(card);
     });
     const total=mission.activities.length,completed=mission.activities.filter(a=>a.done).length;
-    $('#progress').textContent=`${completed}/${total} etapas feitas`;const rp=$('#progress-rose');if(rp)rp.textContent=`${completed}/${total} etapas feitas`;
+    $('#progress').textContent=`${completed}/${total} passagens feitas`;const rp=$('#progress-rose');if(rp)rp.textContent=`${completed}/${total} passagens feitas`;
     renderFlightStepPanel();
   }
   function persistVisualOrder(){
@@ -964,11 +979,11 @@
     $('#choose-radial').setAttribute('aria-pressed',String(!arc));$('#choose-arc').setAttribute('aria-pressed',String(arc));
     syncPlanDirectionUI();
   }
-  function resetForm(){planDirection='inbound';editingId=null;$('#activity-form').reset();$('#plan-tx1').checked=true;$('#plan-tx2').checked=true;$('#activity-type').value='radial';setType();$('#form-title').textContent='Adicionar atividade';$('#save-activity').textContent='Adicionar atividade';$('#cancel-edit').hidden=true;$('#form-error').textContent='';}
+  function resetForm(){planDirection='inbound';editingId=null;$('#activity-form').reset();$('#plan-tx1').checked=true;$('#plan-tx2').checked=true;$('#activity-type').value='radial';setType();$('#form-title').textContent='Adicionar passagem';$('#save-activity').textContent='Adicionar passagem';$('#cancel-edit').hidden=true;$('#form-error').textContent='';}
   function validateActivity(){
-    const type=$('#activity-type').value,description=$('#activity-description').value.trim(),notes=$('#activity-notes').value.trim();if(!description)return{error:'Informe uma descrição para a atividade.'};
+    const type=$('#activity-type').value,description=$('#activity-description').value.trim(),notes=$('#activity-notes').value.trim();if(!description)return{error:'Informe uma descrição para a passagem.'};
     const base={id:editingId||`a-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,type,description,notes,direction:planDirection,tx1Planned:$('#plan-tx1').checked,tx2Planned:$('#plan-tx2').checked};
-    if(!base.tx1Planned&&!base.tx2Planned)return{error:'Planeje a atividade em pelo menos um transmissor.'};
+    if(!base.tx1Planned&&!base.tx2Planned)return{error:'Planeje a passagem em pelo menos um transmissor.'};
     if(type==='radial'){const azimuth=num($('#radial-az').value),start=num($('#radial-start').value),end=num($('#radial-end').value);if(!Number.isFinite(azimuth)||azimuth<0||azimuth>=360)return{error:'O azimute deve estar entre 0° e 359,9°.'};if(!Number.isFinite(start)||!Number.isFinite(end)||start<0||end<0||start>500||end>500||start===end)return{error:'Informe distâncias inicial e final diferentes, entre 0 e 500 NM.'};return{activity:{...base,azimuth,start,end}};}
     const arcStart=num($('#arc-start').value),arcEnd=num($('#arc-end').value),radiusNm=num($('#arc-radius').value);if(!Number.isFinite(arcStart)||!Number.isFinite(arcEnd)||arcStart<0||arcStart>=360||arcEnd<0||arcEnd>=360||arcStart===arcEnd)return{error:'Informe azimutes inicial e final válidos e diferentes.'};if(!Number.isFinite(radiusNm)||radiusNm<=0||radiusNm>500)return{error:'O raio do arco deve estar entre 0,1 e 500 NM.'};return{activity:{...base,arcStart,arcEnd,radius:radiusNm}};
   }
@@ -976,13 +991,13 @@
     showPage('plan');
     const a=mission.activities.find(item=>item.id===id);if(!a)return;editingId=id;$('#activity-type').value=a.type;setType();$('#activity-description').value=a.description;$('#activity-notes').value=a.notes||'';$('#plan-tx1').checked=a.tx==='TX1';$('#plan-tx2').checked=a.tx==='TX2';setPlanDirection(a.direction||(a.type==='arc'?'cw':'inbound'));syncPlanDirectionUI();
     if(a.type==='radial'){$('#radial-az').value=a.azimuth;$('#radial-start').value=a.start;$('#radial-end').value=a.end;}else{$('#arc-start').value=a.arcStart;$('#arc-end').value=a.arcEnd;$('#arc-radius').value=a.radius;}
-    $('#form-title').textContent='Editar atividade';$('#save-activity').textContent='Salvar alterações';$('#cancel-edit').hidden=false;$('#activity-form').scrollIntoView({behavior:'smooth',block:'start'});
+    $('#form-title').textContent='Editar passagem';$('#save-activity').textContent='Salvar alterações';$('#cancel-edit').hidden=false;$('#activity-form').scrollIntoView({behavior:'smooth',block:'start'});
   }
   function deleteActivity(id){const a=mission.activities.find(item=>item.id===id);if(!a||!confirm(`Excluir “${a.description}”?`))return;mission.activities=mission.activities.filter(item=>item.id!==id);if(editingId===id)resetForm();if(selectedId===id)selectedId=null;save();fitMission();renderAll();}
   function clampView(){const half=center/viewZoom;viewX=Math.max(half,Math.min(500-half,viewX));viewY=Math.max(half,Math.min(500-half,viewY));}
-  function applyView(){clampView();const size=500/viewZoom;$('#rose').setAttribute('viewBox',`${viewX-size/2} ${viewY-size/2} ${size} ${size}`);$('#zoom-level').textContent=`${Math.round(viewZoom*100)}%`;}
+  function applyView(){clampView();const size=500/viewZoom;$('#rose').setAttribute('viewBox',`${viewX-size/2} ${viewY-size/2} ${size} ${size}`);$('#map-world').setAttribute('transform',`rotate(${viewRotation} ${center} ${center})`);$('#zoom-level').textContent=`${Math.round(viewZoom*100)}%`;$('#map-readout').textContent=`Zoom ${Math.round(viewZoom*100)}% · Giro ${Math.round(viewRotation)}°`;}
   function setZoom(value){viewZoom=Math.max(1,Math.min(6,value));if(viewZoom===1){viewX=center;viewY=center;}applyView();}
-  function fitMission(){viewX=center;viewY=center;selectedId=null;setZoom(1);renderTable();}
+  function fitMission(){viewX=center;viewY=center;viewRotation=0;selectedId=null;setZoom(1);renderTable();}
   function focusActivity(id){const a=mission.activities.find(item=>item.id===id);if(!a)return;selectedId=id;const distance=a.type==='arc'?a.radius:Math.max(a.start,a.end),target=Math.min(5,Math.max(1,maxDistance()/(distance*1.15)));if(target===1||a.type==='arc'){viewX=center;viewY=center;}else{const p=point(a.azimuth,distance,duplicateOffset(a));viewX=(center+p.x)/2;viewY=(center+p.y)/2;}setZoom(target);renderTable();}
   function centerAid(){viewX=center;viewY=center;applyView();}
   function centerAircraft(){
@@ -1030,7 +1045,7 @@
       const row=document.createElement('div');row.className='saved-mission-item'+(m.savedMissionId===mission.savedMissionId?' current':'');
       const open=document.createElement('button');open.type='button';open.className='saved-mission-open';
       const title=document.createElement('strong');title.textContent=missionDisplayName(m);
-      const info=document.createElement('span');info.textContent=[m.metadata?.date||'',`${m.activities?.length||0} etapas`].filter(Boolean).join(' · ');
+      const info=document.createElement('span');info.textContent=[m.metadata?.date||'',`${m.activities?.length||0} passagens`].filter(Boolean).join(' · ');
       open.append(title,info);open.addEventListener('click',()=>openSavedMission(m.savedMissionId));
       const del=document.createElement('button');del.type='button';del.className='saved-mission-delete';del.textContent='×';del.title='Excluir missão salva';del.addEventListener('click',()=>deleteSavedMission(m.savedMissionId));
       row.append(open,del);list.append(row);
@@ -1062,7 +1077,7 @@
   $('#mission-date').addEventListener('input',e=>{const pos=e.target.selectionStart;e.target.value=maskDateBR(e.target.value);});
   ['#mission-name','#mission-number','#mission-date','#station-lat-deg','#station-lat-min','#station-lat-hemi','#station-lon-deg','#station-lon-min','#station-lon-hemi','#station-magvar','#station-magvar-hemi'].forEach(selector=>$(selector).addEventListener('input',()=>{const st=stationCoords();mission.metadata={name:$('#mission-name').value,number:$('#mission-number').value,date:$('#mission-date').value,stationLat:st?st.lat:'',stationLon:st?st.lon:'',magVar:$('#station-magvar').value,magVarDir:$('#station-magvar-hemi').value};save();if(lastPosition){updateGnssReadout();drawAircraft();}}));
   $('#new-mission').addEventListener('click',()=>{if(!confirm('Criar uma nova missão? A missão atual continuará na lista somente se tiver sido salva.'))return;mission={savedMissionId:null,metadata:{name:'',number:'',date:'',stationLat:'',stationLon:'',magVar:'',magVarDir:'W'},activities:[],activeId:null};save();load();resetForm();fitMission();renderAll();renderSavedMissions();});
-  $('#save-mission').addEventListener('click',saveMissionToLibrary);$('#mission-ok').addEventListener('click',()=>showPage('plan'));$('#import-btn').addEventListener('click',()=>$('#import-file').click());$('#import-file').addEventListener('change',event=>{if(event.target.files[0])importMission(event.target.files[0]);event.target.value='';});
+  $('#save-mission').addEventListener('click',saveMissionToLibrary);$('#export-mission').addEventListener('click',exportMission);$('#mission-ok').addEventListener('click',()=>showPage('plan'));$('#import-btn').addEventListener('click',()=>$('#import-file').click());$('#import-file').addEventListener('change',event=>{if(event.target.files[0])importMission(event.target.files[0]);event.target.value='';});
   document.querySelectorAll('[data-plan-dir]').forEach(b=>b.addEventListener('click',()=>setPlanDirection(b.dataset.planDir)));
   syncPlanDirectionUI();
   $('#gnss-toggle').addEventListener('click',toggleGnss);
@@ -1072,11 +1087,11 @@
   $('#step-undo').addEventListener('click',undoComplete);
   $('#center-aircraft').addEventListener('click',centerAircraft);
   $('#center-aid').addEventListener('click',centerAid);
-  $('#zoom-in').addEventListener('click',()=>setZoom(viewZoom*1.35));$('#zoom-out').addEventListener('click',()=>setZoom(viewZoom/1.35));$('#zoom-fit').addEventListener('click',fitMission);$('#zoom-fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('#rose-panel').requestFullscreen();}catch(_){}});document.addEventListener('fullscreenchange',()=>{$('#zoom-fullscreen').textContent=document.fullscreenElement?'Sair da tela cheia':'Tela cheia';});
+  $('#zoom-in').addEventListener('click',()=>setZoom(viewZoom*1.35));$('#zoom-out').addEventListener('click',()=>setZoom(viewZoom/1.35));$('#zoom-fit').addEventListener('click',fitMission);
   $('#rose').addEventListener('wheel',event=>{event.preventDefault();setZoom(viewZoom*(event.deltaY<0?1.18:1/1.18));},{passive:false});$('#rose').addEventListener('dblclick',fitMission);
-  $('#rose').addEventListener('pointerdown',event=>{$('#rose').setPointerCapture(event.pointerId);pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});$('#rose').classList.add('dragging');if(pointers.size===2){const p=[...pointers.values()];lastPinch=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);}});
-  $('#rose').addEventListener('pointermove',event=>{const previous=pointers.get(event.pointerId);if(!previous)return;pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});if(pointers.size===1&&viewZoom>1){const rect=$('#rose').getBoundingClientRect(),scale=500/(viewZoom*rect.width);viewX-=(event.clientX-previous.x)*scale;viewY-=(event.clientY-previous.y)*scale;applyView();}else if(pointers.size===2){const p=[...pointers.values()],distance=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);if(lastPinch)setZoom(viewZoom*distance/lastPinch);lastPinch=distance;}});
-  function release(event){pointers.delete(event.pointerId);lastPinch=null;if(!pointers.size)$('#rose').classList.remove('dragging');}$('#rose').addEventListener('pointerup',release);$('#rose').addEventListener('pointercancel',release);
+  $('#rose').addEventListener('pointerdown',event=>{$('#rose').setPointerCapture(event.pointerId);pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});$('#rose').classList.add('dragging');if(pointers.size===2){const p=[...pointers.values()];lastPinch=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);lastAngle=Math.atan2(p[1].y-p[0].y,p[1].x-p[0].x);}});
+  $('#rose').addEventListener('pointermove',event=>{const previous=pointers.get(event.pointerId);if(!previous)return;pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});if(pointers.size===1){const rect=$('#rose').getBoundingClientRect(),scale=500/(viewZoom*rect.width);viewX-=(event.clientX-previous.x)*scale;viewY-=(event.clientY-previous.y)*scale;applyView();}else if(pointers.size===2){const p=[...pointers.values()],distance=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),angle=Math.atan2(p[1].y-p[0].y,p[1].x-p[0].x);if(lastPinch)viewZoom=Math.max(1,Math.min(6,viewZoom*distance/lastPinch));if(lastAngle!==null){let delta=(angle-lastAngle)*180/Math.PI;if(delta>180)delta-=360;if(delta<-180)delta+=360;viewRotation=(viewRotation+delta+360)%360}lastPinch=distance;lastAngle=angle;applyView();}});
+  function release(event){pointers.delete(event.pointerId);lastPinch=null;lastAngle=null;if(!pointers.size)$('#rose').classList.remove('dragging');}$('#rose').addEventListener('pointerup',release);$('#rose').addEventListener('pointercancel',release);
 
   // Impede zoom gestual da interface no iOS; mantém os gestos próprios do mapa.
   ['gesturestart','gesturechange','gestureend'].forEach(type=>{
