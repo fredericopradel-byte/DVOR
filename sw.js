@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v12-ios-status-bar-20260917';
+const CACHE = 'iv-planner-v13-papi-20260917';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 
 // Todas as telas e dados locais necessários às funções primárias do app.
