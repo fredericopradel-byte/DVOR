@@ -48,22 +48,28 @@
       "description": "Base estruturada com aeródromos, pistas, cabeceiras, auxílios, fixos, PAPI/VGSI, rotas, procedimentos e espaços aéreos, acompanhada do XML oficial integral.",
       "category": "database",
       "connected": true,
-      "version": "AIXM-BR-2026-09-03",
+      "version": "AIXM-BR-2026-09-03-r2",
       "effectiveDate": "2026-09-03",
       "source": "DECEA AISWEB — AIXM 5.1",
-      "size": 42868371,
+      "size": 42868890,
       "files": [
         {
           "url": "packages/aixm/AIXM-BR-2026-09-03/aixm-core.json",
           "target": "publicacoes-offline/aixm/AIXM-BR-2026-09-03/aixm-core.json",
-          "size": 13592307,
-          "sha256": "9209134ae45d37b9cef7b8f218ad9eb7500538f79992879af0f8b646b88b2a8b"
+          "size": 13592826,
+          "sha256": "c3291a53e3987513d2a4277e4496a5ec92f2d0dbe6290c8ea9324c874107c317"
         },
         {
-          "url": "packages/aixm/AIXM-BR-2026-09-03/aixm-brasil-5.1.zip",
-          "target": "publicacoes-offline/aixm/AIXM-BR-2026-09-03/aixm-brasil-5.1.zip",
-          "size": 29276064,
-          "sha256": "775d27c7748ad9a8694a6fee4f50bcb9d0e482fe8c4e2ac01a3127caa3df94b5"
+          "url": "packages/aixm/AIXM-BR-2026-09-03/aixm-brasil-5.1.zip.part01",
+          "target": "publicacoes-offline/aixm/AIXM-BR-2026-09-03/aixm-brasil-5.1.zip.part01",
+          "size": 20971520,
+          "sha256": "388ad7d7e0660d00f76e06ad025ad061b22487ed920f504c056263b466b375b2"
+        },
+        {
+          "url": "packages/aixm/AIXM-BR-2026-09-03/aixm-brasil-5.1.zip.part02",
+          "target": "publicacoes-offline/aixm/AIXM-BR-2026-09-03/aixm-brasil-5.1.zip.part02",
+          "size": 8304544,
+          "sha256": "913216014733c7b1143c042b13460a9d7ddfa4f309386f57628f28ab993dd5cb"
         }
       ]
     },

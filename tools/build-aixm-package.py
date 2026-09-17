@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Build the IV-PLANNER offline AIXM package from an official AIXM 5.1 XML.
 
-The package deliberately contains two complementary files:
-  * a deterministic ZIP with the untouched source XML;
+The package deliberately contains complementary files:
+  * a deterministic ZIP with the untouched source XML, divided into parts
+    below GitHub's 25 MiB browser-upload limit;
   * a compact JSON index for fast, offline application queries.
 
 Only Python's standard library and lxml are required.  The source XML is
@@ -17,6 +18,7 @@ import hashlib
 import json
 import shutil
 import sys
+import tempfile
 import zipfile
 from datetime import date
 from pathlib import Path
@@ -28,6 +30,7 @@ GML = "http://www.opengis.net/gml/3.2"
 XLINK = "http://www.w3.org/1999/xlink"
 GML_ID = f"{{{GML}}}id"
 XLINK_HREF = f"{{{XLINK}}}href"
+MAX_PART_BYTES = 20 * 1024 * 1024
 
 INDEXED_TYPES = {
     "AirportHeliport": "aerodromes",
@@ -392,6 +395,22 @@ def write_source_zip(source: Path, output: Path, effective_date: str):
             shutil.copyfileobj(input_stream, output_stream, length=1024 * 1024)
 
 
+def split_archive(archive: Path, output_directory: Path) -> list[dict]:
+    parts = []
+    with archive.open("rb") as source:
+        part_number = 1
+        while chunk := source.read(MAX_PART_BYTES):
+            part_path = output_directory / f"aixm-brasil-5.1.zip.part{part_number:02d}"
+            part_path.write_bytes(chunk)
+            parts.append({
+                "fileName": part_path.name,
+                "size": part_path.stat().st_size,
+                "sha256": sha256(part_path),
+            })
+            part_number += 1
+    return parts
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source_xml", type=Path)
@@ -407,7 +426,14 @@ def main() -> int:
     source_hash = sha256(source)
     feature_counts, indexed, effective_date = parse_source(source)
     add_relationships(indexed)
-    version = f"AIXM-BR-{effective_date}"
+    version = f"AIXM-BR-{effective_date}-r2"
+
+    with tempfile.TemporaryDirectory(prefix="ivplanner-aixm-") as temporary_directory:
+        archive_path = Path(temporary_directory) / "aixm-brasil-5.1.zip"
+        write_source_zip(source, archive_path, effective_date)
+        archive_size = archive_path.stat().st_size
+        archive_hash = sha256(archive_path)
+        archive_parts = split_archive(archive_path, output_directory)
 
     index = {
         "schema": "ivplanner-aixm-core-v1",
@@ -417,6 +443,14 @@ def main() -> int:
         "source": "DECEA AISWEB — AIXM 5.1",
         "sourceFile": source.name,
         "sourceSha256": source_hash,
+        "sourceArchive": {
+            "fileName": "aixm-brasil-5.1.zip",
+            "format": "binary-parts",
+            "joinOrder": [part["fileName"] for part in archive_parts],
+            "size": archive_size,
+            "sha256": archive_hash,
+            "parts": archive_parts,
+        },
         "featureCount": sum(feature_counts.values()),
         "featureTypes": dict(sorted(feature_counts.items())),
         "coverageNotice": "Índice operacional derivado do AIXM. O ZIP anexo preserva integralmente o XML oficial recebido.",
@@ -430,16 +464,20 @@ def main() -> int:
         json.dump(index, stream, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
         stream.write("\n")
 
-    zip_path = output_directory / "aixm-brasil-5.1.zip"
-    write_source_zip(source, zip_path, effective_date)
-
     result = {
         "version": version,
         "effectiveDate": effective_date,
         "source": {"path": str(source), "size": source.stat().st_size, "sha256": source_hash},
         "files": [
             {"path": str(index_path), "size": index_path.stat().st_size, "sha256": sha256(index_path)},
-            {"path": str(zip_path), "size": zip_path.stat().st_size, "sha256": sha256(zip_path)},
+            *[
+                {
+                    "path": str(output_directory / part["fileName"]),
+                    "size": part["size"],
+                    "sha256": part["sha256"],
+                }
+                for part in archive_parts
+            ],
         ],
         "featureCount": sum(feature_counts.values()),
         "indexedCounts": {name: len(items) for name, items in indexed.items()},
