@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v6-localidades';
+const CACHE = 'iv-planner-v7-wmm2025-offline';
 
 const APP_SHELL = [
   './',
@@ -10,6 +10,8 @@ const APP_SHELL = [
   './meteorologia/index.html',
   './localidades/',
   './localidades/index.html',
+  './wmm2025.js',
+  './WMM2025-LICENSE.txt',
   './prevoo/legacy-data.js'
 ];
 
