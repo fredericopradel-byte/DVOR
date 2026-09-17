@@ -357,6 +357,10 @@
   .mission-title-field,.mission-locality-field,.mission-date-field{grid-column:1/-1!important}.metadata>label{min-width:0}.mission-date-field input{width:100%;min-width:0;max-width:100%}
   @media(max-width:570px){#page-mission .metadata{grid-template-columns:1fr!important}.flight-step-panel{grid-template-columns:1fr!important;padding:11px!important;gap:8px!important}.step-now,.step-next{grid-column:1!important}.step-controls{grid-column:1!important;grid-row:auto!important;grid-template-columns:46px minmax(108px,1fr) 46px 46px!important;width:100%}.map-corner-controls{top:10px;left:10px;grid-template-columns:repeat(4,43px);gap:6px}.map-corner-controls button{width:43px;height:43px;min-height:43px}.rose-stage{min-height:280px}}
 
+
+  /* Ajuste iOS/Safari — campo Data contido no cartão */
+  .mission-date-field{min-width:0;overflow:hidden;padding-right:2px}
+  .mission-date-field #mission-date{display:block!important;width:calc(100% - 16px)!important;inline-size:calc(100% - 16px)!important;max-width:calc(100% - 16px)!important;max-inline-size:calc(100% - 16px)!important;min-width:0!important;box-sizing:border-box!important}
 </style>
 </head>
 <body>
