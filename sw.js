@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v7-wmm2025-offline';
+const CACHE = 'iv-planner-v8-adc-20260917';
 
 const APP_SHELL = [
   './',
@@ -11,6 +11,7 @@ const APP_SHELL = [
   './localidades/',
   './localidades/index.html',
   './wmm2025.js',
+  './adc-runway-data.js',
   './WMM2025-LICENSE.txt',
   './prevoo/legacy-data.js'
 ];
