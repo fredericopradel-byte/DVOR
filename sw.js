@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v17-papi-clearance-map-20260917';
+const CACHE = 'iv-planner-v18-papi-diagram-legend-20260917';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 
 // Todas as telas e dados locais necessários às funções primárias do app.
