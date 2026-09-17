@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v16-papi-tabs-fix-20260917';
+const CACHE = 'iv-planner-v17-papi-clearance-map-20260917';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 
 // Todas as telas e dados locais necessários às funções primárias do app.
@@ -26,6 +26,7 @@ const APP_SHELL = [
   './inspecao/dvor-vor/icon-512.png',
   './inspecao/dvor-vor/icon-source.svg',
   './inspecao/papi.html',
+  './inspecao/legacy-map.png',
   './inspecao/ils.html',
   './inspecao/radar.html',
   './inspecao/par.html',
