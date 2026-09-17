@@ -144,25 +144,7 @@
       }
     ];
 
-    const plannedCards = [
-      {
-        title: 'AIXM Brasil',
-        description: 'Fonte estruturada planejada para aeródromos, pistas, auxílios e outros objetos aeronáuticos.',
-        badge: 'Não conectada', badgeClass: 'pending',
-        facts: [['Pacote local', 'Não instalado'], ['Atualização remota', 'Não disponível']], details: [],
-        note: 'A tela está preparada para receber uma fonte normalizada em etapa posterior.'
-      },
-      {
-        title: 'Catálogo completo de cartas',
-        description: 'Índice planejado de cartas aeronáuticas brasileiras e seus metadados de publicação.',
-        badge: 'Não conectado', badgeClass: 'pending',
-        facts: [['Catálogo local', 'Não instalado'], ['Leitura das cartas', 'Não disponível']], details: [],
-        note: 'Nenhuma carta é baixada, interpretada ou considerada vigente por esta versão.'
-      }
-    ];
-
     document.getElementById('installed-bases').innerHTML = installedCards.map(cardHtml).join('');
-    document.getElementById('planned-bases').innerHTML = plannedCards.map(cardHtml).join('');
     document.getElementById('integrity-dot').className = `dot ${allOk ? 'ok' : 'warn'}`;
     document.getElementById('integrity-status').textContent = allOk ? 'Arquivos locais íntegros' : 'Verificação encontrou alertas';
 
