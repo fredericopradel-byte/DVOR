@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v21-auditoria-coordenadas-datas-20260917';
+const CACHE = 'iv-planner-v22-configuracoes-bases-20260917';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 
 // Todas as telas e dados locais necessários às funções primárias do app.
@@ -35,6 +35,10 @@ const APP_SHELL = [
   './localidades/index.html',
   './meteorologia/',
   './meteorologia/index.html',
+  './configuracoes/',
+  './configuracoes/index.html',
+  './configuracoes/bases.html',
+  './configuracoes/database-registry.js',
   './modulo-em-breve.html',
 
   './wmm2025.js',
