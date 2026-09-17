@@ -1090,7 +1090,20 @@
 </script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(reg=>reg.update()).catch(()=>{}));
+  // Migração: remove apenas o antigo worker exclusivo do DVOR. O aplicativo
+  // passa a ser controlado integralmente pelo service worker da raiz.
+  window.addEventListener('load', async () => {
+    try {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      const legacy = registrations.filter(registration =>
+        new URL(registration.scope).pathname.endsWith('/inspecao/dvor-vor/')
+      );
+      const removed = await Promise.all(
+        legacy.map(registration => registration.unregister())
+      );
+      if (removed.some(Boolean)) location.reload();
+    } catch (_) {}
+  });
 }
 </script>
 </body>
