@@ -298,6 +298,15 @@
   .saved-mission-open strong{display:block;font-size:12px}.saved-mission-open span{display:block;font-size:9px;color:var(--muted);margin-top:2px}
   .saved-mission-delete{min-width:32px;min-height:32px;padding:2px 7px;font-size:12px}
   .saved-mission-item.current{border-color:var(--accent)}
+  .aixm-assist{grid-column:1/-1;position:relative;margin-top:-5px}
+  .aixm-status{min-height:15px;color:var(--muted);font-size:10px;line-height:1.35;padding:0 2px}
+  .aixm-status.ok{color:#75c991}.aixm-status.warning{color:#e7b96b}
+  .aixm-results{position:absolute;z-index:80;left:0;right:0;top:19px;max-height:260px;overflow:auto;
+    border:1px solid var(--border);border-radius:12px;background:#202326;box-shadow:0 14px 30px rgba(0,0,0,.42);padding:5px}
+  .aixm-results[hidden]{display:none}
+  .aixm-result{display:block;width:100%;min-height:48px;border:0;border-radius:8px;background:transparent;padding:7px 8px;text-align:left}
+  .aixm-result:active,.aixm-result:hover,.aixm-result:focus{background:rgba(10,164,239,.14)}
+  .aixm-result strong,.aixm-result span{display:block}.aixm-result strong{font-size:12px}.aixm-result span{margin-top:2px;color:var(--muted);font-size:9px}
 
 
   /* Coordenadas FMS: campos de texto numérico, sem valor/stepper nativo do input number */
@@ -367,7 +376,11 @@
     <section class="panel">
       <div class="page-heading"><h2>Identificação da missão</h2></div>
       <div class="metadata">
-        <label>Localidade / auxílio<input id="mission-name" placeholder="Ex.: Porto Velho - PVH"></label>
+        <label>Localidade / auxílio<input id="mission-name" placeholder="Ex.: Porto Velho - PVH" autocomplete="off" aria-autocomplete="list" aria-controls="aixm-results"></label>
+        <div class="aixm-assist">
+          <div id="aixm-status" class="aixm-status">Digite ao menos 2 caracteres para consultar VOR/DVOR no pacote AIXM.</div>
+          <div id="aixm-results" class="aixm-results" role="listbox" hidden></div>
+        </div>
         <label>Número do planejamento<input id="mission-number" placeholder="Ex.: 16"></label>
         <label>Data<input id="mission-date" type="date" lang="pt-BR" aria-label="Data da missão"></label>
       </div>
@@ -522,6 +535,7 @@
   </section>
 </main>
 
+<script src="../../data/aixm-client.js?v=1"></script>
 <script>
 (() => {
   const STORAGE_KEY='geiv-dvor-manual-offline-v1';
@@ -538,6 +552,8 @@
   let dragState=null;
   let completionHistory=[];
   let planDirection='inbound';
+  let aixmSearchTimer=null;
+  let aixmSearchSequence=0;
 
   function migrateActivities(){
     const out=[];
@@ -587,6 +603,76 @@
     const m=v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
     return m?`${m[3]}-${m[2]}-${m[1]}`:'';
   }
+  function aixmDisplayName(item){
+    return [item.name,item.designator].filter(Boolean).join(' - ');
+  }
+  function setAixmStatus(message,state=''){
+    const status=$('#aixm-status');
+    if(!status)return;
+    status.textContent=message;
+    status.className=`aixm-status${state?` ${state}`:''}`;
+  }
+  function updateAixmSelectionStatus(){
+    const selected=mission.metadata?.aixmNavaid;
+    if(!selected){
+      setAixmStatus('Digite ao menos 2 caracteres para consultar VOR/DVOR no pacote AIXM. A declinação permanece manual.');
+      return;
+    }
+    const adjusted=mission.metadata.coordinateSource==='manual'?' · coordenadas ajustadas manualmente':'';
+    setAixmStatus(`AIXM · ${selected.type||'VOR'} ${selected.designator||''} · base ${selected.version||'instalada'}${adjusted}. Declinação manual.`,'ok');
+  }
+  function hideAixmResults(){
+    const results=$('#aixm-results');if(!results)return;results.hidden=true;results.replaceChildren();
+  }
+  function aixmDetail(item){
+    const details=[String(item.type||'VOR').replace(/_/g,'/')];
+    if(item.frequency?.value)details.push(`${String(item.frequency.value).replace('.',',')} ${item.frequency.uom||'MHz'}`);
+    if(item.channel)details.push(`DME ${item.channel}`);
+    if(item.airport?.designator)details.push(item.airport.designator);
+    return details.join(' · ');
+  }
+  function applyAixmNavaid(item,database){
+    const lat=decimalToFms(item.position.lat,'lat'),lon=decimalToFms(item.position.lon,'lon');
+    $('#mission-name').value=aixmDisplayName(item);
+    $('#station-lat-deg').value=lat.deg;$('#station-lat-min').value=lat.min;$('#station-lat-hemi').value=lat.hemi;
+    $('#station-lon-deg').value=lon.deg;$('#station-lon-min').value=lon.min;$('#station-lon-hemi').value=lon.hemi;
+    mission.metadata={...mission.metadata,
+      name:$('#mission-name').value,number:$('#mission-number').value,date:formatDateBR($('#mission-date').value),
+      stationLat:item.position.lat,stationLon:item.position.lon,magVar:$('#station-magvar').value,magVarDir:$('#station-magvar-hemi').value,
+      coordinateSource:'AIXM',aixmNavaid:{id:item.id,designator:item.designator,name:item.name,type:item.type,validFrom:item.validFrom||'',version:database.version||'',displayName:aixmDisplayName(item)}
+    };
+    save();hideAixmResults();updateAixmSelectionStatus();
+    if(lastPosition){updateGnssReadout();drawAircraft();}
+  }
+  function renderAixmResults(items,database){
+    const results=$('#aixm-results');results.replaceChildren();
+    if(!items.length){
+      const empty=document.createElement('div');empty.className='aixm-status';empty.textContent='Nenhum VOR/DVOR encontrado.';results.append(empty);results.hidden=false;return;
+    }
+    items.forEach(item=>{
+      const button=document.createElement('button');button.type='button';button.className='aixm-result';button.setAttribute('role','option');
+      const title=document.createElement('strong');title.textContent=aixmDisplayName(item);
+      const detail=document.createElement('span');detail.textContent=aixmDetail(item);
+      button.append(title,detail);button.addEventListener('click',()=>applyAixmNavaid(item,database));results.append(button);
+    });
+    results.hidden=false;
+  }
+  async function searchAixmNavaids(){
+    const query=$('#mission-name').value.trim(),sequence=++aixmSearchSequence;
+    if(query.length<2){hideAixmResults();updateAixmSelectionStatus();return;}
+    if(!window.IVAixm){setAixmStatus('Consulta AIXM indisponível. A entrada manual continua funcionando.','warning');return;}
+    setAixmStatus('Consultando o pacote AIXM instalado…');
+    try{
+      const database=await window.IVAixm.load();
+      if(sequence!==aixmSearchSequence)return;
+      renderAixmResults(window.IVAixm.search(database,query,8),database);
+      setAixmStatus(`AIXM ${database.version||''} · ${database.navaids.length} VOR/DVOR disponíveis offline.`,'ok');
+    }catch(error){
+      if(sequence!==aixmSearchSequence)return;
+      hideAixmResults();
+      setAixmStatus('Pacote AIXM indisponível. Baixe-o em Configurações › Base de dados; a entrada manual continua disponível.','warning');
+    }
+  }
   function load(){
     try{
       const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
@@ -602,6 +688,7 @@
     $('#station-lon-deg').value=lonParts.deg;$('#station-lon-min').value=lonParts.min;$('#station-lon-hemi').value=lonParts.hemi;
     $('#station-magvar').value=mission.metadata.magVar??'';
     $('#station-magvar-hemi').value=mission.metadata.magVarDir||'W';
+    updateAixmSelectionStatus();
   }
   function save(){
     try{localStorage.setItem(STORAGE_KEY,JSON.stringify(mission));}catch(_){ }
@@ -1084,7 +1171,20 @@
     save();resetForm();fitMission();renderAll();
   });
   $('#cancel-edit').addEventListener('click',resetForm);
-  ['#mission-name','#mission-number','#mission-date','#station-lat-deg','#station-lat-min','#station-lat-hemi','#station-lon-deg','#station-lon-min','#station-lon-hemi','#station-magvar','#station-magvar-hemi'].forEach(selector=>$(selector).addEventListener('input',()=>{const st=stationCoords();mission.metadata={name:$('#mission-name').value,number:$('#mission-number').value,date:formatDateBR($('#mission-date').value),stationLat:st?st.lat:'',stationLon:st?st.lon:'',magVar:$('#station-magvar').value,magVarDir:$('#station-magvar-hemi').value};save();if(lastPosition){updateGnssReadout();drawAircraft();}}));
+  ['#mission-name','#mission-number','#mission-date','#station-lat-deg','#station-lat-min','#station-lat-hemi','#station-lon-deg','#station-lon-min','#station-lon-hemi','#station-magvar','#station-magvar-hemi'].forEach(selector=>$(selector).addEventListener('input',()=>{
+    const st=stationCoords(),coordinateField=selector.startsWith('#station-lat-')||selector.startsWith('#station-lon-');
+    mission.metadata={...mission.metadata,name:$('#mission-name').value,number:$('#mission-number').value,date:formatDateBR($('#mission-date').value),stationLat:st?st.lat:'',stationLon:st?st.lon:'',magVar:$('#station-magvar').value,magVarDir:$('#station-magvar-hemi').value};
+    if(coordinateField&&mission.metadata.aixmNavaid)mission.metadata.coordinateSource='manual';
+    save();updateAixmSelectionStatus();if(lastPosition){updateGnssReadout();drawAircraft();}
+  }));
+  $('#mission-name').addEventListener('input',()=>{
+    clearTimeout(aixmSearchTimer);
+    if($('#mission-name').value.trim().length<2){aixmSearchSequence+=1;hideAixmResults();return;}
+    aixmSearchTimer=setTimeout(searchAixmNavaids,180);
+  });
+  $('#mission-name').addEventListener('focus',()=>{if($('#mission-name').value.trim().length>=2)searchAixmNavaids();});
+  $('#mission-name').addEventListener('keydown',event=>{if(event.key==='Escape')hideAixmResults();});
+  document.addEventListener('click',event=>{if(!event.target.closest('.metadata'))hideAixmResults();});
   ['#station-lat-deg','#station-lat-min','#station-lat-hemi','#station-lon-deg','#station-lon-min','#station-lon-hemi'].forEach(selector=>$(selector).addEventListener('change',normalizeStationCoordInputs));
   $('#new-mission').addEventListener('click',()=>{if(!confirm('Criar uma nova missão? A missão atual continuará na lista somente se tiver sido salva.'))return;mission={savedMissionId:null,metadata:{name:'',number:'',date:'',stationLat:'',stationLon:'',magVar:'',magVarDir:'W'},activities:[],activeId:null};save();load();resetForm();fitMission();renderAll();renderSavedMissions();});
   $('#save-mission').addEventListener('click',saveMissionToLibrary);$('#export-mission').addEventListener('click',exportMission);$('#mission-ok').addEventListener('click',()=>showPage('plan'));$('#import-btn').addEventListener('click',()=>$('#import-file').click());$('#import-file').addEventListener('change',event=>{if(event.target.files[0])importMission(event.target.files[0]);event.target.value='';});

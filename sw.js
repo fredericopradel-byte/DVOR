@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v25-aixm-fracionado-20260917';
+const CACHE = 'iv-planner-v26-dvor-aixm-20260917';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -46,6 +46,7 @@ const APP_SHELL = [
   './configuracoes/database-registry.js',
   './configuracoes/package-manager.js',
   './data/package-catalog.json',
+  './data/aixm-client.js',
   './modulo-em-breve.html',
 
   './wmm2025.js',
