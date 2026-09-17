@@ -354,7 +354,8 @@
   .step-now.active-tx1{border-color:#00a8ff}.step-now.active-tx2{border-color:#ff3045}.swatch.blue{background:#00a8ff}.swatch.red{background:#ff3045}
   #rose-panel:fullscreen{background:radial-gradient(circle at 100% 0,#44494d 0,transparent 30%),linear-gradient(155deg,#151719,#292c2f);padding:18px}.rose-toolbar button{background:#303438}.gnss-warning{color:#8f969c;letter-spacing:.025em}
   @media(max-width:570px){.app{padding:10px 10px calc(82px + env(safe-area-inset-bottom))}.topbar{margin:0 2px 16px!important}.module-brand span{display:none}.panel{padding:11px;border-radius:17px;margin-bottom:10px}.page-nav{left:0!important;right:0!important;bottom:0!important;transform:none;width:100%;border-left:0!important;border-right:0!important;border-bottom:0!important;border-radius:0!important;padding:7px 8px calc(7px + env(safe-area-inset-bottom))!important}.page-nav button{min-height:46px!important}.coord-box{border-radius:12px}.exec-card{border-radius:14px}}
-  @media(max-width:570px){.flight-step-panel{grid-template-columns:1fr!important;padding:11px!important;gap:8px!important}.step-now,.step-next{grid-column:1!important}.step-controls{grid-column:1!important;grid-row:auto!important;grid-template-columns:46px minmax(108px,1fr) 46px 46px!important;width:100%}.map-corner-controls{top:10px;left:10px;grid-template-columns:repeat(4,43px);gap:6px}.map-corner-controls button{width:43px;height:43px;min-height:43px}.rose-stage{min-height:280px}}
+  .mission-title-field,.mission-locality-field,.mission-date-field{grid-column:1/-1!important}.metadata>label{min-width:0}.mission-date-field input{width:100%;min-width:0;max-width:100%}
+  @media(max-width:570px){#page-mission .metadata{grid-template-columns:1fr!important}.flight-step-panel{grid-template-columns:1fr!important;padding:11px!important;gap:8px!important}.step-now,.step-next{grid-column:1!important}.step-controls{grid-column:1!important;grid-row:auto!important;grid-template-columns:46px minmax(108px,1fr) 46px 46px!important;width:100%}.map-corner-controls{top:10px;left:10px;grid-template-columns:repeat(4,43px);gap:6px}.map-corner-controls button{width:43px;height:43px;min-height:43px}.rose-stage{min-height:280px}}
 
 </style>
 </head>
@@ -376,13 +377,14 @@
     <section class="panel">
       <div class="page-heading"><h2>Identificação da missão</h2></div>
       <div class="metadata">
-        <label>Localidade / auxílio<input id="mission-name" placeholder="Ex.: Porto Velho - PVH" autocomplete="off" aria-autocomplete="list" aria-controls="aixm-results"></label>
+        <label class="mission-title-field">Nome da missão<input id="mission-title" placeholder="Ex.: Missão Norte 01" autocomplete="off"></label>
+        <label class="mission-locality-field">Localidade / auxílio<input id="mission-name" placeholder="Ex.: Porto Velho - PVH" autocomplete="off" aria-autocomplete="list" aria-controls="aixm-results"></label>
         <div class="aixm-assist">
           <div id="aixm-status" class="aixm-status">Digite ao menos 2 caracteres para consultar VOR/DVOR no pacote AIXM.</div>
           <div id="aixm-results" class="aixm-results" role="listbox" hidden></div>
         </div>
-        <label>Número do planejamento<input id="mission-number" placeholder="Ex.: 16"></label>
-        <label>Data<input id="mission-date" type="date" lang="pt-BR" aria-label="Data da missão"></label>
+        <input id="mission-number" type="hidden">
+        <label class="mission-date-field">Data<input id="mission-date" type="date" lang="pt-BR" aria-label="Data da missão"></label>
       </div>
       <div class="gnss-grid">
         <div class="coord-box">
@@ -551,7 +553,7 @@
   const svgNS='http://www.w3.org/2000/svg';
   const center=250, radius=190;
   let editingId=null, selectedId=null;
-  let mission={savedMissionId:null,metadata:{name:'',number:'',date:'',stationLat:'',stationLon:'',magVar:'',magVarDir:'W'},activities:[],activeId:null};
+  let mission={savedMissionId:null,metadata:{missionTitle:'',name:'',number:'',date:'',stationLat:'',stationLon:'',magVar:'',magVarDir:'W'},activities:[],activeId:null};
   let viewZoom=1, viewX=center, viewY=center, viewRotation=0, lastPinch=null, lastAngle=null;
   const pointers=new Map();
   let currentPage='mission';
@@ -687,6 +689,7 @@
       migrateActivities();
     }catch(_){ }
     mission.metadata.date=formatDateBR(mission.metadata.date||'');
+    $('#mission-title').value=mission.metadata.missionTitle||'';
     $('#mission-name').value=mission.metadata.name||'';
     $('#mission-number').value=mission.metadata.number||'';
     $('#mission-date').value=dateBRToISO(mission.metadata.date||'');
@@ -1116,14 +1119,14 @@
     try{localStorage.setItem(MISSIONS_LIBRARY_KEY,JSON.stringify(items));}catch(_){}
   }
   function missionDisplayName(m){
-    const name=(m.metadata?.name||'Missão sem nome').trim()||'Missão sem nome';
+    const name=(m.metadata?.missionTitle||m.metadata?.name||'Missão sem nome').trim()||'Missão sem nome';
     const number=(m.metadata?.number||'').trim();
     return number?`${name} · Plan. ${number}`:name;
   }
   function saveMissionToLibrary(){
     // Sincroniza os campos antes de guardar.
     const st=stationCoords();
-    mission.metadata={...mission.metadata,name:$('#mission-name').value,number:$('#mission-number').value,date:formatDateBR($('#mission-date').value),
+    mission.metadata={...mission.metadata,missionTitle:$('#mission-title').value,name:$('#mission-name').value,number:$('#mission-number').value,date:formatDateBR($('#mission-date').value),
       stationLat:st?st.lat:'',stationLon:st?st.lon:'',magVar:$('#station-magvar').value,magVarDir:$('#station-magvar-hemi').value};
     if(!mission.savedMissionId)mission.savedMissionId=`m-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
     const library=getMissionLibrary(),copy=JSON.parse(JSON.stringify(mission)),i=library.findIndex(x=>x.savedMissionId===mission.savedMissionId);
@@ -1155,7 +1158,7 @@
       row.append(open,del);list.append(row);
     });
   }
-  function exportMission(){const blob=new Blob([JSON.stringify({...mission,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a'),name=(mission.metadata.name||'missao-dvor').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase();link.href=url;link.download=`${name||'missao-dvor'}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  function exportMission(){const blob=new Blob([JSON.stringify({...mission,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a'),name=(mission.metadata.missionTitle||mission.metadata.name||'missao-dvor').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').toLowerCase();link.href=url;link.download=`${name||'missao-dvor'}.json`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   function importMission(file){const reader=new FileReader();reader.onload=()=>{try{const data=JSON.parse(reader.result);if(!data.metadata||!Array.isArray(data.activities))throw new Error();mission={metadata:data.metadata,activities:data.activities,activeId:data.activeId||null};migrateActivities();save();load();resetForm();fitMission();renderAll();}catch(_){alert('Arquivo de missão inválido.');}};reader.readAsText(file);}
 
   document.querySelectorAll('.page-nav button').forEach(btn=>btn.addEventListener('click',()=>showPage(btn.dataset.page)));
@@ -1178,9 +1181,9 @@
     save();resetForm();fitMission();renderAll();
   });
   $('#cancel-edit').addEventListener('click',resetForm);
-  ['#mission-name','#mission-number','#mission-date','#station-lat-deg','#station-lat-min','#station-lat-hemi','#station-lon-deg','#station-lon-min','#station-lon-hemi','#station-magvar','#station-magvar-hemi'].forEach(selector=>$(selector).addEventListener('input',()=>{
+  ['#mission-title','#mission-name','#mission-date','#station-lat-deg','#station-lat-min','#station-lat-hemi','#station-lon-deg','#station-lon-min','#station-lon-hemi','#station-magvar','#station-magvar-hemi'].forEach(selector=>$(selector).addEventListener('input',()=>{
     const st=stationCoords(),coordinateField=selector.startsWith('#station-lat-')||selector.startsWith('#station-lon-');
-    mission.metadata={...mission.metadata,name:$('#mission-name').value,number:$('#mission-number').value,date:formatDateBR($('#mission-date').value),stationLat:st?st.lat:'',stationLon:st?st.lon:'',magVar:$('#station-magvar').value,magVarDir:$('#station-magvar-hemi').value};
+    mission.metadata={...mission.metadata,missionTitle:$('#mission-title').value,name:$('#mission-name').value,number:$('#mission-number').value,date:formatDateBR($('#mission-date').value),stationLat:st?st.lat:'',stationLon:st?st.lon:'',magVar:$('#station-magvar').value,magVarDir:$('#station-magvar-hemi').value};
     if(coordinateField&&mission.metadata.aixmNavaid)mission.metadata.coordinateSource='manual';
     save();updateAixmSelectionStatus();if(lastPosition){updateGnssReadout();drawAircraft();}
   }));
@@ -1193,7 +1196,7 @@
   $('#mission-name').addEventListener('keydown',event=>{if(event.key==='Escape')hideAixmResults();});
   document.addEventListener('click',event=>{if(!event.target.closest('.metadata'))hideAixmResults();});
   ['#station-lat-deg','#station-lat-min','#station-lat-hemi','#station-lon-deg','#station-lon-min','#station-lon-hemi'].forEach(selector=>$(selector).addEventListener('change',normalizeStationCoordInputs));
-  $('#new-mission').addEventListener('click',()=>{if(!confirm('Criar uma nova missão? A missão atual continuará na lista somente se tiver sido salva.'))return;mission={savedMissionId:null,metadata:{name:'',number:'',date:'',stationLat:'',stationLon:'',magVar:'',magVarDir:'W'},activities:[],activeId:null};save();load();resetForm();fitMission();renderAll();renderSavedMissions();});
+  $('#new-mission').addEventListener('click',()=>{if(!confirm('Criar uma nova missão? A missão atual continuará na lista somente se tiver sido salva.'))return;mission={savedMissionId:null,metadata:{missionTitle:'',name:'',number:'',date:'',stationLat:'',stationLon:'',magVar:'',magVarDir:'W'},activities:[],activeId:null};save();load();resetForm();fitMission();renderAll();renderSavedMissions();});
   $('#save-mission').addEventListener('click',saveMissionToLibrary);$('#export-mission').addEventListener('click',exportMission);$('#mission-ok').addEventListener('click',()=>showPage('plan'));$('#import-btn').addEventListener('click',()=>$('#import-file').click());$('#import-file').addEventListener('change',event=>{if(event.target.files[0])importMission(event.target.files[0]);event.target.value='';});
   document.querySelectorAll('[data-plan-dir]').forEach(b=>b.addEventListener('click',()=>setPlanDirection(b.dataset.planDir)));
   syncPlanDirectionUI();
