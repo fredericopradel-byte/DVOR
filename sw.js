@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v27-papi-aixm-20260917';
+const CACHE = 'iv-planner-v28-localidades-auxilios-20260917';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -38,6 +38,8 @@ const APP_SHELL = [
 
   './localidades/',
   './localidades/index.html',
+  './localidades/aerodromos.html',
+  './localidades/auxilios.html',
   './meteorologia/',
   './meteorologia/index.html',
   './configuracoes/',
@@ -46,6 +48,13 @@ const APP_SHELL = [
   './configuracoes/database-registry.js',
   './configuracoes/package-manager.js',
   './data/package-catalog.json',
+  './data/aixm/core.js',
+  './data/aixm/aerodromes.js',
+  './data/aixm/vor.js',
+  './data/aixm/dme.js',
+  './data/aixm/ndb.js',
+  './data/aixm/papi.js',
+  './data/aixm/ils.js',
   './data/aixm-client.js',
   './modulo-em-breve.html',
 
