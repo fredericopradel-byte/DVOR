@@ -4,7 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
   <meta name="theme-color" content="#17191b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>IV-PLANNER</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="icon" type="image/png" href="icon-512.png">
   <style>
     :root{color-scheme:dark;--ink:#17191b;--panel:#24272a;--silver:#d9dde1;--brand-blue:#078dd1;--blue2:#0aa4ef;--line:#4d5359;--muted:#aeb5bc;--shadow:0 16px 35px rgba(0,0,0,.24)}
@@ -27,4 +31,15 @@
     <a class="card" href="localidades/"><span class="icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M32 57s18-16.4 18-33A18 18 0 1 0 14 24c0 16.6 18 33 18 33Z" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="32" cy="24" r="6" fill="none" stroke="currentColor" stroke-width="3"/><path d="M8 56h48" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></span><span class="copy"><strong>Localidades</strong><span>Base de aeródromos, pistas e cadastro manual</span></span><span class="arrow" aria-hidden="true">›</span></a>
   </nav>
   <footer>PLANEJAMENTO E INSPEÇÃO EM VOO</footer>
-</main><script>['gesturestart','gesturechange','gestureend'].forEach(type=>document.addEventListener(type,event=>event.preventDefault(),{passive:false}));</script></body></html>
+</main><script>['gesturestart','gesturechange','gestureend'].forEach(type=>document.addEventListener(type,event=>event.preventDefault(),{passive:false}));</script>
+<script>
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('./sw.js', { scope: './', updateViaCache: 'none' })
+      .then(registration => registration.update())
+      .catch(() => {});
+  });
+}
+</script>
+</body></html>
