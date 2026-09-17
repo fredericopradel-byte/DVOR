@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v10-legacy-defaults-20260917';
+const CACHE = 'iv-planner-v11-legacy-wind-label-20260917';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 
 // Todas as telas e dados locais necessários às funções primárias do app.
