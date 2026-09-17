@@ -315,11 +315,15 @@
     background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
     background-size:30px 30px;box-shadow:inset 0 0 32px rgba(0,0,0,.26)}
   .grid-circle{stroke:rgba(255,255,255,.32);stroke-dasharray:7 7}.axis{stroke:rgba(255,255,255,.2);stroke-dasharray:5 7}
-  .map-gesture-hint{margin:4px 0 7px;color:var(--muted);font-size:.64rem;text-align:center}
-  .rose-toolbar{justify-content:flex-start;padding:7px;border:1px solid rgba(255,255,255,.11);border-radius:14px;background:rgba(0,0,0,.16)}
-  .rose-toolbar button{min-height:38px;border-radius:10px}.rose-toolbar .map-readout{margin-left:auto;padding:0 7px;color:var(--muted);font-size:.68rem;white-space:nowrap}
-  .flight-step-panel{border-color:rgba(255,255,255,.14);background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));border-radius:15px;padding:10px}
-  .step-controls button{border-radius:10px}.step-controls #step-complete{background:var(--accent);border-color:var(--blue2)}
+  .rose-stage{position:relative;flex:1 1 auto;min-height:280px}
+  .rose-stage #rose{width:100%;height:100%}
+  .map-corner-controls{position:absolute;z-index:5;top:12px;left:12px;display:grid;grid-template-columns:repeat(4,46px);gap:7px}
+  .map-corner-controls button{display:grid;place-items:center;width:46px;height:46px;min-height:46px;padding:3px;border:1px solid rgba(255,255,255,.24);border-radius:11px;background:rgba(27,31,34,.9);backdrop-filter:blur(8px);box-shadow:0 5px 14px rgba(0,0,0,.3);font-size:1.1rem}
+  .map-corner-controls button small{display:block;font-size:.48rem;line-height:1;color:#dce2e6;letter-spacing:.04em}
+  .map-readout{position:absolute;z-index:4;right:10px;bottom:10px;padding:5px 7px;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(18,21,23,.82);backdrop-filter:blur(8px);color:var(--muted);font-size:.6rem;pointer-events:none}
+  .flight-step-panel{grid-template-columns:1fr 1fr;border-color:rgba(255,255,255,.14);background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));border-radius:15px;padding:13px;gap:10px 14px}
+  .step-controls{grid-column:1/-1;grid-template-columns:46px minmax(105px,1fr) 46px 46px;justify-self:stretch}
+  .step-controls button{min-height:44px;border-radius:10px}.step-controls #step-complete{background:var(--accent);border-color:var(--blue2)}
 
   /* Sistema visual unificado com o módulo Legacy */
   :root{--bg:#17191b!important;--panel:#24272a!important;--text:#f5f7f9!important;--muted:#aeb5bc!important;--border:#4d5359!important;--accent:#078dd1!important;--blue:#00a8ff!important;--red:#ff3045!important;--danger:#ff5b69!important;--soft:#34383c!important;--blue2:#0aa4ef;--green:#39d98a;--amber:#ffb020;--shadow:0 16px 35px rgba(0,0,0,.24)}
@@ -341,7 +345,7 @@
   .step-now.active-tx1{border-color:#00a8ff}.step-now.active-tx2{border-color:#ff3045}.swatch.blue{background:#00a8ff}.swatch.red{background:#ff3045}
   #rose-panel:fullscreen{background:radial-gradient(circle at 100% 0,#44494d 0,transparent 30%),linear-gradient(155deg,#151719,#292c2f);padding:18px}.rose-toolbar button{background:#303438}.gnss-warning{color:#8f969c;letter-spacing:.025em}
   @media(max-width:570px){.app{padding:10px 10px calc(82px + env(safe-area-inset-bottom))}.topbar{margin:0 2px 16px!important}.module-brand span{display:none}.panel{padding:11px;border-radius:17px;margin-bottom:10px}.page-nav{left:0!important;right:0!important;bottom:0!important;transform:none;width:100%;border-left:0!important;border-right:0!important;border-bottom:0!important;border-radius:0!important;padding:7px 8px calc(7px + env(safe-area-inset-bottom))!important}.page-nav button{min-height:46px!important}.coord-box{border-radius:12px}.exec-card{border-radius:14px}}
-  @media(max-width:570px){.rose-toolbar{display:grid!important;grid-template-columns:34px 40px 34px 1fr 1fr!important}.rose-toolbar .map-readout{grid-column:1/-1;margin:0;text-align:center;font-size:9px}.map-gesture-hint{font-size:9px}}
+  @media(max-width:570px){.flight-step-panel{grid-template-columns:1fr!important;padding:11px!important;gap:8px!important}.step-now,.step-next{grid-column:1!important}.step-controls{grid-column:1!important;grid-row:auto!important;grid-template-columns:46px minmax(108px,1fr) 46px 46px!important;width:100%}.map-corner-controls{top:10px;left:10px;grid-template-columns:repeat(4,43px);gap:6px}.map-corner-controls button{width:43px;height:43px;min-height:43px}.rose-stage{min-height:280px}}
 
 </style>
 </head>
@@ -465,16 +469,6 @@
         <h2>Mapa da missão</h2>
         <div><strong id="progress-rose">0/0 TX feitos</strong> · <span id="scale-info" class="muted">Escala: 10 NM</span></div>
       </div>
-      <div class="rose-toolbar" aria-label="Controles do mapa">
-        <button id="zoom-out" type="button" aria-label="Reduzir zoom">−</button>
-        <span id="zoom-level" class="zoom-level" aria-live="polite">100%</span>
-        <button id="zoom-in" type="button" aria-label="Aumentar zoom">+</button>
-        <button id="zoom-fit" type="button">Ajustar à missão</button>
-        <button id="center-aircraft" type="button" title="Centralizar na aeronave">✈ ANV</button>
-        <button id="center-aid" type="button" title="Centralizar no auxílio">◎ AUX</button>
-        <span id="map-readout" class="map-readout" aria-live="polite">Zoom 100% · Giro 0°</span>
-      </div>
-      <div class="map-gesture-hint">Arraste para deslocar · use dois dedos para zoom e giro</div>
       <div class="flight-step-panel" id="flight-step-panel">
         <div class="step-now">
           <span class="step-kicker">ATUAL</span>
@@ -496,11 +490,20 @@
         <div id="gnss-readout" style="margin-top:8px"><strong>GNSS desligado</strong><br>Informe as coordenadas do auxílio na página Missão.</div>
         <div class="gnss-warning">POSIÇÃO AUXILIAR — NÃO UTILIZAR PARA NAVEGAÇÃO OU COMO DADO DE INSPEÇÃO.</div>
       </div>
-      <svg id="rose" viewBox="0 0 500 500" role="img" aria-labelledby="rose-title rose-desc">
-        <title id="rose-title">Mapa de radiais da missão</title>
-        <desc id="rose-desc">Radiais planejadas no TX1 aparecem em azul e no TX2 em vermelho.</desc>
-        <g id="map-world"><g id="rose-grid"></g><g id="rose-lines"></g><g id="aircraft-layer"></g></g>
-      </svg>
+      <div class="rose-stage">
+        <svg id="rose" viewBox="0 0 500 500" role="img" aria-labelledby="rose-title rose-desc">
+          <title id="rose-title">Mapa de radiais da missão</title>
+          <desc id="rose-desc">Radiais planejadas no TX1 aparecem em azul e no TX2 em vermelho.</desc>
+          <g id="map-world"><g id="rose-grid"></g><g id="rose-lines"></g><g id="aircraft-layer"></g></g>
+        </svg>
+        <div class="map-corner-controls" aria-label="Controles do mapa">
+          <button id="zoom-out" type="button" aria-label="Reduzir zoom">−</button>
+          <button id="zoom-in" type="button" aria-label="Aumentar zoom">+</button>
+          <button id="center-aircraft" type="button" aria-label="Centralizar na aeronave"><span>✈</span><small>ANV</small></button>
+          <button id="center-aid" type="button" aria-label="Centralizar no auxílio"><span>◎</span><small>AUX</small></button>
+        </div>
+        <span id="map-readout" class="map-readout" aria-live="polite">Zoom 100% · Giro 0°</span>
+      </div>
       <div class="legend">
         <span><span class="swatch blue"></span>TX1</span>
         <span><span class="swatch red"></span>TX2</span>
@@ -995,7 +998,7 @@
   }
   function deleteActivity(id){const a=mission.activities.find(item=>item.id===id);if(!a||!confirm(`Excluir “${a.description}”?`))return;mission.activities=mission.activities.filter(item=>item.id!==id);if(editingId===id)resetForm();if(selectedId===id)selectedId=null;save();fitMission();renderAll();}
   function clampView(){const half=center/viewZoom;viewX=Math.max(half,Math.min(500-half,viewX));viewY=Math.max(half,Math.min(500-half,viewY));}
-  function applyView(){clampView();const size=500/viewZoom;$('#rose').setAttribute('viewBox',`${viewX-size/2} ${viewY-size/2} ${size} ${size}`);$('#map-world').setAttribute('transform',`rotate(${viewRotation} ${center} ${center})`);$('#zoom-level').textContent=`${Math.round(viewZoom*100)}%`;$('#map-readout').textContent=`Zoom ${Math.round(viewZoom*100)}% · Giro ${Math.round(viewRotation)}°`;}
+  function applyView(){clampView();const size=500/viewZoom;$('#rose').setAttribute('viewBox',`${viewX-size/2} ${viewY-size/2} ${size} ${size}`);$('#map-world').setAttribute('transform',`rotate(${viewRotation} ${center} ${center})`);$('#map-readout').textContent=`Zoom ${Math.round(viewZoom*100)}% · Giro ${Math.round(viewRotation)}°`;}
   function setZoom(value){viewZoom=Math.max(1,Math.min(6,value));if(viewZoom===1){viewX=center;viewY=center;}applyView();}
   function fitMission(){viewX=center;viewY=center;viewRotation=0;selectedId=null;setZoom(1);renderTable();}
   function focusActivity(id){const a=mission.activities.find(item=>item.id===id);if(!a)return;selectedId=id;const distance=a.type==='arc'?a.radius:Math.max(a.start,a.end),target=Math.min(5,Math.max(1,maxDistance()/(distance*1.15)));if(target===1||a.type==='arc'){viewX=center;viewY=center;}else{const p=point(a.azimuth,distance,duplicateOffset(a));viewX=(center+p.x)/2;viewY=(center+p.y)/2;}setZoom(target);renderTable();}
@@ -1087,7 +1090,7 @@
   $('#step-undo').addEventListener('click',undoComplete);
   $('#center-aircraft').addEventListener('click',centerAircraft);
   $('#center-aid').addEventListener('click',centerAid);
-  $('#zoom-in').addEventListener('click',()=>setZoom(viewZoom*1.35));$('#zoom-out').addEventListener('click',()=>setZoom(viewZoom/1.35));$('#zoom-fit').addEventListener('click',fitMission);
+  $('#zoom-in').addEventListener('click',()=>setZoom(viewZoom*1.35));$('#zoom-out').addEventListener('click',()=>setZoom(viewZoom/1.35));
   $('#rose').addEventListener('wheel',event=>{event.preventDefault();setZoom(viewZoom*(event.deltaY<0?1.18:1/1.18));},{passive:false});$('#rose').addEventListener('dblclick',fitMission);
   $('#rose').addEventListener('pointerdown',event=>{$('#rose').setPointerCapture(event.pointerId);pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});$('#rose').classList.add('dragging');if(pointers.size===2){const p=[...pointers.values()];lastPinch=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);lastAngle=Math.atan2(p[1].y-p[0].y,p[1].x-p[0].x);}});
   $('#rose').addEventListener('pointermove',event=>{const previous=pointers.get(event.pointerId);if(!previous)return;pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});if(pointers.size===1){const rect=$('#rose').getBoundingClientRect(),scale=500/(viewZoom*rect.width);viewX-=(event.clientX-previous.x)*scale;viewY-=(event.clientY-previous.y)*scale;applyView();}else if(pointers.size===2){const p=[...pointers.values()],distance=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),angle=Math.atan2(p[1].y-p[0].y,p[1].x-p[0].x);if(lastPinch)viewZoom=Math.max(1,Math.min(6,viewZoom*distance/lastPinch));if(lastAngle!==null){let delta=(angle-lastAngle)*180/Math.PI;if(delta>180)delta-=360;if(delta<-180)delta+=360;viewRotation=(viewRotation+delta+360)%360}lastPinch=distance;lastAngle=angle;applyView();}});
