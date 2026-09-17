@@ -369,11 +369,11 @@
       <div class="metadata">
         <label>Localidade / auxílio<input id="mission-name" placeholder="Ex.: Porto Velho - PVH"></label>
         <label>Número do planejamento<input id="mission-number" placeholder="Ex.: 16"></label>
-        <label>Data<input id="mission-date" type="text" inputmode="numeric" maxlength="10" placeholder="DD/MM/AAAA" autocomplete="off"></label>
+        <label>Data<input id="mission-date" type="date" lang="pt-BR" aria-label="Data da missão"></label>
       </div>
       <div class="gnss-grid">
         <div class="coord-box">
-          <div class="coord-title">Latitude do auxílio — formato FMS (DD° MM.mm')</div>
+          <div class="coord-title">Latitude do auxílio — formato FMS (GG MM.MM)</div>
           <div class="coord-parts">
             <label>Graus<input id="station-lat-deg" type="text" inputmode="numeric" maxlength="2" placeholder="08" autocomplete="off"></label>
             <label>Minutos<input id="station-lat-min" type="text" inputmode="decimal" maxlength="5" placeholder="42.83" autocomplete="off"></label>
@@ -381,7 +381,7 @@
           </div>
         </div>
         <div class="coord-box">
-          <div class="coord-title">Longitude do auxílio — formato FMS (DDD° MM.mm')</div>
+          <div class="coord-title">Longitude do auxílio — formato FMS (GGG MM.MM)</div>
           <div class="coord-parts lon">
             <label>Graus<input id="station-lon-deg" type="text" inputmode="numeric" maxlength="3" placeholder="063" autocomplete="off"></label>
             <label>Minutos<input id="station-lon-min" type="text" inputmode="decimal" maxlength="5" placeholder="54.20" autocomplete="off"></label>
@@ -581,11 +581,11 @@
     const m=v.match(/^(\d{4})-(\d{2})-(\d{2})$/);
     return m?`${m[3]}/${m[2]}/${m[1]}`:v;
   }
-  function maskDateBR(value){
-    const d=String(value||'').replace(/\D/g,'').slice(0,8);
-    if(d.length<=2)return d;
-    if(d.length<=4)return `${d.slice(0,2)}/${d.slice(2)}`;
-    return `${d.slice(0,2)}/${d.slice(2,4)}/${d.slice(4)}`;
+  function dateBRToISO(value){
+    const v=String(value||'').trim();
+    if(/^\d{4}-\d{2}-\d{2}$/.test(v))return v;
+    const m=v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    return m?`${m[3]}-${m[2]}-${m[1]}`:'';
   }
   function load(){
     try{
@@ -593,9 +593,10 @@
       if(saved&&saved.metadata&&Array.isArray(saved.activities)) mission=saved;
       migrateActivities();
     }catch(_){ }
+    mission.metadata.date=formatDateBR(mission.metadata.date||'');
     $('#mission-name').value=mission.metadata.name||'';
     $('#mission-number').value=mission.metadata.number||'';
-    $('#mission-date').value=formatDateBR(mission.metadata.date||'');
+    $('#mission-date').value=dateBRToISO(mission.metadata.date||'');
     const latParts=(mission.metadata.stationLat===''||mission.metadata.stationLat===null||mission.metadata.stationLat===undefined)?{deg:'',min:'',hemi:'S'}:decimalToFms(mission.metadata.stationLat,'lat'),lonParts=(mission.metadata.stationLon===''||mission.metadata.stationLon===null||mission.metadata.stationLon===undefined)?{deg:'',min:'',hemi:'W'}:decimalToFms(mission.metadata.stationLon,'lon');
     $('#station-lat-deg').value=latParts.deg;$('#station-lat-min').value=latParts.min;$('#station-lat-hemi').value=latParts.hemi;
     $('#station-lon-deg').value=lonParts.deg;$('#station-lon-min').value=lonParts.min;$('#station-lon-hemi').value=lonParts.hemi;
@@ -695,7 +696,7 @@
   }
 
   function decimalToFms(value,type){
-    const v=Number(value);if(!Number.isFinite(v))return{deg:'',min:'',hemi:type==='lat'?'S':'W'};const abs=Math.abs(v),deg=Math.floor(abs),min=((abs-deg)*60).toFixed(2);return{deg:String(deg).padStart(type==='lat'?2:3,'0'),min,hemi:type==='lat'?(v<0?'S':'N'):(v<0?'W':'E')};
+    const v=Number(value);if(!Number.isFinite(v))return{deg:'',min:'',hemi:type==='lat'?'S':'W'};const total=Math.round(Math.abs(v)*6000)/100,deg=Math.floor(total/60),min=(total-deg*60).toFixed(2).padStart(5,'0');return{deg:String(deg).padStart(type==='lat'?2:3,'0'),min,hemi:type==='lat'?(v<0?'S':'N'):(v<0?'W':'E')};
   }
   function stationCoords(){
     const num=id=>{const s=String($(id).value||'').trim().replace(',','.');return s===''?NaN:Number(s);};
@@ -706,6 +707,12 @@
     if($('#station-lat-hemi').value==='S')lat=-lat;
     if($('#station-lon-hemi').value==='W')lon=-lon;
     return {lat,lon};
+  }
+  function normalizeStationCoordInputs(){
+    const st=stationCoords();if(!st)return;
+    const lat=decimalToFms(st.lat,'lat'),lon=decimalToFms(st.lon,'lon');
+    $('#station-lat-deg').value=lat.deg;$('#station-lat-min').value=lat.min;$('#station-lat-hemi').value=lat.hemi;
+    $('#station-lon-deg').value=lon.deg;$('#station-lon-min').value=lon.min;$('#station-lon-hemi').value=lon.hemi;
   }
   function magneticVariation(){
     const value=num($('#station-magvar').value);
@@ -1022,7 +1029,7 @@
   function saveMissionToLibrary(){
     // Sincroniza os campos antes de guardar.
     const st=stationCoords();
-    mission.metadata={...mission.metadata,name:$('#mission-name').value,number:$('#mission-number').value,date:$('#mission-date').value,
+    mission.metadata={...mission.metadata,name:$('#mission-name').value,number:$('#mission-number').value,date:formatDateBR($('#mission-date').value),
       stationLat:st?st.lat:'',stationLon:st?st.lon:'',magVar:$('#station-magvar').value,magVarDir:$('#station-magvar-hemi').value};
     if(!mission.savedMissionId)mission.savedMissionId=`m-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
     const library=getMissionLibrary(),copy=JSON.parse(JSON.stringify(mission)),i=library.findIndex(x=>x.savedMissionId===mission.savedMissionId);
@@ -1048,7 +1055,7 @@
       const row=document.createElement('div');row.className='saved-mission-item'+(m.savedMissionId===mission.savedMissionId?' current':'');
       const open=document.createElement('button');open.type='button';open.className='saved-mission-open';
       const title=document.createElement('strong');title.textContent=missionDisplayName(m);
-      const info=document.createElement('span');info.textContent=[m.metadata?.date||'',`${m.activities?.length||0} passagens`].filter(Boolean).join(' · ');
+      const info=document.createElement('span');info.textContent=[formatDateBR(m.metadata?.date||''),`${m.activities?.length||0} passagens`].filter(Boolean).join(' · ');
       open.append(title,info);open.addEventListener('click',()=>openSavedMission(m.savedMissionId));
       const del=document.createElement('button');del.type='button';del.className='saved-mission-delete';del.textContent='×';del.title='Excluir missão salva';del.addEventListener('click',()=>deleteSavedMission(m.savedMissionId));
       row.append(open,del);list.append(row);
@@ -1077,8 +1084,8 @@
     save();resetForm();fitMission();renderAll();
   });
   $('#cancel-edit').addEventListener('click',resetForm);
-  $('#mission-date').addEventListener('input',e=>{const pos=e.target.selectionStart;e.target.value=maskDateBR(e.target.value);});
-  ['#mission-name','#mission-number','#mission-date','#station-lat-deg','#station-lat-min','#station-lat-hemi','#station-lon-deg','#station-lon-min','#station-lon-hemi','#station-magvar','#station-magvar-hemi'].forEach(selector=>$(selector).addEventListener('input',()=>{const st=stationCoords();mission.metadata={name:$('#mission-name').value,number:$('#mission-number').value,date:$('#mission-date').value,stationLat:st?st.lat:'',stationLon:st?st.lon:'',magVar:$('#station-magvar').value,magVarDir:$('#station-magvar-hemi').value};save();if(lastPosition){updateGnssReadout();drawAircraft();}}));
+  ['#mission-name','#mission-number','#mission-date','#station-lat-deg','#station-lat-min','#station-lat-hemi','#station-lon-deg','#station-lon-min','#station-lon-hemi','#station-magvar','#station-magvar-hemi'].forEach(selector=>$(selector).addEventListener('input',()=>{const st=stationCoords();mission.metadata={name:$('#mission-name').value,number:$('#mission-number').value,date:formatDateBR($('#mission-date').value),stationLat:st?st.lat:'',stationLon:st?st.lon:'',magVar:$('#station-magvar').value,magVarDir:$('#station-magvar-hemi').value};save();if(lastPosition){updateGnssReadout();drawAircraft();}}));
+  ['#station-lat-deg','#station-lat-min','#station-lat-hemi','#station-lon-deg','#station-lon-min','#station-lon-hemi'].forEach(selector=>$(selector).addEventListener('change',normalizeStationCoordInputs));
   $('#new-mission').addEventListener('click',()=>{if(!confirm('Criar uma nova missão? A missão atual continuará na lista somente se tiver sido salva.'))return;mission={savedMissionId:null,metadata:{name:'',number:'',date:'',stationLat:'',stationLon:'',magVar:'',magVarDir:'W'},activities:[],activeId:null};save();load();resetForm();fitMission();renderAll();renderSavedMissions();});
   $('#save-mission').addEventListener('click',saveMissionToLibrary);$('#export-mission').addEventListener('click',exportMission);$('#mission-ok').addEventListener('click',()=>showPage('plan'));$('#import-btn').addEventListener('click',()=>$('#import-file').click());$('#import-file').addEventListener('change',event=>{if(event.target.files[0])importMission(event.target.files[0]);event.target.value='';});
   document.querySelectorAll('[data-plan-dir]').forEach(b=>b.addEventListener('click',()=>setPlanDirection(b.dataset.planDir)));
