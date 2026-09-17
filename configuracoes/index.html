@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#17191b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Configurações — IV-PLANNER</title>
+  <link rel="manifest" href="../manifest.webmanifest">
+  <link rel="apple-touch-icon" href="../icon-192.png">
+  <style>
+    :root{color-scheme:dark;--ink:#17191b;--panel:#24272a;--blue:#0aa4ef;--line:#4d5359;--muted:#aeb5bc;--shadow:0 16px 35px rgba(0,0,0,.24)}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#17191b}body{min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 100% 0,#44494d 0,transparent 30%),linear-gradient(155deg,#151719,#292c2f);color:#fff}
+    header{position:sticky;top:0;z-index:2;padding:max(14px,env(safe-area-inset-top)) 16px 14px;background:rgba(23,25,27,.94);border-bottom:1px solid #3e4449;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+    .bar{width:min(760px,100%);margin:auto;display:grid;grid-template-columns:48px 1fr 48px;align-items:center}.back{width:44px;height:44px;display:grid;place-items:center;border:1px solid #4d5359;border-radius:13px;color:#fff;text-decoration:none;font-size:1.7rem;-webkit-tap-highlight-color:transparent}.bar h1{margin:0;text-align:center;font-size:1.1rem;letter-spacing:.04em}.spacer{width:44px}
+    main{width:min(760px,100%);margin:auto;padding:26px 18px max(30px,env(safe-area-inset-bottom))}.intro{margin:0 2px 22px}.intro h2{font-size:clamp(1.7rem,6vw,2.35rem);margin:0 0 8px}.intro p{margin:0;color:var(--muted);line-height:1.45}
+    .card{display:flex;align-items:center;gap:16px;min-height:112px;padding:18px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.035));color:#fff;text-decoration:none;box-shadow:var(--shadow);-webkit-tap-highlight-color:transparent}.card:active{transform:scale(.985)}.icon{width:56px;height:56px;flex:0 0 auto;border-radius:16px;background:#1c1f21;color:var(--blue);display:grid;place-items:center;border:1px solid rgba(255,255,255,.12)}.icon svg{width:38px;height:38px}.copy{flex:1}.copy strong{display:block;font-size:1.14rem;margin-bottom:5px}.copy span{display:block;color:var(--muted);font-size:.91rem;line-height:1.38}.arrow{font-size:1.7rem;color:var(--blue)}
+    .note{margin:18px 2px 0;padding:14px 15px;border:1px solid #3f464b;border-radius:15px;background:rgba(0,0,0,.15);color:#aeb5bc;font-size:.85rem;line-height:1.45}
+  </style>
+</head>
+<body>
+  <header><div class="bar"><a class="back" href="../" aria-label="Voltar">‹</a><h1>CONFIGURAÇÕES</h1><span class="spacer" aria-hidden="true"></span></div></header>
+  <main>
+    <section class="intro"><h2>Configurações</h2><p>Consulte os recursos locais do IV-PLANNER.</p></section>
+    <a class="card" href="bases.html"><span class="icon" aria-hidden="true"><svg viewBox="0 0 64 64"><ellipse cx="32" cy="14" rx="21" ry="8" fill="none" stroke="currentColor" stroke-width="3"/><path d="M11 14v17c0 4.4 9.4 8 21 8s21-3.6 21-8V14M11 31v18c0 4.4 9.4 8 21 8s21-3.6 21-8V31" fill="none" stroke="currentColor" stroke-width="3"/><path d="M46 25h1M46 43h1" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg></span><span class="copy"><strong>Base de dados</strong><span>Integridade, versões e fontes aeronáuticas instaladas</span></span><span class="arrow" aria-hidden="true">›</span></a>
+    <p class="note">A verificação desta área é local e não altera missões, parâmetros, cadastros ou dados pessoais.</p>
+  </main>
+  <script>['gesturestart','gesturechange','gestureend'].forEach(type=>document.addEventListener(type,event=>event.preventDefault(),{passive:false}));</script>
+</body>
+</html>

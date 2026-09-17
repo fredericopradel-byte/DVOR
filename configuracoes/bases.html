@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#17191b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Base de dados — IV-PLANNER</title>
+  <link rel="manifest" href="../manifest.webmanifest">
+  <link rel="apple-touch-icon" href="../icon-192.png">
+  <style>
+    :root{color-scheme:dark;--bg:#17191b;--panel:#24272a;--panel2:#1d2022;--blue:#0aa4ef;--line:#4d5359;--muted:#aeb5bc;--ok:#57d38c;--warn:#ffc857;--bad:#ff6b70}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg)}body{min-height:100svh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 100% 0,#44494d 0,transparent 26%),linear-gradient(155deg,#151719,#292c2f);color:#fff}
+    header{position:sticky;top:0;z-index:3;padding:max(14px,env(safe-area-inset-top)) 16px 14px;background:rgba(23,25,27,.94);border-bottom:1px solid #3e4449;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}.bar{width:min(820px,100%);margin:auto;display:grid;grid-template-columns:48px 1fr 48px;align-items:center}.back{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--line);border-radius:13px;color:#fff;text-decoration:none;font-size:1.7rem;-webkit-tap-highlight-color:transparent}.bar h1{margin:0;text-align:center;font-size:1.06rem;letter-spacing:.04em}.spacer{width:44px}
+    main{width:min(820px,100%);margin:auto;padding:22px 16px max(34px,env(safe-area-inset-bottom))}.summary{padding:19px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.08),rgba(255,255,255,.035));box-shadow:0 14px 30px rgba(0,0,0,.22)}.summary h2{margin:0 0 7px;font-size:1.45rem}.summary p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.45}.status-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}.pill{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;background:#171a1c;border:1px solid #41484e;color:#d6dadd;font-size:.8rem}.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}.dot.ok{background:var(--ok)}.dot.warn{background:var(--warn)}
+    button{min-height:48px;font:inherit;font-size:1rem;font-weight:700;border-radius:14px;border:1px solid #168fc9;background:linear-gradient(180deg,#0aa4ef,#0787c7);color:#fff;padding:0 17px;-webkit-tap-highlight-color:transparent}button:active{transform:scale(.985)}button:disabled{opacity:.55}.actions{margin:14px 0 20px}.actions button{width:100%}
+    .section-title{margin:25px 2px 11px;font-size:.82rem;color:#bdc3c8;letter-spacing:.09em;text-transform:uppercase}.grid{display:grid;gap:12px}.db-card{border:1px solid var(--line);border-radius:18px;background:rgba(32,35,38,.94);padding:17px}.db-top{display:flex;align-items:flex-start;gap:12px}.db-copy{flex:1;min-width:0}.db-copy h3{margin:0 0 5px;font-size:1.04rem}.db-copy p{margin:0;color:var(--muted);font-size:.84rem;line-height:1.4}.badge{flex:0 0 auto;border-radius:999px;padding:6px 9px;border:1px solid #596168;background:#1a1d1f;color:#c9ced2;font-size:.72rem;font-weight:700}.badge.ok{color:#9ce8bb;border-color:#317a51;background:#193326}.badge.pending{color:#ffe09b;border-color:#80672f;background:#352d1b}.badge.bad{color:#ffadb0;border-color:#8d3e42;background:#3a1f21}.facts{display:grid;grid-template-columns:1fr;gap:8px;margin-top:14px;padding-top:13px;border-top:1px solid #3c4247}.fact{display:flex;justify-content:space-between;gap:16px;font-size:.81rem}.fact span:first-child{color:#969ea5}.fact span:last-child{text-align:right;overflow-wrap:anywhere}.details{margin:12px 0 0;padding-left:19px;color:#c7ccd0;font-size:.8rem;line-height:1.45}.details li+li{margin-top:4px}.integrity-note{margin:14px 0 0;color:#98a0a7;font-size:.78rem;line-height:1.45}.future{border:1px dashed #4c5359;border-radius:16px;padding:15px;color:#abb2b8;background:rgba(0,0,0,.12);font-size:.84rem;line-height:1.5}.future strong{color:#eef0f2}.privacy{margin:20px 2px 0;color:#8f979e;font-size:.78rem;line-height:1.5}
+    @media(min-width:680px){.grid{grid-template-columns:1fr 1fr}.db-card{min-height:270px}.actions{display:flex;justify-content:flex-end}.actions button{width:auto;min-width:220px}}
+  </style>
+</head>
+<body>
+  <header><div class="bar"><a class="back" href="./" aria-label="Voltar">‹</a><h1>BASE DE DADOS</h1><span class="spacer" aria-hidden="true"></span></div></header>
+  <main>
+    <section class="summary" aria-labelledby="summary-title">
+      <h2 id="summary-title">Bases aeronáuticas</h2>
+      <p>Verificação dos arquivos instalados neste aparelho. Integridade local não confirma a vigência da publicação oficial.</p>
+      <div class="status-row"><span class="pill"><span class="dot" id="connection-dot"></span><span id="connection-status">Verificando conexão</span></span><span class="pill"><span class="dot" id="integrity-dot"></span><span id="integrity-status">Aguardando verificação</span></span></div>
+    </section>
+    <div class="actions"><button id="verify-button" type="button">Verificar bases locais</button></div>
+    <h2 class="section-title">Instaladas no aplicativo</h2>
+    <div class="grid" id="installed-bases" aria-live="polite"></div>
+    <h2 class="section-title">Fontes preparadas para integração</h2>
+    <div class="grid" id="planned-bases"></div>
+    <h2 class="section-title">Próximas fontes recomendadas</h2>
+    <div class="future"><strong>AIP/eAIP, Suplementos AIP, obstáculos/OPEA e NOTAM</strong><br>Estas fontes exigirão coleta, normalização, validação e distribuição por um serviço externo. Nenhuma atualização remota está ativa nesta versão.</div>
+    <p class="privacy">A verificação lê somente os arquivos locais e a quantidade de localidades personalizadas. Não modifica nem remove missões, configurações, IndexedDB ou outros dados salvos.</p>
+  </main>
+  <script src="../prevoo/legacy-data.js?v=20260917"></script>
+  <script src="../adc-runway-data.js?v=20260917"></script>
+  <script src="database-registry.js?v=20260917"></script>
+</body>
+</html>
