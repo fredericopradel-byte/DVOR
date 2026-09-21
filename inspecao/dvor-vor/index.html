@@ -236,7 +236,8 @@
   .exec-card.is-active{box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 70%,transparent);border-color:var(--accent)}
   .exec-card.is-next{box-shadow:0 0 0 1px color-mix(in srgb,var(--text) 35%,transparent)}
   .exec-card.is-done{opacity:.35}
-  .exec-card.is-grouped{border-left:4px solid var(--amber)}
+  .exec-card.is-grouped{border-left:4px solid var(--group-color,var(--amber))}
+  .exec-card.is-grouped .group-badge{border-color:var(--group-color,var(--amber));color:var(--group-color,var(--amber))}
   .exec-card.group-selected{box-shadow:0 0 0 2px var(--amber);border-color:var(--amber)}
   .exec-card.dragging{opacity:.94;z-index:1000;transition:box-shadow .14s,opacity .14s;will-change:left,top;cursor:grabbing}
   .exec-card.longpress-ready{box-shadow:0 14px 34px rgba(0,0,0,.46),0 0 0 2px color-mix(in srgb,var(--text) 65%,transparent)}
@@ -336,7 +337,7 @@
   .map-corner-controls button{display:grid;place-items:center;width:46px;height:46px;min-height:46px;padding:3px;border:1px solid rgba(255,255,255,.24);border-radius:11px;background:rgba(27,31,34,.9);backdrop-filter:blur(8px);box-shadow:0 5px 14px rgba(0,0,0,.3);font-size:1.1rem}
   .map-corner-controls button small{display:block;font-size:.48rem;line-height:1;color:#dce2e6;letter-spacing:.04em}
   .map-readout{position:absolute;z-index:4;right:10px;bottom:10px;padding:5px 7px;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(18,21,23,.82);backdrop-filter:blur(8px);color:var(--muted);font-size:.6rem;pointer-events:none}
-  .gnss-hud{position:absolute;z-index:4;left:10px;bottom:10px;max-width:62%;padding:6px 8px;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(18,21,23,.84);backdrop-filter:blur(8px);color:var(--muted);font-size:.58rem;line-height:1.25;pointer-events:none}.gnss-hud strong{color:var(--text)}.gnss-hud .gnss-warning{margin-top:3px;font-size:.5rem}.map-corner-controls #gnss-toggle{margin-top:-2px}.map-corner-controls #gnss-toggle.gnss-on{background:rgba(57,217,138,.25);border-color:var(--green);color:var(--green)}
+  .gnss-hud{position:absolute;z-index:4;left:10px;bottom:10px;max-width:62%;padding:6px 8px;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(18,21,23,.84);backdrop-filter:blur(8px);color:var(--muted);font-size:.58rem;line-height:1.25;pointer-events:none}.gnss-hud strong{color:var(--text)}.gnss-hud .gnss-warning{margin-top:3px;font-size:.5rem}.map-corner-controls #gnss-toggle{margin-top:-5px}.map-corner-controls #gnss-toggle.gnss-on{background:rgba(57,217,138,.25);border-color:var(--green);color:var(--green)}
   .flight-step-panel{grid-template-columns:1fr 1fr;border-color:rgba(255,255,255,.14);background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));border-radius:15px;padding:15px;gap:13px 16px;margin-bottom:8px}
   .step-controls{grid-column:1/-1;grid-template-columns:46px minmax(82px,110px) 46px 1fr 46px;justify-self:stretch}
   .step-controls button{min-height:42px;border-radius:10px}.step-controls #step-complete{background:var(--accent);border-color:var(--blue2);font-size:10px}.step-controls #step-undo{grid-column:5;border-color:rgba(255,176,32,.65);color:var(--amber)}
@@ -548,7 +549,6 @@
       <div class="group-toolbar" aria-label="Agrupamento de passagens">
         <button id="group-mode" type="button">Agrupar cartões</button>
         <button class="primary" id="group-confirm" type="button" hidden>Confirmar grupo</button>
-        <button id="group-ungroup" type="button" hidden>Desagrupar</button>
         <button id="group-cancel" type="button" hidden>Cancelar</button>
       </div>
       <div id="execution-list" class="execution-list" aria-live="polite"></div>
@@ -957,14 +957,22 @@
     $('#step-undo').disabled=!mission.activities.some(x=>x.done);
   }
   function normalizeGroups(){
-    const counts=new Map();mission.activities.forEach(a=>{if(a.groupId)counts.set(a.groupId,(counts.get(a.groupId)||0)+1)});
-    mission.activities.forEach(a=>{if(a.groupId&&counts.get(a.groupId)<2)delete a.groupId;});
+    const groups=new Map();mission.activities.forEach(a=>{if(a.groupId){if(!groups.has(a.groupId))groups.set(a.groupId,[]);groups.get(a.groupId).push(a)}});
+    const used=new Set(mission.activities.map(a=>Number(a.groupColorIndex)).filter(Number.isInteger));let next=0;
+    groups.forEach(items=>{
+      if(items.length<2){items.forEach(a=>{delete a.groupId;delete a.groupColor;delete a.groupColorIndex});return;}
+      let index=items.map(a=>Number(a.groupColorIndex)).find(Number.isInteger);
+      if(!Number.isInteger(index)){while(used.has(next))next++;index=next;used.add(index);}
+      const color=items.find(a=>a.groupColor)?.groupColor||groupColorForIndex(index);
+      items.forEach(a=>{a.groupColorIndex=index;a.groupColor=color;});
+    });
   }
+  function groupColorForIndex(index){if(Number(index)===0)return'#ffb020';const hue=(40+Number(index)*137.508)%360;return`hsl(${hue.toFixed(1)} 88% 62%)`;}
+  function nextGroupColorIndex(){const indexes=mission.activities.map(a=>Number(a.groupColorIndex)).filter(Number.isInteger);return indexes.length?Math.max(...indexes)+1:0;}
   function selectedActivities(){return mission.activities.filter(a=>groupSelection.has(a.id));}
   function toggleGroupSelection(activity){
-    const members=activity.groupId?mission.activities.filter(a=>a.groupId===activity.groupId):[activity];
-    const select=members.some(a=>!groupSelection.has(a.id));
-    members.forEach(a=>select?groupSelection.add(a.id):groupSelection.delete(a.id));
+    if(activity.groupId)return;
+    if(groupSelection.has(activity.id))groupSelection.delete(activity.id);else groupSelection.add(activity.id);
     renderTable();
   }
   function setGroupMode(enabled){groupMode=enabled;groupSelection.clear();renderTable();}
@@ -973,18 +981,18 @@
     const ids=new Set(chosen.map(a=>a.id)),first=mission.activities.findIndex(a=>ids.has(a.id));
     const before=mission.activities.slice(0,first).filter(a=>!ids.has(a.id)).length;
     const remaining=mission.activities.filter(a=>!ids.has(a.id));
-    const groupId=`group-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
-    chosen.forEach(a=>a.groupId=groupId);remaining.splice(before,0,...chosen);mission.activities=remaining;
+    const groupId=`group-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,groupColorIndex=nextGroupColorIndex(),groupColor=groupColorForIndex(groupColorIndex);
+    chosen.forEach(a=>{a.groupId=groupId;a.groupColorIndex=groupColorIndex;a.groupColor=groupColor;});remaining.splice(before,0,...chosen);mission.activities=remaining;
     setGroupMode(false);save();renderAll();
   }
-  function ungroupSelected(){
-    const chosen=selectedActivities();if(!chosen.length){alert('Selecione um grupo para desagrupar.');return;}
-    chosen.forEach(a=>delete a.groupId);normalizeGroups();setGroupMode(false);save();renderAll();
+  function ungroupById(groupId){
+    mission.activities.filter(a=>a.groupId===groupId).forEach(a=>{delete a.groupId;delete a.groupColor;delete a.groupColorIndex;});
+    save();renderAll();
   }
   function updateGroupToolbar(){
-    const mode=$('#group-mode'),confirmButton=$('#group-confirm'),ungroup=$('#group-ungroup'),cancel=$('#group-cancel');if(!mode)return;
-    mode.hidden=groupMode;confirmButton.hidden=!groupMode;ungroup.hidden=!groupMode;cancel.hidden=!groupMode;
-    confirmButton.disabled=groupSelection.size<2;ungroup.disabled=!selectedActivities().some(a=>a.groupId);
+    const mode=$('#group-mode'),confirmButton=$('#group-confirm'),cancel=$('#group-cancel');if(!mode)return;
+    mode.hidden=groupMode;confirmButton.hidden=!groupMode;cancel.hidden=!groupMode;
+    confirmButton.disabled=groupSelection.size<2;
   }
   function renderTable(){
     ensureActive();
@@ -997,7 +1005,7 @@
       if(a.done)card.classList.add('is-done');
       if(a.id===mission.activeId)card.classList.add('is-active');
       if(nxt&&a.id===nxt.id)card.classList.add('is-next');
-      if(a.groupId){card.classList.add('is-grouped');card.dataset.groupId=a.groupId;}
+      if(a.groupId){card.classList.add('is-grouped');card.dataset.groupId=a.groupId;card.style.setProperty('--group-color',a.groupColor||groupColorForIndex(a.groupColorIndex||0));}
       if(groupSelection.has(a.id))card.classList.add('group-selected');
 
       const main=document.createElement('div');main.className='exec-main';
@@ -1008,13 +1016,14 @@
       if(a.id===mission.activeId){const s=document.createElement('span');s.className='state-badge';s.textContent='ATIVA';head.append(s);}
       else if(nxt&&a.id===nxt.id){const s=document.createElement('span');s.className='state-badge';s.textContent='PRÓXIMA';head.append(s);}
       else if(a.done){const s=document.createElement('span');s.className='state-badge';s.textContent='✓ CONCLUÍDA';head.append(s);}
-      if(a.groupId){const s=document.createElement('span');s.className='state-badge';s.textContent='GRUPO';head.append(s);}
+      if(a.groupId){const s=document.createElement('span');s.className='state-badge group-badge';s.textContent='GRUPO';head.append(s);}
       const title=document.createElement('div');title.className='exec-title';title.textContent=a.description;
       const detail=document.createElement('div');detail.className='exec-detail';detail.textContent=segmentText(a)+(a.notes?` · ${a.notes}`:'');
       main.append(head,title,detail);
 
       const actions=document.createElement('div');actions.className='exec-actions';
-      if(groupMode){const picker=actionButton(groupSelection.has(a.id)?'✓':'○',()=>toggleGroupSelection(a));picker.classList.add('group-picker');if(groupSelection.has(a.id))picker.classList.add('selected');actions.append(picker);}
+      if(groupMode){if(a.groupId){const locked=actionButton('Já agrupado',()=>{});locked.disabled=true;actions.append(locked);}else{const picker=actionButton(groupSelection.has(a.id)?'✓':'○',()=>toggleGroupSelection(a));picker.classList.add('group-picker');if(groupSelection.has(a.id))picker.classList.add('selected');actions.append(picker);}}
+      else if(a.groupId)actions.append(actionButton('Desagrupar',()=>ungroupById(a.groupId)));
       if(!a.done) actions.append(actionButton(a.id===mission.activeId?'Ativa':'Tornar ativa',()=>setActive(a.id)));
       if(a.done) actions.append(actionButton('Refazer',()=>restoreActivity(a.id),'primary'));
       if(a.id===mission.activeId) actions.append(actionButton('Concluir',completeActive,'primary'));
@@ -1076,8 +1085,8 @@
       const navTop=$('.page-nav')?.getBoundingClientRect().top;
       const topLimit=viewportTop+8,bottomLimit=Number.isFinite(navTop)?Math.min(viewportBottom,navTop-8):viewportBottom-8;
       const edge=112,yPos=dragState.edgeY;let speed=0;
-      if(yPos<topLimit+edge)speed=-Math.ceil(Math.max(0,(topLimit+edge-yPos)/edge)*34);
-      else if(yPos>bottomLimit-edge)speed=Math.ceil(Math.max(0,(yPos-(bottomLimit-edge))/edge)*34);
+      if(yPos<topLimit+edge)speed=-Math.ceil(Math.max(0,(topLimit+edge-yPos)/edge)*68);
+      else if(yPos>bottomLimit-edge)speed=Math.ceil(Math.max(0,(yPos-(bottomLimit-edge))/edge)*68);
       if(speed){window.scrollBy(0,speed);moveDraggedCard(dragState.card,dragState.lastX,dragState.lastY);}
       autoScrollFrame=requestAnimationFrame(tick);
     };
@@ -1300,7 +1309,6 @@
   $('#step-undo').addEventListener('click',undoComplete);
   $('#group-mode').addEventListener('click',()=>setGroupMode(true));
   $('#group-confirm').addEventListener('click',confirmGroup);
-  $('#group-ungroup').addEventListener('click',ungroupSelected);
   $('#group-cancel').addEventListener('click',()=>setGroupMode(false));
   $('#center-aircraft').addEventListener('click',centerAircraft);
   $('#center-aid').addEventListener('click',centerAid);
