@@ -1085,8 +1085,8 @@
       const navTop=$('.page-nav')?.getBoundingClientRect().top;
       const topLimit=viewportTop+8,bottomLimit=Number.isFinite(navTop)?Math.min(viewportBottom,navTop-8):viewportBottom-8;
       const edge=112,yPos=dragState.edgeY;let speed=0;
-      if(yPos<topLimit+edge)speed=-Math.ceil(Math.max(0,(topLimit+edge-yPos)/edge)*68);
-      else if(yPos>bottomLimit-edge)speed=Math.ceil(Math.max(0,(yPos-(bottomLimit-edge))/edge)*68);
+  if(yPos<topLimit+edge)speed=-Math.ceil(Math.max(0,(topLimit+edge-yPos)/edge)*150);
+  else if(yPos>bottomLimit-edge)speed=Math.ceil(Math.max(0,(yPos-(bottomLimit-edge))/edge)*150);
       if(speed){window.scrollBy(0,speed);moveDraggedCard(dragState.card,dragState.lastX,dragState.lastY);}
       autoScrollFrame=requestAnimationFrame(tick);
     };
