@@ -217,6 +217,7 @@
   .step-now,.step-next{min-width:0;display:flex;flex-direction:column;gap:2px}
   .step-kicker{font-size:9px;font-weight:800;letter-spacing:.08em;color:var(--muted)}
   #active-step-text,#next-step-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+  .step-notes{font-size:11px;line-height:1.3;color:var(--muted);white-space:normal;overflow-wrap:anywhere}
   .step-now.active-tx1{border-left:4px solid var(--blue);padding-left:7px}
   .step-now.active-tx2{border-left:4px solid var(--red);padding-left:7px}
   .step-controls{display:grid;grid-template-columns:34px auto 34px 34px;gap:4px;align-items:center}
@@ -235,9 +236,13 @@
   .exec-card.is-active{box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 70%,transparent);border-color:var(--accent)}
   .exec-card.is-next{box-shadow:0 0 0 1px color-mix(in srgb,var(--text) 35%,transparent)}
   .exec-card.is-done{opacity:.35}
+  .exec-card.is-grouped{border-left:4px solid var(--amber)}
+  .exec-card.group-selected{box-shadow:0 0 0 2px var(--amber);border-color:var(--amber)}
   .exec-card.dragging{opacity:.94;z-index:1000;transition:box-shadow .14s,opacity .14s;will-change:left,top;cursor:grabbing}
   .exec-card.longpress-ready{box-shadow:0 14px 34px rgba(0,0,0,.46),0 0 0 2px color-mix(in srgb,var(--text) 65%,transparent)}
   .exec-placeholder{border:1px dashed color-mix(in srgb,var(--accent) 55%,var(--border));border-radius:11px;background:color-mix(in srgb,var(--accent) 7%,transparent)}
+  .drag-block{position:fixed;z-index:1000;display:flex;flex-direction:column;gap:8px;margin:0;pointer-events:none}
+  .drag-block .exec-card{width:100%;opacity:.94;box-shadow:0 14px 34px rgba(0,0,0,.46)}
   .exec-card.reflowing{transition:transform .18s cubic-bezier(.2,.8,.2,1),opacity .15s,border-color .15s,box-shadow .15s}
   .exec-card{touch-action:pan-y;-webkit-user-select:none;user-select:none}
   .execution-list.reordering{touch-action:none;overscroll-behavior:contain}
@@ -252,6 +257,7 @@
   .exec-detail{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.25}
   .exec-actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
   .exec-actions button{font-size:10px;padding:5px 7px;min-height:34px}
+  .group-toolbar{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 10px}.group-toolbar button{min-height:38px;font-size:11px}.group-picker{min-width:34px!important;background:transparent!important}.group-picker.selected{background:var(--amber)!important;color:#17191b!important;border-color:var(--amber)!important}
 
   /* Tablet também usa navegação inferior */
   @media (max-width:1100px){
@@ -326,13 +332,14 @@
   .grid-circle{stroke:rgba(255,255,255,.32);stroke-dasharray:7 7}.axis{stroke:rgba(255,255,255,.2);stroke-dasharray:5 7}
   .rose-stage{position:relative;flex:1 1 auto;min-height:280px}
   .rose-stage #rose{width:100%;height:100%}
-  .map-corner-controls{position:absolute;z-index:5;top:12px;left:12px;display:grid;grid-template-columns:repeat(4,46px);gap:7px}
+  .map-corner-controls{position:absolute;z-index:5;top:12px;left:12px;display:grid;grid-template-columns:repeat(5,46px);gap:7px}
   .map-corner-controls button{display:grid;place-items:center;width:46px;height:46px;min-height:46px;padding:3px;border:1px solid rgba(255,255,255,.24);border-radius:11px;background:rgba(27,31,34,.9);backdrop-filter:blur(8px);box-shadow:0 5px 14px rgba(0,0,0,.3);font-size:1.1rem}
   .map-corner-controls button small{display:block;font-size:.48rem;line-height:1;color:#dce2e6;letter-spacing:.04em}
   .map-readout{position:absolute;z-index:4;right:10px;bottom:10px;padding:5px 7px;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(18,21,23,.82);backdrop-filter:blur(8px);color:var(--muted);font-size:.6rem;pointer-events:none}
-  .flight-step-panel{grid-template-columns:1fr 1fr;border-color:rgba(255,255,255,.14);background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));border-radius:15px;padding:13px;gap:10px 14px}
-  .step-controls{grid-column:1/-1;grid-template-columns:46px minmax(105px,1fr) 46px 46px;justify-self:stretch}
-  .step-controls button{min-height:44px;border-radius:10px}.step-controls #step-complete{background:var(--accent);border-color:var(--blue2)}
+  .gnss-hud{position:absolute;z-index:4;left:10px;bottom:10px;max-width:62%;padding:6px 8px;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(18,21,23,.84);backdrop-filter:blur(8px);color:var(--muted);font-size:.58rem;line-height:1.25;pointer-events:none}.gnss-hud strong{color:var(--text)}.gnss-hud .gnss-warning{margin-top:3px;font-size:.5rem}.map-corner-controls #gnss-toggle.gnss-on{background:rgba(57,217,138,.25);border-color:var(--green);color:var(--green)}
+  .flight-step-panel{grid-template-columns:1fr 1fr;border-color:rgba(255,255,255,.14);background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));border-radius:15px;padding:15px;gap:13px 16px;margin-bottom:8px}
+  .step-controls{grid-column:1/-1;grid-template-columns:46px minmax(82px,110px) 46px 1fr 46px;justify-self:stretch}
+  .step-controls button{min-height:42px;border-radius:10px}.step-controls #step-complete{background:var(--accent);border-color:var(--blue2);font-size:10px}.step-controls #step-undo{grid-column:5;border-color:rgba(255,176,32,.65);color:var(--amber)}
 
   /* Sistema visual unificado com o módulo Legacy */
   :root{--bg:#17191b!important;--panel:#24272a!important;--text:#f5f7f9!important;--muted:#aeb5bc!important;--border:#4d5359!important;--accent:#078dd1!important;--blue:#00a8ff!important;--red:#ff3045!important;--danger:#ff5b69!important;--soft:#34383c!important;--blue2:#0aa4ef;--green:#39d98a;--amber:#ffb020;--shadow:0 16px 35px rgba(0,0,0,.24)}
@@ -350,12 +357,12 @@
   .saved-missions{border-color:rgba(255,255,255,.1)}.saved-mission-item{background:rgba(0,0,0,.18);border-radius:12px}.saved-mission-item.current{border-color:var(--blue2);background:rgba(7,141,209,.12)}
   .page-nav{position:fixed!important;z-index:100;left:50%!important;right:auto!important;top:auto!important;bottom:14px!important;transform:translateX(-50%);width:min(620px,calc(100% - 28px));margin:0!important;padding:7px!important;display:grid;grid-template-columns:repeat(4,1fr);gap:5px!important;border:1px solid rgba(255,255,255,.13)!important;border-radius:18px;background:rgba(22,24,26,.94)!important;backdrop-filter:blur(18px);box-shadow:0 12px 30px rgba(0,0,0,.34)!important}
   .page-nav button{min-height:47px;border:0!important;border-radius:11px!important;background:transparent!important;color:#929aa1!important;padding:7px 3px 5px!important;font-size:.7rem!important;font-weight:750}.page-nav button::before{content:"";display:block;width:8px;height:8px;border-radius:50%;background:#5c6369;margin:0 auto 5px}.page-nav button.active{background:rgba(7,141,209,.18)!important;color:#fff!important}.page-nav button.active::before{background:var(--blue2);box-shadow:0 0 10px var(--blue2)}
-  .exec-card{border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));padding:11px}.exec-card.is-active{border-color:var(--blue2);box-shadow:0 0 0 2px rgba(10,164,239,.3),var(--shadow)}.exec-card.is-next{box-shadow:0 0 0 1px rgba(255,255,255,.24)}.exec-placeholder{border-radius:16px;border-color:rgba(10,164,239,.55);background:rgba(7,141,209,.08)}.state-badge,.tx-badge{border-radius:999px}.tx-badge.tx1{background:#00a8ff}.tx-badge.tx2{background:#ff3045}
+  .exec-card{border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));padding:11px}.exec-card.is-active{border-color:var(--blue2);box-shadow:0 0 0 2px rgba(10,164,239,.3),var(--shadow)}.exec-card.is-next{box-shadow:0 0 0 1px rgba(255,255,255,.24)}.exec-card.is-done{opacity:.58}.exec-placeholder{border-radius:16px;border-color:rgba(10,164,239,.55);background:rgba(7,141,209,.08)}.state-badge,.tx-badge{border-radius:999px}.tx-badge.tx1{background:#00a8ff}.tx-badge.tx2{background:#ff3045}
   .step-now.active-tx1{border-color:#00a8ff}.step-now.active-tx2{border-color:#ff3045}.swatch.blue{background:#00a8ff}.swatch.red{background:#ff3045}
   #rose-panel:fullscreen{background:radial-gradient(circle at 100% 0,#44494d 0,transparent 30%),linear-gradient(155deg,#151719,#292c2f);padding:18px}.rose-toolbar button{background:#303438}.gnss-warning{color:#8f969c;letter-spacing:.025em}
   @media(max-width:570px){.app{padding:10px 10px calc(82px + env(safe-area-inset-bottom))}.topbar{margin:0 2px 16px!important}.module-brand span{display:none}.panel{padding:11px;border-radius:17px;margin-bottom:10px}.page-nav{left:0!important;right:0!important;bottom:0!important;transform:none;width:100%;border-left:0!important;border-right:0!important;border-bottom:0!important;border-radius:0!important;padding:7px 8px calc(7px + env(safe-area-inset-bottom))!important}.page-nav button{min-height:46px!important}.coord-box{border-radius:12px}.exec-card{border-radius:14px}}
   .mission-title-field,.mission-locality-field,.mission-date-field{grid-column:1/-1!important}.metadata>label{min-width:0}.mission-date-field input{width:100%;min-width:0;max-width:100%}
-  @media(max-width:570px){#page-mission .metadata{grid-template-columns:1fr!important}.flight-step-panel{grid-template-columns:1fr!important;padding:11px!important;gap:8px!important}.step-now,.step-next{grid-column:1!important}.step-controls{grid-column:1!important;grid-row:auto!important;grid-template-columns:46px minmax(108px,1fr) 46px 46px!important;width:100%}.map-corner-controls{top:10px;left:10px;grid-template-columns:repeat(4,43px);gap:6px}.map-corner-controls button{width:43px;height:43px;min-height:43px}.rose-stage{min-height:280px}}
+  @media(max-width:570px){#page-mission .metadata{grid-template-columns:1fr!important}.flight-step-panel{grid-template-columns:1fr!important;padding:13px!important;gap:10px!important}.step-now,.step-next{grid-column:1!important}.step-controls{grid-column:1!important;grid-row:auto!important;grid-template-columns:43px minmax(78px,104px) 43px 1fr 43px!important;width:100%}.map-corner-controls{top:10px;left:10px;grid-template-columns:repeat(5,40px);gap:5px}.map-corner-controls button{width:40px;height:40px;min-height:40px}.rose-stage{min-height:300px}}
 
 
   /* Ajuste iOS/Safari — campo Data contido no cartão */
@@ -492,10 +499,12 @@
         <div class="step-now">
           <span class="step-kicker">ATUAL</span>
           <strong id="active-step-text">Nenhuma passagem ativa</strong>
+          <span id="active-step-notes" class="step-notes">—</span>
         </div>
         <div class="step-next">
           <span class="step-kicker">PRÓXIMA</span>
           <span id="next-step-text">—</span>
+          <span id="next-step-notes" class="step-notes">—</span>
         </div>
         <div class="step-controls" aria-label="Controles da passagem ativa">
           <button id="step-prev" type="button" title="Passagem anterior">←</button>
@@ -503,11 +512,6 @@
           <button id="step-next" type="button" title="Próxima passagem">→</button>
           <button id="step-undo" type="button" title="Desfazer última conclusão">↶</button>
         </div>
-      </div>
-      <div class="gnss-status">
-        <button class="primary" id="gnss-toggle" type="button">Ativar posição GNSS</button>
-        <div id="gnss-readout" style="margin-top:8px"><strong>GNSS desligado</strong><br>Informe as coordenadas do auxílio na página Missão.</div>
-        <div class="gnss-warning">POSIÇÃO AUXILIAR — NÃO UTILIZAR PARA NAVEGAÇÃO OU COMO DADO DE INSPEÇÃO.</div>
       </div>
       <div class="rose-stage">
         <svg id="rose" viewBox="0 0 500 500" role="img" aria-labelledby="rose-title rose-desc">
@@ -520,6 +524,11 @@
           <button id="zoom-in" type="button" aria-label="Aumentar zoom">+</button>
           <button id="center-aircraft" type="button" aria-label="Centralizar na aeronave"><span>✈</span><small>ANV</small></button>
           <button id="center-aid" type="button" aria-label="Centralizar no auxílio"><span>◎</span><small>AUX</small></button>
+          <button id="gnss-toggle" type="button" aria-label="Ligar ou desligar posição GNSS"><span>⌖</span><small>GPS</small></button>
+        </div>
+        <div class="gnss-hud" aria-live="polite">
+          <div id="gnss-readout"><strong>GNSS desligado</strong></div>
+          <div class="gnss-warning">POSIÇÃO AUXILIAR — NÃO UTILIZAR PARA NAVEGAÇÃO OU COMO DADO DE INSPEÇÃO.</div>
         </div>
         <span id="map-readout" class="map-readout" aria-live="polite">Zoom 100% · Giro 0°</span>
       </div>
@@ -535,6 +544,12 @@
       <div class="summary">
         <h2>Execução da missão</h2>
         <div><strong id="progress">0/0 TX feitos</strong></div>
+      </div>
+      <div class="group-toolbar" aria-label="Agrupamento de passagens">
+        <button id="group-mode" type="button">Agrupar cartões</button>
+        <button class="primary" id="group-confirm" type="button" hidden>Confirmar grupo</button>
+        <button id="group-ungroup" type="button" hidden>Desagrupar</button>
+        <button id="group-cancel" type="button" hidden>Cancelar</button>
       </div>
       <div id="execution-list" class="execution-list" aria-live="polite"></div>
     </section>
@@ -563,6 +578,9 @@
   let currentPage='mission';
   let gnssWatchId=null, lastPosition=null;
   let dragState=null;
+  let groupMode=false;
+  const groupSelection=new Set();
+  let autoScrollFrame=null;
   let completionHistory=[];
   let planDirection='inbound';
   let aixmSearchTimer=null;
@@ -589,6 +607,14 @@
     const i=activeIndex();
     if(i<0)return mission.activities.find(a=>!a.done)||null;
     return mission.activities.slice(i+1).find(a=>!a.done)||mission.activities.find((a,j)=>j<i&&!a.done)||null;
+  }
+  function pendingStep(direction){
+    const i=activeIndex();
+    if(i<0)return mission.activities.find(a=>!a.done)||null;
+    for(let j=i+direction;j>=0&&j<mission.activities.length;j+=direction){
+      if(!mission.activities[j].done)return mission.activities[j];
+    }
+    return null;
   }
   function ensureActive(){
     const a=activeStep();
@@ -848,11 +874,12 @@
     const trk=Number.isFinite(c.heading)&&c.speed>0.5?Math.round(trueToMagnetic(c.heading)):'—';
     out.innerHTML=`<strong>RDL ${fmt(rdl)}° · DST ${fmt(bd.distance)} NM · GS ${gs} kt · TRK ${trk}° · ±${acc} m</strong>`;
   }
-  function stopGnss(){if(gnssWatchId!==null&&navigator.geolocation)navigator.geolocation.clearWatch(gnssWatchId);gnssWatchId=null;lastPosition=null;$('#gnss-toggle').textContent='Ativar posição GNSS';$('#gnss-readout').innerHTML='<strong>GNSS desligado</strong><br>Informe as coordenadas do auxílio na página Missão.';drawAircraft();}
+  function setGnssButton(on){const button=$('#gnss-toggle');button.classList.toggle('gnss-on',on);button.innerHTML=`<span>⌖</span><small>${on?'ON':'GPS'}</small>`;button.setAttribute('aria-label',on?'Desativar posição GNSS':'Ativar posição GNSS');}
+  function stopGnss(){if(gnssWatchId!==null&&navigator.geolocation)navigator.geolocation.clearWatch(gnssWatchId);gnssWatchId=null;lastPosition=null;setGnssButton(false);$('#gnss-readout').innerHTML='<strong>GNSS desligado</strong>';drawAircraft();}
   function toggleGnss(){
     if(gnssWatchId!==null){stopGnss();return;}if(!stationCoords()){alert('Informe primeiro a latitude e a longitude do auxílio na página Missão.');showPage('mission');return;}
     if(!navigator.geolocation){alert('Geolocalização não disponível neste aparelho.');return;}
-    $('#gnss-toggle').textContent='Desativar posição GNSS';$('#gnss-readout').innerHTML='<strong>Solicitando posição…</strong>';
+    setGnssButton(true);$('#gnss-readout').innerHTML='<strong>Solicitando posição…</strong>';
     gnssWatchId=navigator.geolocation.watchPosition(pos=>{lastPosition=pos;updateGnssReadout();drawAircraft();},err=>{const msg=err.code===1?'Permissão de localização negada. Ative a Localização para este app/site nos Ajustes do iPhone.':'Não foi possível obter a posição GNSS.';$('#gnss-readout').innerHTML=`<strong>${msg}</strong>`;},{enableHighAccuracy:true,maximumAge:1000,timeout:15000});
   }
   function directionLabel(a){
@@ -903,30 +930,65 @@
     if(!a)return;
     a.done=false;mission.activeId=a.id;save();renderAll();
   }
+  function restoreActivity(id){
+    const a=mission.activities.find(item=>item.id===id);if(!a||!a.done)return;
+    a.done=false;mission.activeId=a.id;
+    for(let i=completionHistory.length-1;i>=0;i--)if(completionHistory[i].id===id)completionHistory.splice(i,1);
+    save();renderAll();
+  }
   function moveActive(direction){
-    if(!mission.activities.length)return;
-    let i=activeIndex();
-    if(i<0)i=0;
-    const ni=i+direction;
-    if(ni<0||ni>=mission.activities.length)return;
-    mission.activeId=mission.activities[ni].id;
+    const target=pendingStep(direction);
+    if(!target)return;
+    mission.activeId=target.id;
     save();renderAll();
   }
   function renderFlightStepPanel(){
-    const a=activeStep(),n=nextStep(),now=$('#active-step-text'),next=$('#next-step-text'),wrap=$('.step-now');
+    const a=activeStep(),n=nextStep(),now=$('#active-step-text'),next=$('#next-step-text'),nowNotes=$('#active-step-notes'),nextNotes=$('#next-step-notes'),wrap=$('.step-now');
     if(!now||!next)return;
     wrap.classList.remove('active-tx1','active-tx2');
     if(a){now.textContent=`${String(activeIndex()+1).padStart(2,'0')} · ${segmentText(a)} · ${a.tx}`;wrap.classList.add(a.tx==='TX2'?'active-tx2':'active-tx1');}
     else now.textContent='Missão concluída / nenhuma passagem ativa';
     next.textContent=n?`${String(mission.activities.indexOf(n)+1).padStart(2,'0')} · ${segmentText(n)} · ${n.tx}`:'—';
-    const i=activeIndex();
+    nowNotes.textContent=a?(a.notes||'Sem observações'):'—';
+    nextNotes.textContent=n?(n.notes||'Sem observações'):'—';
     $('#step-complete').disabled=!a||Boolean(a&&a.done);
-    $('#step-prev').disabled=i<=0;
-    $('#step-next').disabled=i<0||i>=mission.activities.length-1;
+    $('#step-prev').disabled=!pendingStep(-1);
+    $('#step-next').disabled=!pendingStep(1);
     $('#step-undo').disabled=!mission.activities.some(x=>x.done);
+  }
+  function normalizeGroups(){
+    const counts=new Map();mission.activities.forEach(a=>{if(a.groupId)counts.set(a.groupId,(counts.get(a.groupId)||0)+1)});
+    mission.activities.forEach(a=>{if(a.groupId&&counts.get(a.groupId)<2)delete a.groupId;});
+  }
+  function selectedActivities(){return mission.activities.filter(a=>groupSelection.has(a.id));}
+  function toggleGroupSelection(activity){
+    const members=activity.groupId?mission.activities.filter(a=>a.groupId===activity.groupId):[activity];
+    const select=members.some(a=>!groupSelection.has(a.id));
+    members.forEach(a=>select?groupSelection.add(a.id):groupSelection.delete(a.id));
+    renderTable();
+  }
+  function setGroupMode(enabled){groupMode=enabled;groupSelection.clear();renderTable();}
+  function confirmGroup(){
+    const chosen=selectedActivities();if(chosen.length<2){alert('Selecione pelo menos dois cartões para agrupar.');return;}
+    const ids=new Set(chosen.map(a=>a.id)),first=mission.activities.findIndex(a=>ids.has(a.id));
+    const before=mission.activities.slice(0,first).filter(a=>!ids.has(a.id)).length;
+    const remaining=mission.activities.filter(a=>!ids.has(a.id));
+    const groupId=`group-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
+    chosen.forEach(a=>a.groupId=groupId);remaining.splice(before,0,...chosen);mission.activities=remaining;
+    setGroupMode(false);save();renderAll();
+  }
+  function ungroupSelected(){
+    const chosen=selectedActivities();if(!chosen.length){alert('Selecione um grupo para desagrupar.');return;}
+    chosen.forEach(a=>delete a.groupId);normalizeGroups();setGroupMode(false);save();renderAll();
+  }
+  function updateGroupToolbar(){
+    const mode=$('#group-mode'),confirmButton=$('#group-confirm'),ungroup=$('#group-ungroup'),cancel=$('#group-cancel');if(!mode)return;
+    mode.hidden=groupMode;confirmButton.hidden=!groupMode;ungroup.hidden=!groupMode;cancel.hidden=!groupMode;
+    confirmButton.disabled=groupSelection.size<2;ungroup.disabled=!selectedActivities().some(a=>a.groupId);
   }
   function renderTable(){
     ensureActive();
+    normalizeGroups();updateGroupToolbar();
     const list=$('#execution-list');if(!list)return;list.replaceChildren();
     if(!mission.activities.length){const e=document.createElement('div');e.className='empty';e.textContent='Nenhuma passagem cadastrada.';list.append(e);}
     const nxt=nextStep();
@@ -935,6 +997,8 @@
       if(a.done)card.classList.add('is-done');
       if(a.id===mission.activeId)card.classList.add('is-active');
       if(nxt&&a.id===nxt.id)card.classList.add('is-next');
+      if(a.groupId){card.classList.add('is-grouped');card.dataset.groupId=a.groupId;}
+      if(groupSelection.has(a.id))card.classList.add('group-selected');
 
       const main=document.createElement('div');main.className='exec-main';
       const head=document.createElement('div');head.className='exec-head';
@@ -944,12 +1008,15 @@
       if(a.id===mission.activeId){const s=document.createElement('span');s.className='state-badge';s.textContent='ATIVA';head.append(s);}
       else if(nxt&&a.id===nxt.id){const s=document.createElement('span');s.className='state-badge';s.textContent='PRÓXIMA';head.append(s);}
       else if(a.done){const s=document.createElement('span');s.className='state-badge';s.textContent='✓ CONCLUÍDA';head.append(s);}
+      if(a.groupId){const s=document.createElement('span');s.className='state-badge';s.textContent='GRUPO';head.append(s);}
       const title=document.createElement('div');title.className='exec-title';title.textContent=a.description;
       const detail=document.createElement('div');detail.className='exec-detail';detail.textContent=segmentText(a)+(a.notes?` · ${a.notes}`:'');
       main.append(head,title,detail);
 
       const actions=document.createElement('div');actions.className='exec-actions';
+      if(groupMode){const picker=actionButton(groupSelection.has(a.id)?'✓':'○',()=>toggleGroupSelection(a));picker.classList.add('group-picker');if(groupSelection.has(a.id))picker.classList.add('selected');actions.append(picker);}
       if(!a.done) actions.append(actionButton(a.id===mission.activeId?'Ativa':'Tornar ativa',()=>setActive(a.id)));
+      if(a.done) actions.append(actionButton('Refazer',()=>restoreActivity(a.id),'primary'));
       if(a.id===mission.activeId) actions.append(actionButton('Concluir',completeActive,'primary'));
       const dirs=document.createElement('div');dirs.className='direction-choice';
       const choices=a.type==='arc'?[['cw','↻','Horário'],['ccw','↺','Anti-horário']]:[['inbound','IN','Inbound'],['outbound','OUT','Outbound']];
@@ -963,8 +1030,8 @@
       actions.append(actionButton('Editar',()=>editActivity(a.id)),actionButton('Excluir',()=>deleteActivity(a.id),'danger'));
 
       card.append(main,actions);
-      installLongPressDrag(card);
-      card.addEventListener('click',e=>{if(e.target.closest('button'))return;setActive(a.id);});
+      if(!groupMode)installLongPressDrag(card);
+      card.addEventListener('click',e=>{if(e.target.closest('button'))return;if(groupMode)toggleGroupSelection(a);else setActive(a.id);});
       list.append(card);
     });
     const total=mission.activities.length,completed=mission.activities.filter(a=>a.done).length;
@@ -989,14 +1056,29 @@
   }
   function moveDraggedCard(card,x,y){
     if(!dragState)return;
-    card.style.left=`${x-dragState.offsetX}px`;
-    card.style.top=`${y-dragState.offsetY}px`;
-    const target=document.elementsFromPoint(x,y).map(el=>el.closest?.('.exec-card')).find(el=>el&&el!==card);
+    dragState.lastX=x;dragState.lastY=y;
+    dragState.floating.style.left=`${x-dragState.offsetX}px`;
+    dragState.floating.style.top=`${y-dragState.offsetY}px`;
+    const dragged=new Set(dragState.cards);
+    const target=document.elementsFromPoint(x,y).map(el=>el.closest?.('.exec-card')).find(el=>el&&!dragged.has(el));
     if(!target)return;
     const placeholder=dragState.placeholder,rect=target.getBoundingClientRect();
     const reference=y<rect.top+rect.height/2?target:target.nextSibling;
     if(reference===placeholder||reference===placeholder.nextSibling)return;
     animateExecutionReflow(()=>$('#execution-list').insertBefore(placeholder,reference));
+  }
+  function stopAutoScroll(){if(autoScrollFrame!==null)cancelAnimationFrame(autoScrollFrame);autoScrollFrame=null;}
+  function updateAutoScroll(y){
+    if(!dragState)return;dragState.edgeY=y;if(autoScrollFrame!==null)return;
+    const tick=()=>{
+      if(!dragState){autoScrollFrame=null;return;}
+      const edge=82,yPos=dragState.edgeY;let speed=0;
+      if(yPos<edge)speed=-Math.ceil((edge-yPos)/edge*16);
+      else if(yPos>window.innerHeight-edge)speed=Math.ceil((yPos-(window.innerHeight-edge))/edge*16);
+      if(speed){window.scrollBy(0,speed);moveDraggedCard(dragState.card,dragState.lastX,dragState.lastY);}
+      autoScrollFrame=requestAnimationFrame(tick);
+    };
+    autoScrollFrame=requestAnimationFrame(tick);
   }
   function neutralPoint(target){
     return !target.closest('button,input,select,textarea,a,label');
@@ -1009,14 +1091,17 @@
 
     const arm=(x,y)=>{
       armed=true;suppressClick=true;lastX=x;lastY=y;
-      const rect=card.getBoundingClientRect(),placeholder=document.createElement('div');
-      placeholder.className='exec-placeholder';placeholder.style.height=`${rect.height}px`;
-      card.before(placeholder);
-      dragState={card,placeholder,offsetX:x-rect.left,offsetY:y-rect.top};
+      const groupId=card.dataset.groupId,cards=groupId?[...$('#execution-list').querySelectorAll(`.exec-card[data-group-id="${CSS.escape(groupId)}"]`)]:[card];
+      const rect=card.getBoundingClientRect(),firstRect=cards[0].getBoundingClientRect(),placeholder=document.createElement('div'),floating=document.createElement('div');
+      const totalHeight=cards.reduce((sum,item)=>sum+item.getBoundingClientRect().height,0)+Math.max(0,cards.length-1)*8;
+      placeholder.className='exec-placeholder';placeholder.style.height=`${totalHeight}px`;
+      cards[0].before(placeholder);
+      floating.className='drag-block';
+      Object.assign(floating.style,{left:`${firstRect.left}px`,top:`${firstRect.top}px`,width:`${firstRect.width}px`});
+      cards.forEach(item=>{item.classList.add('dragging','longpress-ready');floating.append(item);});
+      document.body.append(floating);
+      dragState={card,cards,placeholder,floating,offsetX:x-firstRect.left,offsetY:y-firstRect.top,lastX:x,lastY:y,edgeY:y};
       $('#execution-list').classList.add('reordering');
-      card.classList.add('dragging','longpress-ready');
-      Object.assign(card.style,{position:'fixed',left:`${rect.left}px`,top:`${rect.top}px`,width:`${rect.width}px`,height:`${rect.height}px`,margin:'0'});
-      document.body.append(card);
       if(navigator.vibrate)navigator.vibrate(25);
     };
 
@@ -1024,10 +1109,10 @@
       clearArm();
       if(armed){
         armed=false;
-        const placeholder=dragState?.placeholder;
-        if(placeholder)placeholder.replaceWith(card);
-        card.removeAttribute('style');
-        card.classList.remove('dragging','longpress-ready');
+        stopAutoScroll();
+        const placeholder=dragState?.placeholder,cards=dragState?.cards||[card],floating=dragState?.floating;
+        if(placeholder){const fragment=document.createDocumentFragment();cards.forEach(item=>{item.classList.remove('dragging','longpress-ready');fragment.append(item);});placeholder.replaceWith(fragment);}
+        floating?.remove();
         $('#execution-list').classList.remove('reordering');
         dragState=null;
         persistVisualOrder();
@@ -1053,6 +1138,7 @@
       }
       e.preventDefault();
       moveDraggedCard(card,lastX,lastY);
+      updateAutoScroll(lastY);
     },{passive:false});
 
     card.addEventListener('touchend',finish,{passive:true});
@@ -1071,7 +1157,7 @@
         if(timer&&Math.hypot(lastX-startX,lastY-startY)>8)clearArm();
         return;
       }
-      e.preventDefault();moveDraggedCard(card,lastX,lastY);
+      e.preventDefault();moveDraggedCard(card,lastX,lastY);updateAutoScroll(lastY);
     });
     card.addEventListener('pointerup',e=>{if(e.pointerType==='mouse')finish();});
     card.addEventListener('pointercancel',e=>{if(e.pointerType==='mouse')finish();});
@@ -1104,7 +1190,7 @@
     if(a.type==='radial'){$('#radial-az').value=a.azimuth;$('#radial-start').value=a.start;$('#radial-end').value=a.end;}else{$('#arc-start').value=a.arcStart;$('#arc-end').value=a.arcEnd;$('#arc-radius').value=a.radius;}
     $('#form-title').textContent='Editar passagem';$('#save-activity').textContent='Salvar alterações';$('#cancel-edit').hidden=false;$('#activity-form').scrollIntoView({behavior:'smooth',block:'start'});
   }
-  function deleteActivity(id){const a=mission.activities.find(item=>item.id===id);if(!a||!confirm(`Excluir “${a.description}”?`))return;mission.activities=mission.activities.filter(item=>item.id!==id);if(editingId===id)resetForm();if(selectedId===id)selectedId=null;save();fitMission();renderAll();}
+  function deleteActivity(id){const a=mission.activities.find(item=>item.id===id);if(!a||!confirm(`Excluir “${a.description}”?`))return;mission.activities=mission.activities.filter(item=>item.id!==id);groupSelection.delete(id);normalizeGroups();if(editingId===id)resetForm();if(selectedId===id)selectedId=null;if(mission.activeId===id)mission.activeId=null;ensureActive();save();fitMission();renderAll();}
   function clampView(){const half=center/viewZoom;viewX=Math.max(half,Math.min(500-half,viewX));viewY=Math.max(half,Math.min(500-half,viewY));}
   function applyView(){clampView();const size=500/viewZoom;$('#rose').setAttribute('viewBox',`${viewX-size/2} ${viewY-size/2} ${size} ${size}`);$('#map-world').setAttribute('transform',`rotate(${viewRotation} ${center} ${center})`);$('#map-readout').textContent=`Zoom ${Math.round(viewZoom*100)}% · Giro ${Math.round(viewRotation)}°`;}
   function setZoom(value){viewZoom=Math.max(1,Math.min(6,value));if(viewZoom===1){viewX=center;viewY=center;}applyView();}
@@ -1209,6 +1295,10 @@
   $('#step-prev').addEventListener('click',()=>moveActive(-1));
   $('#step-next').addEventListener('click',()=>moveActive(1));
   $('#step-undo').addEventListener('click',undoComplete);
+  $('#group-mode').addEventListener('click',()=>setGroupMode(true));
+  $('#group-confirm').addEventListener('click',confirmGroup);
+  $('#group-ungroup').addEventListener('click',ungroupSelected);
+  $('#group-cancel').addEventListener('click',()=>setGroupMode(false));
   $('#center-aircraft').addEventListener('click',centerAircraft);
   $('#center-aid').addEventListener('click',centerAid);
   $('#zoom-in').addEventListener('click',()=>setZoom(viewZoom*1.35));$('#zoom-out').addEventListener('click',()=>setZoom(viewZoom/1.35));
