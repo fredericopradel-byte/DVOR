@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v34-dvor-scroll-150-20260921';
+const CACHE = 'iv-planner-v35-dvor-acoes-concluidas-20260921';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;

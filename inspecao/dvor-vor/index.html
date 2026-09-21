@@ -235,7 +235,9 @@
     transition:opacity .15s,border-color .15s,box-shadow .15s,transform .15s}
   .exec-card.is-active{box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 70%,transparent);border-color:var(--accent)}
   .exec-card.is-next{box-shadow:0 0 0 1px color-mix(in srgb,var(--text) 35%,transparent)}
-  .exec-card.is-done{opacity:.35}
+  .exec-card.is-done{opacity:1;position:relative;isolation:isolate}
+  .exec-card.is-done::after{content:"";position:absolute;inset:0;border-radius:inherit;background:rgba(9,11,13,.42);pointer-events:none;z-index:1}
+  .exec-card.is-done .done-live-action{position:relative;z-index:2;opacity:1;filter:none}
   .exec-card.is-grouped{border-left:4px solid var(--group-color,var(--amber))}
   .exec-card.is-grouped .group-badge{border-color:var(--group-color,var(--amber));color:var(--group-color,var(--amber))}
   .exec-card.group-selected{box-shadow:0 0 0 2px var(--amber);border-color:var(--amber)}
@@ -358,7 +360,7 @@
   .saved-missions{border-color:rgba(255,255,255,.1)}.saved-mission-item{background:rgba(0,0,0,.18);border-radius:12px}.saved-mission-item.current{border-color:var(--blue2);background:rgba(7,141,209,.12)}
   .page-nav{position:fixed!important;z-index:100;left:50%!important;right:auto!important;top:auto!important;bottom:14px!important;transform:translateX(-50%);width:min(620px,calc(100% - 28px));margin:0!important;padding:7px!important;display:grid;grid-template-columns:repeat(4,1fr);gap:5px!important;border:1px solid rgba(255,255,255,.13)!important;border-radius:18px;background:rgba(22,24,26,.94)!important;backdrop-filter:blur(18px);box-shadow:0 12px 30px rgba(0,0,0,.34)!important}
   .page-nav button{min-height:47px;border:0!important;border-radius:11px!important;background:transparent!important;color:#929aa1!important;padding:7px 3px 5px!important;font-size:.7rem!important;font-weight:750}.page-nav button::before{content:"";display:block;width:8px;height:8px;border-radius:50%;background:#5c6369;margin:0 auto 5px}.page-nav button.active{background:rgba(7,141,209,.18)!important;color:#fff!important}.page-nav button.active::before{background:var(--blue2);box-shadow:0 0 10px var(--blue2)}
-  .exec-card{border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));padding:11px}.exec-card.is-active{border-color:var(--blue2);box-shadow:0 0 0 2px rgba(10,164,239,.3),var(--shadow)}.exec-card.is-next{box-shadow:0 0 0 1px rgba(255,255,255,.24)}.exec-card.is-done{opacity:.58}.exec-placeholder{border-radius:16px;border-color:rgba(10,164,239,.55);background:rgba(7,141,209,.08)}.state-badge,.tx-badge{border-radius:999px}.tx-badge.tx1{background:#00a8ff}.tx-badge.tx2{background:#ff3045}
+  .exec-card{border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));padding:11px}.exec-card.is-active{border-color:var(--blue2);box-shadow:0 0 0 2px rgba(10,164,239,.3),var(--shadow)}.exec-card.is-next{box-shadow:0 0 0 1px rgba(255,255,255,.24)}.exec-card.is-done{opacity:1}.exec-placeholder{border-radius:16px;border-color:rgba(10,164,239,.55);background:rgba(7,141,209,.08)}.state-badge,.tx-badge{border-radius:999px}.tx-badge.tx1{background:#00a8ff}.tx-badge.tx2{background:#ff3045}
   .step-now.active-tx1{border-color:#00a8ff}.step-now.active-tx2{border-color:#ff3045}.swatch.blue{background:#00a8ff}.swatch.red{background:#ff3045}
   #rose-panel:fullscreen{background:radial-gradient(circle at 100% 0,#44494d 0,transparent 30%),linear-gradient(155deg,#151719,#292c2f);padding:18px}.rose-toolbar button{background:#303438}.gnss-warning{color:#8f969c;letter-spacing:.025em}
   @media(max-width:570px){.app{padding:10px 10px calc(82px + env(safe-area-inset-bottom))}.topbar{margin:0 2px 16px!important}.module-brand span{display:none}.panel{padding:11px;border-radius:17px;margin-bottom:10px}.page-nav{left:0!important;right:0!important;bottom:0!important;transform:none;width:100%;border-left:0!important;border-right:0!important;border-bottom:0!important;border-radius:0!important;padding:7px 8px calc(7px + env(safe-area-inset-bottom))!important}.page-nav button{min-height:46px!important}.coord-box{border-radius:12px}.exec-card{border-radius:14px}}
@@ -1025,7 +1027,7 @@
       if(groupMode){if(a.groupId){const locked=actionButton('Já agrupado',()=>{});locked.disabled=true;actions.append(locked);}else{const picker=actionButton(groupSelection.has(a.id)?'✓':'○',()=>toggleGroupSelection(a));picker.classList.add('group-picker');if(groupSelection.has(a.id))picker.classList.add('selected');actions.append(picker);}}
       else if(a.groupId)actions.append(actionButton('Desagrupar',()=>ungroupById(a.groupId)));
       if(!a.done) actions.append(actionButton(a.id===mission.activeId?'Ativa':'Tornar ativa',()=>setActive(a.id)));
-      if(a.done) actions.append(actionButton('Refazer',()=>restoreActivity(a.id),'primary'));
+      if(a.done) actions.append(actionButton('Refazer',()=>restoreActivity(a.id),'primary done-live-action'));
       if(a.id===mission.activeId) actions.append(actionButton('Concluir',completeActive,'primary'));
       const dirs=document.createElement('div');dirs.className='direction-choice';
       const choices=a.type==='arc'?[['cw','↻','Horário'],['ccw','↺','Anti-horário']]:[['inbound','IN','Inbound'],['outbound','OUT','Outbound']];
@@ -1036,7 +1038,10 @@
         dirs.append(b);
       });
       actions.append(dirs);
-      actions.append(actionButton('Editar',()=>editActivity(a.id)),actionButton('Excluir',()=>deleteActivity(a.id),'danger'));
+      const editButton=actionButton('Editar',()=>editActivity(a.id));
+      const deleteButton=actionButton('Excluir',()=>deleteActivity(a.id),'danger');
+      if(a.done)deleteButton.classList.add('done-live-action');
+      actions.append(editButton,deleteButton);
 
       card.append(main,actions);
       if(!groupMode)installLongPressDrag(card);
