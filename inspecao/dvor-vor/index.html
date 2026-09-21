@@ -260,7 +260,7 @@
   .exec-detail{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.25}
   .exec-actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
   .exec-actions button{font-size:10px;padding:5px 7px;min-height:34px}
-  .group-toolbar{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 10px}.group-toolbar button{min-height:38px;font-size:11px}.group-picker{min-width:34px!important;background:transparent!important}.group-picker.selected{background:var(--amber)!important;color:#17191b!important;border-color:var(--amber)!important}
+  .group-toolbar{position:sticky;top:max(8px,env(safe-area-inset-top));z-index:40;display:flex;gap:7px;flex-wrap:wrap;margin:0 0 10px;padding:7px;border:1px solid rgba(255,255,255,.13);border-radius:13px;background:rgba(31,34,36,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 8px 20px rgba(0,0,0,.24)}.group-toolbar button{min-height:38px;font-size:11px}.group-picker{min-width:34px!important;background:transparent!important}.group-picker.selected{background:var(--amber)!important;color:#17191b!important;border-color:var(--amber)!important}
 
   /* Tablet também usa navegação inferior */
   @media (max-width:1100px){
@@ -1090,8 +1090,8 @@
       const navTop=$('.page-nav')?.getBoundingClientRect().top;
       const topLimit=viewportTop+8,bottomLimit=Number.isFinite(navTop)?Math.min(viewportBottom,navTop-8):viewportBottom-8;
       const edge=112,yPos=dragState.edgeY;let speed=0;
-  if(yPos<topLimit+edge)speed=-Math.ceil(Math.max(0,(topLimit+edge-yPos)/edge)*300);
-  else if(yPos>bottomLimit-edge)speed=Math.ceil(Math.max(0,(yPos-(bottomLimit-edge))/edge)*300);
+  if(yPos<topLimit+edge)speed=-Math.ceil(Math.max(0,(topLimit+edge-yPos)/edge)*240);
+  else if(yPos>bottomLimit-edge)speed=Math.ceil(Math.max(0,(yPos-(bottomLimit-edge))/edge)*240);
       if(speed){window.scrollBy(0,speed);moveDraggedCard(dragState.card,dragState.lastX,dragState.lastY);}
       autoScrollFrame=requestAnimationFrame(tick);
     };
