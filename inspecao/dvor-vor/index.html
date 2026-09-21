@@ -1103,8 +1103,25 @@
   function installLongPressDrag(card){
     let timer=null,armed=false,startX=0,startY=0,lastX=0,lastY=0;
     let suppressClick=false;
+    let mousePointerId=null,mouseTracking=false,mouseCaptureTarget=null;
 
     const clearArm=()=>{if(timer){clearTimeout(timer);timer=null;}};
+
+    function stopMouseTracking(){
+      if(!mouseTracking)return;
+      mouseTracking=false;
+      window.removeEventListener('pointermove',handleMouseMove,true);
+      window.removeEventListener('pointerup',handleMouseEnd,true);
+      window.removeEventListener('pointercancel',handleMouseEnd,true);
+      window.removeEventListener('blur',handleMouseAbort);
+      document.removeEventListener('keydown',handleDesktopKey);
+      const pointerId=mousePointerId,captureTarget=mouseCaptureTarget;
+      mousePointerId=null;mouseCaptureTarget=null;
+      captureTarget?.removeEventListener('lostpointercapture',handleLostPointerCapture);
+      if(pointerId!==null&&captureTarget?.hasPointerCapture?.(pointerId)){
+        try{captureTarget.releasePointerCapture(pointerId);}catch{}
+      }
+    }
 
     const arm=(x,y)=>{
       armed=true;suppressClick=true;lastX=x;lastY=y;
@@ -1115,15 +1132,16 @@
       cards[0].before(placeholder);
       floating.className='drag-block';
       Object.assign(floating.style,{left:`${firstRect.left}px`,top:`${firstRect.top}px`,width:`${firstRect.width}px`});
-      cards.forEach(item=>{item.classList.add('dragging','longpress-ready');floating.append(item);});
       document.body.append(floating);
+      cards.forEach(item=>{item.classList.add('dragging','longpress-ready');floating.append(item);});
       dragState={card,cards,placeholder,floating,offsetX:x-firstRect.left,offsetY:y-firstRect.top,lastX:x,lastY:y,edgeY:y};
       $('#execution-list').classList.add('reordering');
       if(navigator.vibrate)navigator.vibrate(25);
     };
 
-    const finish=()=>{
+    function finish(){
       clearArm();
+      stopMouseTracking();
       if(armed){
         armed=false;
         stopAutoScroll();
@@ -1136,7 +1154,28 @@
         renderAll();
       }
       setTimeout(()=>{suppressClick=false;},250);
-    };
+    }
+
+    function handleMouseAbort(){if(mouseTracking)finish();}
+    function handleMouseMove(e){
+      if(!mouseTracking||e.pointerType!=='mouse'||e.pointerId!==mousePointerId)return;
+      lastX=e.clientX;lastY=e.clientY;
+      if(!armed){
+        if(timer&&Math.hypot(lastX-startX,lastY-startY)>8)clearArm();
+        return;
+      }
+      e.preventDefault();moveDraggedCard(card,lastX,lastY);updateAutoScroll(lastY);
+    }
+    function handleMouseEnd(e){
+      if(mouseTracking&&e.pointerType==='mouse'&&e.pointerId===mousePointerId)finish();
+    }
+    function handleLostPointerCapture(e){
+      if(mouseTracking&&e.pointerId===mousePointerId)finish();
+    }
+    function handleDesktopKey(e){
+      if(e.key!=='Escape'||!mouseTracking)return;
+      e.preventDefault();finish();
+    }
 
     card.addEventListener('touchstart',e=>{
       if(e.touches.length!==1||!neutralPoint(e.target))return;
@@ -1165,19 +1204,17 @@
     card.addEventListener('pointerdown',e=>{
       if(e.pointerType!=='mouse'||e.button!==0||!neutralPoint(e.target))return;
       startX=lastX=e.clientX;startY=lastY=e.clientY;
+      mousePointerId=e.pointerId;mouseTracking=true;
+      mouseCaptureTarget=$('#execution-list')||card;
+      try{mouseCaptureTarget.setPointerCapture(e.pointerId);}catch{}
+      window.addEventListener('pointermove',handleMouseMove,true);
+      window.addEventListener('pointerup',handleMouseEnd,true);
+      window.addEventListener('pointercancel',handleMouseEnd,true);
+      window.addEventListener('blur',handleMouseAbort);
+      document.addEventListener('keydown',handleDesktopKey);
+      mouseCaptureTarget.addEventListener('lostpointercapture',handleLostPointerCapture);
       clearArm();timer=setTimeout(()=>arm(lastX,lastY),650);
     });
-    card.addEventListener('pointermove',e=>{
-      if(e.pointerType!=='mouse')return;
-      lastX=e.clientX;lastY=e.clientY;
-      if(!armed){
-        if(timer&&Math.hypot(lastX-startX,lastY-startY)>8)clearArm();
-        return;
-      }
-      e.preventDefault();moveDraggedCard(card,lastX,lastY);updateAutoScroll(lastY);
-    });
-    card.addEventListener('pointerup',e=>{if(e.pointerType==='mouse')finish();});
-    card.addEventListener('pointercancel',e=>{if(e.pointerType==='mouse')finish();});
 
     card.addEventListener('click',e=>{
       if(suppressClick){e.preventDefault();e.stopImmediatePropagation();}
