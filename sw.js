@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v37-dvor-scroll-240-barra-grupo-20260921';
+const CACHE = 'iv-planner-v38-global-nav-offline-20260922';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -15,6 +15,8 @@ const APP_SHELL = [
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',
+  './global-nav.css',
+  './global-nav.js',
 
   './prevoo/',
   './prevoo/index.html',

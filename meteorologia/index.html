@@ -18,7 +18,7 @@
     header{display:flex;align-items:center;gap:12px;margin-bottom:16px}.back{width:44px;height:44px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.055);color:#fff;font-size:28px;display:grid;place-items:center;text-decoration:none;-webkit-tap-highlight-color:transparent}.heading{min-width:0}.heading h1{font-size:1.4rem;line-height:1.1;margin:0}.heading p{margin:4px 0 0;color:var(--muted);font-size:.82rem}.live{margin-left:auto;display:flex;align-items:center;gap:7px;color:var(--muted);font-size:.75rem;white-space:nowrap}.live i{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(50,199,125,.12)}
     .search{display:flex;gap:9px;margin-bottom:12px}.searchbox{flex:1;display:flex;align-items:center;gap:9px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:0 13px}.searchbox svg{width:19px;color:var(--muted);flex:0 0 auto}.search input{width:100%;height:50px;border:0;outline:0;background:transparent;color:#fff;text-transform:uppercase;font-weight:700;letter-spacing:.05em}.search input::placeholder{text-transform:none;font-weight:500;letter-spacing:0;color:#818990}.search button,.locate{height:50px;border:0;border-radius:15px;background:var(--blue);color:#062335;font-weight:800;padding:0 18px;cursor:pointer}.search button:disabled{opacity:.55}.locate{width:50px;padding:0;background:var(--panel);border:1px solid var(--line);color:var(--blue);font-size:21px}
     .chips{display:flex;gap:8px;overflow:auto;padding:0 0 12px;scrollbar-width:none}.chips::-webkit-scrollbar{display:none}.chip{border:1px solid var(--line);background:var(--panel);color:#dce0e3;border-radius:999px;padding:8px 13px;font-size:.8rem;font-weight:700;white-space:nowrap;cursor:pointer}.chip.active{border-color:var(--blue);background:rgba(10,164,239,.14);color:#63c9fa}
-    .mapwrap{position:relative;height:min(54svh,520px);min-height:360px;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#202629;box-shadow:var(--shadow)}#map{height:100%;width:100%}.leaflet-container{background:#202629;font-family:inherit}.leaflet-control-zoom a{background:#24282b!important;color:#fff!important;border-color:#4d5359!important}.leaflet-control-attribution{background:rgba(24,27,29,.78)!important;color:#aeb5bc!important}.leaflet-control-attribution a{color:#62c9fa!important}
+    .mapwrap{position:relative;height:min(54svh,520px);min-height:360px;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#202629;box-shadow:var(--shadow)}#map{height:100%;width:100%}.map-offline{display:grid;place-items:center;padding:32px;text-align:center;color:var(--muted);font-size:.83rem;line-height:1.5}.map-offline strong{display:block;margin-bottom:6px;color:#dce2e6;font-size:1rem}.leaflet-container{background:#202629;font-family:inherit}.leaflet-control-zoom a{background:#24282b!important;color:#fff!important;border-color:#4d5359!important}.leaflet-control-attribution{background:rgba(24,27,29,.78)!important;color:#aeb5bc!important}.leaflet-control-attribution a{color:#62c9fa!important}
     .legend{position:absolute;z-index:500;left:10px;bottom:22px;display:flex;gap:7px;padding:8px 10px;border:1px solid rgba(255,255,255,.14);border-radius:11px;background:rgba(24,27,29,.86);backdrop-filter:blur(8px);font-size:.67rem;color:#d6dade}.legend span{display:flex;align-items:center;gap:4px}.dot{width:7px;height:7px;border-radius:50%}.vfr{background:var(--green)}.mvfr{background:#42a5f5}.ifr{background:var(--red)}.lifr{background:#d16bdf}
     .layers{position:absolute;z-index:500;right:10px;top:10px;display:grid;gap:7px}.layer{border:1px solid rgba(255,255,255,.15);border-radius:11px;background:rgba(24,27,29,.9);color:#dce0e3;padding:9px 11px;font-size:.72rem;font-weight:800;backdrop-filter:blur(8px);cursor:pointer}.layer:disabled{color:#737b81}.layer.active{color:#66ccfb;border-color:#078dd1;background:rgba(6,48,68,.92)}
     .layer-options{display:none;margin-top:12px;border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden}.layer-options.show{display:block}.option-row{display:none;align-items:center;gap:12px;padding:13px 14px}.option-row.show{display:flex}.option-row+.option-row{border-top:1px solid rgba(255,255,255,.09)}.option-info{min-width:0;margin-right:auto}.option-info strong{display:block;color:#e8edf0;font-size:.84rem}.option-info small{display:block;margin-top:3px;color:var(--muted);font-size:.68rem;line-height:1.3}.option-row select{max-width:190px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:#e8edf0;padding:7px;font-size:16px}.opacity{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:.68rem;white-space:nowrap}.opacity input{width:72px;accent-color:var(--blue)}
@@ -29,6 +29,7 @@
     @media(max-width:560px){.option-row{align-items:flex-start;flex-wrap:wrap}.option-info{width:100%}.option-row select{flex:1;max-width:none}.opacity{margin-left:auto}}
     @media(min-width:760px){.app{padding-left:24px;padding-right:24px}.weather.show{grid-template-columns:310px 1fr}.place{grid-column:1}.reports{grid-column:2;grid-row:1/3}.mapwrap{min-height:470px}}
   </style>
+  <script src="../global-nav.js?v=20260922-1" defer></script>
 </head>
 <body><main class="app">
   <header>
@@ -79,9 +80,11 @@
   };
   const el = id => document.getElementById(id);
   const status = el('status');
-  const map = L.map('map',{zoomControl:true,minZoom:3}).setView([-14.5,-52.5],4);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(map);
-  const markerLayer = L.layerGroup().addTo(map);
+  const mapAvailable=typeof window.L!=='undefined';
+  const map=mapAvailable?L.map('map',{zoomControl:true,minZoom:3}).setView([-14.5,-52.5],4):null;
+  if(mapAvailable)L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(map);
+  else{el('map').classList.add('map-offline');el('map').innerHTML='<div><strong>Mapa indisponível sem conexão.</strong>METAR e TAF salvos continuam acessíveis neste aparelho.</div>'}
+  const markerLayer=mapAvailable?L.layerGroup().addTo(map):null;
   const SATELLITE_URLS = {
     ir:'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/GOES-East_ABI_Band13_Clean_Infrared/default/default/GoogleMapsCompatible_Level6/{z}/{y}/{x}.png',
     airmass:'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/GOES-East_ABI_Air_Mass/default/default/GoogleMapsCompatible_Level6/{z}/{y}/{x}.png'
@@ -93,11 +96,12 @@
   function markerIcon(code,category='vfr'){
     return L.divIcon({className:'',html:`<div class="wx-marker ${category}" style="background:var(--${category==='vfr'?'green':category==='mvfr'?'blue':category==='ifr'?'red':'lifr'})"><b>${code.slice(2)}</b></div>`,iconSize:[35,35],iconAnchor:[9,32]});
   }
-  Object.entries(stations).forEach(([code,s])=>L.marker([s.lat,s.lon],{icon:markerIcon(code)}).addTo(markerLayer).bindTooltip(code,{direction:'top'}).on('click',()=>loadWeather(code)));
+  if(mapAvailable)Object.entries(stations).forEach(([code,s])=>L.marker([s.lat,s.lon],{icon:markerIcon(code)}).addTo(markerLayer).bindTooltip(code,{direction:'top'}).on('click',()=>loadWeather(code)));
 
   function showStatus(message,error=false){status.textContent=message;status.className=`status show${error?' error':''}`}
   function hideStatus(){status.className='status'}
   function updateLayerOptions(){
+    if(!mapAvailable)return;
     const radarOn=radarLayer&&map.hasLayer(radarLayer),satelliteOn=satelliteLayer&&map.hasLayer(satelliteLayer);
     el('radarOptions').classList.toggle('show',Boolean(radarOn));el('satelliteOptions').classList.toggle('show',Boolean(satelliteOn));
     el('layerOptions').classList.toggle('show',Boolean(radarOn||satelliteOn));
@@ -161,7 +165,7 @@
       el('tafRaw').textContent=taf?.rawTAF||'TAF não disponível para esta estação.';
       const obs=metar?.reportTime||metar?.obsTime;el('updated').textContent=obs?`Observação\n${new Date(obs).toLocaleString('pt-BR',{timeZone:'UTC',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})} UTC`:'Consulta atual';
       el('weather').classList.add('show');hideStatus();
-      if(Number.isFinite(lat)&&Number.isFinite(lon)){
+      if(mapAvailable&&Number.isFinite(lat)&&Number.isFinite(lon)){
         if(selectedMarker)selectedMarker.remove();
         selectedMarker=L.marker([lat,lon],{icon:markerIcon(code,cls),zIndexOffset:1000}).addTo(map).bindPopup(`<b>${code}</b><br>${cat}`).openPopup();map.flyTo([lat,lon],7,{duration:.8});
       }
@@ -177,15 +181,16 @@
   }
   el('searchForm').addEventListener('submit',e=>{e.preventDefault();loadWeather(el('icao').value)});
   document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>loadWeather(c.dataset.icao)));
-  el('aerodromesBtn').addEventListener('click',()=>{const button=el('aerodromesBtn');if(map.hasLayer(markerLayer)){map.removeLayer(markerLayer);button.classList.remove('active')}else{markerLayer.addTo(map);button.classList.add('active')}});
+  el('aerodromesBtn').addEventListener('click',()=>{if(!mapAvailable)return;const button=el('aerodromesBtn');if(map.hasLayer(markerLayer)){map.removeLayer(markerLayer);button.classList.remove('active')}else{markerLayer.addTo(map);button.classList.add('active')}});
   el('radarBtn').addEventListener('click',toggleRadar);
   el('satelliteBtn').addEventListener('click',toggleSatellite);
+  if(!mapAvailable)['aerodromesBtn','radarBtn','satelliteBtn','locateBtn'].forEach(id=>el(id).disabled=true);
   el('radarOpacity').addEventListener('input',e=>radarLayer?.setOpacity(Number(e.target.value)));
   el('satelliteOpacity').addEventListener('input',e=>satelliteLayer?.setOpacity(Number(e.target.value)));
   el('satelliteMode').addEventListener('change',()=>{if(!satelliteLayer||!map.hasLayer(satelliteLayer))return;map.removeLayer(satelliteLayer);satelliteLayer=createSatelliteLayer().addTo(map)});
   ['gesturestart','gesturechange','gestureend'].forEach(type=>document.addEventListener(type,event=>{if(!event.target.closest?.('#map'))event.preventDefault()},{passive:false}));
   document.querySelectorAll('.copybtn').forEach(b=>b.addEventListener('click',async()=>{await navigator.clipboard.writeText(el(b.dataset.copy).textContent);const old=b.textContent;b.textContent='Copiado';setTimeout(()=>b.textContent=old,1200)}));
-  el('locateBtn').addEventListener('click',()=>{if(!navigator.geolocation){showStatus('Localização não disponível neste aparelho.',true);return}showStatus('Obtendo sua posição…');navigator.geolocation.getCurrentPosition(p=>{hideStatus();map.flyTo([p.coords.latitude,p.coords.longitude],7);L.circleMarker([p.coords.latitude,p.coords.longitude],{radius:7,color:'#fff',weight:3,fillColor:'#0aa4ef',fillOpacity:1}).addTo(map).bindPopup('Sua posição').openPopup()},()=>showStatus('Não foi possível obter sua posição. Verifique a permissão de localização.',true),{enableHighAccuracy:true,timeout:12000})});
+  el('locateBtn').addEventListener('click',()=>{if(!mapAvailable)return;if(!navigator.geolocation){showStatus('Localização não disponível neste aparelho.',true);return}showStatus('Obtendo sua posição…');navigator.geolocation.getCurrentPosition(p=>{hideStatus();map.flyTo([p.coords.latitude,p.coords.longitude],7);L.circleMarker([p.coords.latitude,p.coords.longitude],{radius:7,color:'#fff',weight:3,fillColor:'#0aa4ef',fillOpacity:1}).addTo(map).bindPopup('Sua posição').openPopup()},()=>showStatus('Não foi possível obter sua posição. Verifique a permissão de localização.',true),{enableHighAccuracy:true,timeout:12000})});
 })();
 </script>
 </body></html>
