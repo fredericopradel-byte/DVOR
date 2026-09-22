@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v39-global-nav-icons-20260922';
+const CACHE = 'iv-planner-v40-papi-floating-nav-20260922';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
