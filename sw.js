@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v40-papi-floating-nav-20260922';
+const CACHE = 'iv-planner-v41-floating-nav-help-20260922';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -17,6 +17,8 @@ const APP_SHELL = [
   './icon-512.png',
   './global-nav.css',
   './global-nav.js',
+  './page-ui.css',
+  './page-ui.js',
 
   './prevoo/',
   './prevoo/index.html',
