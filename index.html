@@ -386,6 +386,12 @@
 <main class="app">
   <div class="topbar">
     <a class="back-to-inspection" href="../" aria-label="Voltar para Inspeção em Voo">‹</a>
+    <script>
+      // O beta também publica esta página diretamente na raiz do projeto.
+      if (!/\/inspecao\/dvor-vor\/(?:index\.html)?$/i.test(location.pathname)) {
+        document.querySelector('.back-to-inspection').href = './inspecao/';
+      }
+    </script>
     <div class="module-brand"><small>IV-PLANNER</small><strong>DVOR / VOR</strong><span>Planejamento e acompanhamento da inspeção</span></div>
   </div>
 
