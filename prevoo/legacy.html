@@ -34,8 +34,25 @@
   <script src="legacy-data.js?v=20260916-runways-fixed-2"></script>
   <script src="legacy-afm-performance.js?v=20260923-qrh9-wet"></script>
   <script>
-  (()=>{
-    'use strict';const D=window.LEGACY_DATA,AFM=window.LEGACY_AFM_PERFORMANCE,ADC=window.ADC_RUNWAY_DATA||{aerodromes:{},overrides:{}},KEY='ivplanner-legacy-v1',DEFAULTS_KEY='ivplanner-legacy-defaults-v1';if(!D?.runwayDatabase?.runways||!AFM?.takeoffAll||!AFM?.flap1Off||!window.WMM2025){document.body.innerHTML='<main class="shell"><div class="notice">A base de pistas ou o modelo magnético WMM2025 não foi carregado. Confirme os arquivos do módulo Legacy e recarregue a página.</div></main>';return}
+  (async()=>{
+    'use strict';
+    // A navegação pode vir de um cache anterior enquanto os dados de pista
+    // ainda não estão presentes. Recarrega somente a dependência ausente;
+    // o service worker também atende à tentativa pelo cache em modo avião.
+    async function recoverScript(path,ready){
+      if(ready())return;
+      await new Promise(resolve=>{
+        const script=document.createElement('script');
+        script.src=path+'?legacy-recover='+Date.now();
+        script.onload=resolve;
+        script.onerror=resolve;
+        document.head.appendChild(script);
+      });
+    }
+    await recoverScript('legacy-data.js',()=>Boolean(window.LEGACY_DATA?.runwayDatabase?.runways));
+    await recoverScript('../wmm2025.js',()=>Boolean(window.WMM2025?.declination));
+    await recoverScript('legacy-afm-performance.js',()=>Boolean(window.LEGACY_AFM_PERFORMANCE?.flap1Off));
+    const D=window.LEGACY_DATA,AFM=window.LEGACY_AFM_PERFORMANCE,ADC=window.ADC_RUNWAY_DATA||{aerodromes:{},overrides:{}},KEY='ivplanner-legacy-v1',DEFAULTS_KEY='ivplanner-legacy-defaults-v1';if(!D?.runwayDatabase?.runways||!window.WMM2025?.declination||!AFM?.flap1Off){const missing=[!D?.runwayDatabase?.runways?'base de pistas':null,!window.WMM2025?.declination?'WMM2025':null,!AFM?.flap1Off?'tabelas de performance':null].filter(Boolean).join(', ');document.body.innerHTML='<main class="shell"><div class="notice">O módulo Legacy não conseguiu carregar: '+missing+'. Conecte-se à internet, atualize o aplicativo e abra novamente. Seus dados salvos permanecem no aparelho.</div></main>';return}
     const CUSTOM_AIRPORTS_KEY='ivplanner-custom-localities-v1';let customAirports=[];try{customAirports=JSON.parse(localStorage.getItem(CUSTOM_AIRPORTS_KEY)||'[]');if(!Array.isArray(customAirports))customAirports=[]}catch{customAirports=[]}const customAerodromes=customAirports.map(a=>[a.icao,a.name,a.lat,a.lon,a.elev,Math.max(0,...(a.runways||[]).map(r=>Number(r.length)||0)),a.uf||'']),adcAerodromes=Object.values(ADC.overrides||{}).map(x=>x.aerodrome).filter(Boolean),baseAerodromes=[...D.aerodromes,...adcAerodromes.filter(a=>!D.aerodromes.some(b=>b[0]===a[0]))],allAerodromes=[...baseAerodromes.filter(a=>!customAirports.some(c=>c.icao===a[0])),...customAerodromes];const byIcao=new Map(allAerodromes.map(a=>[a[0],{icao:a[0],name:a[1],lat:a[2],lon:a[3],elev:a[4],runway:a[5],uf:a[6]}]));const emptyWx=()=>({temp:'',windDir:'',windSpeed:'',runway:'AUTO',flap:'',iceProtection:'OFF',runwaySurface:'DRY',metar:'',taf:''});const emptyLeg=()=>({from:'',to:'',type:'route',inspectionMinutes:0});const fresh=()=>({aircraft:'3604',fuel:0,payload:{fwd:0,aft:0,toilet:0,stowage:0,cargo:0},legs:Array.from({length:5},emptyLeg),legCount:1,alternate:'',weather:{adep:emptyWx(),adest:emptyWx(),altn:emptyWx()},page:'route'});const factoryDefaults=()=>({cruiseKt:D.constants.cruiseKt,firstHourKg:1000,nextHoursKg:750,inspectionKgHour:900,legExtraMinutes:10,roundMinutes:5,reserveKg:D.constants.reserveKg,fixedExtraKg:D.constants.fixedExtraKg,aircraftPbo:{...D.aircraft},levels:[{max:10,fl:100},{max:19,fl:200},{max:29,fl:240},{max:44,fl:300},{max:59,fl:360},{max:9999,fl:400}]});let defaults=factoryDefaults();try{defaults=merge(factoryDefaults(),JSON.parse(localStorage.getItem(DEFAULTS_KEY)||'{}'))}catch{}let state=fresh();try{state=merge(fresh(),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch{}state.legs=Array.from({length:5},(_,i)=>({...emptyLeg(),...(state.legs[i]||{}),type:state.legs[i]?.type==='inspection'?'inspection':'route'}));const usedLegs=state.legs.reduce((last,leg,i)=>leg.from&&(leg.type==='inspection'?Number(leg.inspectionMinutes)>0:leg.to)?i+1:last,0);state.legCount=Math.min(5,Math.max(1,Number(state.legCount)||1,usedLegs));state.payload.stowage=Math.min(150,Math.max(0,Number(state.payload.stowage)||0));state.payload.cargo=Math.min(400,Math.max(0,Number(state.payload.cargo)||0));
     function merge(base,add){if(!add||typeof add!=='object')return base;for(const k of Object.keys(add)){if(add[k]&&typeof add[k]==='object'&&!Array.isArray(add[k])&&base[k])merge(base[k],add[k]);else base[k]=add[k]}return base}const el=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const num=v=>Number.isFinite(Number(v))?Number(v):0,kg=v=>`${Math.round(num(v)).toLocaleString('pt-BR')} kg`,nm=v=>`${num(v).toFixed(0)} NM`,minText=m=>{m=Math.round(num(m));return `${Math.floor(m/60)}h${String(m%60).padStart(2,'0')}`},clamp=(v,a,b)=>Math.min(b,Math.max(a,v));function save(){localStorage.setItem(KEY,JSON.stringify(state));localStorage.setItem(DEFAULTS_KEY,JSON.stringify(defaults))}
     function distance(a,b){const r=Math.PI/180,p1=a.lat*r,p2=b.lat*r,dl=(b.lon-a.lon)*r;return 6371*Math.acos(clamp(Math.sin(p1)*Math.sin(p2)+Math.cos(p1)*Math.cos(p2)*Math.cos(dl),-1,1))/1.852}function burn(minutes){return minutes<=60?minutes/60*defaults.firstHourKg:defaults.firstHourKg+(minutes-60)/60*defaults.nextHoursKg}function flightLevel(minutes){if(!minutes)return'—';const level=defaults.levels.find(x=>minutes<=x.max)||defaults.levels.at(-1);return`FL${String(Math.round(level.fl)).padStart(3,'0')}`}function legCalc(leg){const a=byIcao.get(leg.from);if(leg.type==='inspection'){const minutes=Math.max(0,num(leg.inspectionMinutes));if(!a||!minutes)return null;return{a,b:a,dist:0,minutes,burn:minutes/60*defaults.inspectionKgHour,fl:'—',type:'inspection'}}const b=byIcao.get(leg.to);if(!a||!b)return null;const dist=distance(a,b),baseMinutes=Math.floor(dist/defaults.cruiseKt*60),minutes=Math.ceil((baseMinutes+defaults.legExtraMinutes)/defaults.roundMinutes)*defaults.roundMinutes;return{a,b,dist,minutes,burn:burn(minutes),fl:flightLevel(minutes),type:'route'}}
@@ -51,13 +68,13 @@
       const w=nearestHigher(weights,weight),alt=clamp(Math.round(elev/1000)*1000,0,flap==='1'?5000:4000),same=rows.filter(r=>r[0]===alt);
       if(table!==D.takeoff&&(!same.length||temp<same[0][1]||temp>same.at(-1)[1]))return null;
       const chosen=same.reduce((a,r)=>!a||Math.abs(r[1]-temp)<Math.abs(a[1]-temp)?r:a,null),idx=table[0].indexOf(w);
-      return chosen?{alt,temp:chosen[1],weight:w,distance:chosen[idx],v1:chosen[idx+1],vr:chosen[idx+2],v2:chosen[idx+3]}:null
+      return chosen&&idx>=0&&[chosen[idx],chosen[idx+1],chosen[idx+2],chosen[idx+3]].every(x=>Number.isFinite(x)&&x>0)?{alt,temp:chosen[1],weight:w,distance:chosen[idx],v1:chosen[idx+1],vr:chosen[idx+2],v2:chosen[idx+3]}:null
     }
     function landingPerf(elev,wind,weight,flap='FULL',ice='OFF',surface='DRY'){
       const table=flap==='3'?(ice==='ALL'?AFM.landingFlap3All:AFM.landingFlap3Off):(ice==='ALL'?AFM.landingFullAll:(surface==='WET'?AFM.landingFullOff:D.landing));
       if(table!==D.landing&&(elev<-1000||elev>6000||weight>17400))return null;
       const rows=table.slice(1),weights=[10600,11200,11800,12400,13000,13600,14200,14800,15400,16000,16600,17400],winds=[-10,0,10,20],w=nearestHigher(weights,weight),alt=clamp(Math.round(elev/1000)*1000,-1000,6000),ws=winds.reduce((a,x)=>Math.abs(x-wind)<Math.abs(a-wind)?x:a),row=rows.find(r=>r[0]===alt&&r[1]===w);
-      return row?{alt,weight:w,wind:ws,distance:row[2+winds.indexOf(ws)]*(surface==='WET'?1.25:1),surface}:null
+      const cell=row?.[2+winds.indexOf(ws)];return Number.isFinite(cell)&&cell>0?{alt,weight:w,wind:ws,distance:cell*(surface==='WET'?1.25:1),surface}:null
     }
     function marginClass(v){return v<0?'danger':v<300?'warn':'ok'}
     function norm360(v){return((Number(v)%360)+360)%360}
