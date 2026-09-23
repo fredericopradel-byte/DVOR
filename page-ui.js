@@ -30,6 +30,22 @@ const H={
 };
 const icons={mission:'M12 2 7 4v4a5 5 0 0 0 10 0V4l-5-2Zm-7 9v10h14V11M8 15h8m-8 3h5',plan:'M8 4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-3M8 4c0-1.1.9-2 2-2h4c1.1 0 2 .9 2 2v2H8V4Zm0 8h8m-8 4h6',route:'M3 18h5l4-12 4 12h5M8 14h8',weight:'M12 3v4m-7 2h14M7 9l-4 7h8L7 9Zm10 0-4 7h8l-4-7ZM5 21h14m-7-14v14',performance:'M4 19 12 4l8 15M7 16h10',summary:'M5 4h14v16H5V4Zm3 4h8m-8 4h8m-8 4h5',defaults:'M4 7h16M4 17h16M9 4v6m6 4v6',execute:'M12 3a9 9 0 1 0 9 9 9 9 0 0 0-9-9Zm-4 9 2.7 2.7L16 9.5',execution:'M12 3a9 9 0 1 0 9 9 9 9 0 0 0-9-9Zm-4 9 2.7 2.7L16 9.5',map:'M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Zm0-9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',rose:'M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Zm0-9a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',passes:'M9 5h12M9 12h12M9 19h12M3 5h2m-2 7h2m-2 7h2'};
 function path(){let p=location.pathname.slice(rootPath.length);return '/'+(p.endsWith('/')?p+'index.html':p)}
+function initUpdates(){
+ if(!('serviceWorker' in navigator)||!location.protocol.startsWith('http'))return;
+ const wasControlled=!!navigator.serviceWorker.controller;
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{
+  if(!wasControlled||document.querySelector('.iv-update-notice'))return;
+  const notice=document.createElement('div');notice.className='iv-update-notice';notice.setAttribute('role','status');
+  const label=document.createElement('span');label.textContent='Atualização pronta para usar.';
+  const reload=document.createElement('button');reload.type='button';reload.textContent='Recarregar';reload.addEventListener('click',()=>location.reload());
+  notice.append(label,reload);document.body.append(notice);
+ });
+ let lastCheck=0;
+ function check(){if(Date.now()-lastCheck<60000)return;lastCheck=Date.now();navigator.serviceWorker.getRegistration(rootPath).then(reg=>reg?.update()).catch(()=>{})}
+ window.addEventListener('load',check,{once:true});window.addEventListener('online',check);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)check()});
+}
+initUpdates();
 function init(){
  const entry=H[path()];
  if(!entry)return;

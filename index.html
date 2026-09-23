@@ -39,6 +39,21 @@
 </main><script>['gesturestart','gesturechange','gestureend'].forEach(type=>document.addEventListener(type,event=>event.preventDefault(),{passive:false}));</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || document.querySelector('.iv-update-notice')) return;
+    const notice = document.createElement('div');
+    notice.className = 'iv-update-notice';
+    notice.setAttribute('role', 'status');
+    const label = document.createElement('span');
+    label.textContent = 'Atualização pronta para usar.';
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = 'Recarregar';
+    button.addEventListener('click', () => location.reload());
+    notice.append(label, button);
+    document.body.append(notice);
+  });
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('./sw.js', { scope: './', updateViaCache: 'none' })

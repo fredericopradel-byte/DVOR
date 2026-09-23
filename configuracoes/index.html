@@ -33,9 +33,32 @@
       <div id="backup-preview" class="backup-preview" hidden><h3>Conferir importação</h3><p id="backup-details"></p><div id="backup-conflict" hidden><p>Há dados diferentes com a mesma identificação ou configurações já salvas neste aparelho. Escolha como resolver os conflitos:</p><label><input type="radio" name="backup-conflict" value="local" checked>Manter os dados deste aparelho</label><label><input type="radio" name="backup-conflict" value="import">Usar os dados do backup</label></div><div class="backup-actions"><button id="backup-cancel" type="button">Cancelar</button><button class="primary" id="backup-apply" type="button">Confirmar importação</button></div></div>
       <p class="note">Guarde o arquivo gerado fora do aplicativo. A importação não atualiza as bases aeronáuticas instaladas.</p>
     </section>
+    <section class="backup" aria-labelledby="update-title"><h2 id="update-title">Atualização do aplicativo</h2><p>Verifique a versão instalada e recarregue as páginas sem remover o ícone da tela inicial.</p><button class="primary" id="app-update" type="button">Verificar e recarregar</button><div id="app-update-status" class="backup-status" role="status" aria-live="polite"></div></section>
     <p class="note">A verificação das bases é local e não altera missões, parâmetros ou cadastros.</p>
   </main>
   <script>['gesturestart','gesturechange','gestureend'].forEach(type=>document.addEventListener(type,event=>event.preventDefault(),{passive:false}));</script>
   <script src="backup.js?v=20260923-1" defer></script>
+  <script>
+  document.getElementById('app-update').addEventListener('click', async function () {
+    const button=this,status=document.getElementById('app-update-status');
+    if(!navigator.onLine){status.textContent='Conecte-se à internet para procurar uma atualização.';return}
+    if(!('serviceWorker' in navigator)){status.textContent='Atualização automática indisponível neste navegador.';return}
+    button.disabled=true;status.textContent='Verificando e instalando a versão disponível…';
+    try{
+      const registration=await navigator.serviceWorker.getRegistration('../');
+      if(!registration){status.textContent='Abra a página inicial do aplicativo online e volte a esta tela.';button.disabled=false;return}
+      await registration.update();
+      const worker=registration.installing||registration.waiting;
+      if(worker){
+        if(worker.state==='installed')worker.postMessage('SKIP_WAITING');
+        if(worker.state!=='activated')await new Promise((resolve,reject)=>{
+          const onState=()=>{if(worker.state==='installed')worker.postMessage('SKIP_WAITING');if(worker.state==='activated'){worker.removeEventListener('statechange',onState);resolve()}else if(worker.state==='redundant'){worker.removeEventListener('statechange',onState);reject(new Error('A atualização não pôde ser instalada.'))}};
+          worker.addEventListener('statechange',onState);onState();
+        });
+      }
+      status.textContent='Recarregando o aplicativo…';location.reload();
+    }catch(error){status.textContent='Não foi possível concluir a atualização. Confira a conexão e tente novamente.';button.disabled=false}
+  });
+  </script>
 </body>
 </html>
