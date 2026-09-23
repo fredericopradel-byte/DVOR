@@ -3,10 +3,12 @@ const FORMAT='ivplanner-backup',VERSION=1,MAX_BYTES=20*1024*1024;
 const GROUPS={
  'iv-planner-saved-missions-v1':{type:'list',id:'savedMissionId',label:'missões DVOR/VOR'},
  'ivplanner-papi-missions-v1':{type:'list',id:'savedMissionId',label:'missões PAPI'},
+ 'ivplanner-ils-missions-v1':{type:'list',id:'savedMissionId',label:'missões ILS'},
  'ivplanner-custom-localities-v1':{type:'list',id:'icao',label:'localidades manuais'},
  'ivplanner-custom-aids-v1':{type:'list',id:'id',label:'auxílios manuais'},
  'geiv-dvor-manual-offline-v1':{type:'record',label:'rascunho DVOR/VOR'},
  'ivplanner-papi-current-v1':{type:'record',label:'rascunho PAPI'},
+ 'ivplanner-ils-current-v1':{type:'record',label:'rascunho ILS'},
  'ivplanner-legacy-v1':{type:'record',label:'planejamento Legacy'},
  'ivplanner-legacy-defaults-v1':{type:'record',label:'Defaults Legacy'},
  'ivplanner-hawker-v1':{type:'record',label:'planejamento Hawker'},
@@ -21,6 +23,7 @@ function identity(item,spec){const raw=item[spec.id];return typeof raw==='string
 function validateValue(key,value){const spec=GROUPS[key];if(!spec)throw Error('O arquivo contém uma categoria desconhecida.');if(spec.type==='record'){if(!validRecord(value))throw Error(`Dados inválidos em ${spec.label}.`);
  if(key==='geiv-dvor-manual-offline-v1'&&(!validRecord(value.metadata)||!Array.isArray(value.activities)))throw Error('Rascunho DVOR/VOR inválido.');
  if(key==='ivplanner-papi-current-v1'&&(!validRecord(value.metadata)||!Array.isArray(value.passes)))throw Error('Rascunho PAPI inválido.');
+ if(key==='ivplanner-ils-current-v1'&&(!validRecord(value.metadata)||!Array.isArray(value.activities)))throw Error('Rascunho ILS inválido.');
  if(key==='ivplanner-legacy-v1'&&!Array.isArray(value.legs))throw Error('Planejamento Legacy inválido.');
  if(key==='ivplanner-hawker-v1'&&!Array.isArray(value.legs))throw Error('Planejamento Hawker inválido.');
  return}

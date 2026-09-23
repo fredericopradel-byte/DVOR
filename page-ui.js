@@ -21,6 +21,11 @@ const H={
  plan:['Planejar DVOR/VOR','Adicione as passagens radiais ou arcos e escolha transmissor, sentido e observações conforme seu planejamento.'],
  rose:['Mapa DVOR/VOR','Veja a posição auxiliar em relação ao auxílio. Use os controles de centralização, aproximação e GNSS; o mapa não substitui o resultado de inspeção.'],
  execution:['Execução DVOR/VOR','Ordene as passagens, acompanhe Atual e Próxima, conclua ou refaça registros. Os cartões podem ser agrupados para organização.']},
+ '/inspecao/ils.html':{
+ mission:['Missão ILS','Informe o auxílio, o TX inicial e os alarmes solicitados. Salve, importe ou exporte a missão.'],
+ plan:['Planejar ILS','Confira o pacote P3, P2 e P4 e ajuste as passagens conforme o planejamento da inspeção.'],
+ rose:['Mapa ILS','Veja as trajetórias planejadas e a posição auxiliar do GNSS quando houver coordenadas e declinação.'],
+ execution:['Execução ILS','Ordene os cartões, acompanhe Atual e Próxima, conclua, refaça e agrupe passagens.']},
  '/inspecao/papi.html':{
  plan:['Planejamento PAPI','Identifique a missão, selecione cabeceira, lado e conjunto, confira as coordenadas e os valores planejados antes da execução.'],
  execute:['Execução PAPI','Registre os quatro ângulos encontrados. Confirmar cria uma nova passagem sem substituir as anteriores.'],
