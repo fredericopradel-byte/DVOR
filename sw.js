@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v48-dvor-map-group-labels-20260923';
+const CACHE = 'iv-planner-v49-dvor-map-color-button-20260923';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
