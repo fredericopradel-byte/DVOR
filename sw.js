@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v40-legacy-afm-20260923';
+const CACHE = 'iv-planner-v41-legacy-flap1-wet-20260923';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
