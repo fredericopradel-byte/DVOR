@@ -7,9 +7,12 @@
 .iv-help-panel h2{margin:0 40px 13px 0;color:#fff;font-size:1.15rem}.iv-help-panel p{margin:0 0 11px}.iv-help-panel p:last-child{margin-bottom:0}
 .iv-help-close{position:absolute;right:13px;top:12px;display:grid;place-items:center;width:35px;height:35px;min-height:35px;padding:0;border:1px solid #596067;border-radius:9px;background:#303438;color:#fff;font:700 23px/1 sans-serif;cursor:pointer}
 body.iv-help-open{overflow:hidden}
-/* O fundo ocupa o canvas inteiro, inclusive a área inferior do iOS. */
-html.iv-canvas{background:radial-gradient(circle at 100% 0,#44494d 0,transparent 30%),linear-gradient(155deg,#151719,#292c2f)!important;background-attachment:fixed!important}
-html.iv-canvas body{background:transparent!important}
+/* O fundo cobre o viewport expandido da PWA, inclusive abaixo de 100svh. */
+html{min-height:100%;background:radial-gradient(circle at 100% 0,#44494d 0,transparent 30%),linear-gradient(155deg,#151719,#292c2f)!important;background-attachment:fixed!important}
+body{min-height:100dvh!important}
+/* Desfoque preso à tela: fica abaixo das barras e não recebe eventos de toque. */
+body::after{content:"";position:fixed;z-index:60;pointer-events:none;left:0;right:0;bottom:0;height:calc(76px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,rgba(24,27,29,.66));-webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);-webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 75%);mask-image:linear-gradient(180deg,transparent 0%,#000 75%)}
+body.iv-no-bottom-nav main,body.iv-no-bottom-nav .app,body.iv-no-bottom-nav .shell{padding-bottom:max(92px,env(safe-area-inset-bottom))!important}
 body.iv-has-bottom-nav .ivg-shell{z-index:850}
 body.iv-has-bottom-nav .bottom-nav,body.iv-has-bottom-nav .page-nav,body.iv-has-bottom-nav .tabs{z-index:100!important}
 /* Apenas a altura da barra e uma folga para o último controle rolar acima dela. */

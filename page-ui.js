@@ -35,13 +35,13 @@ function init(){
  if(!entry)return;
  const anchor=document.querySelector('.topbar,header .bar,main > header,.hero');
  const button=document.createElement('button');button.type='button';button.className='iv-help-button'+(anchor?'':' iv-help-floating');button.textContent='?';button.setAttribute('aria-label','Ajuda desta página');button.setAttribute('aria-haspopup','dialog');
- if(anchor)anchor.append(button);else document.body.append(button);
+ if(anchor){const spacer=anchor.querySelector(':scope > .spacer');if(spacer)spacer.replaceWith(button);else anchor.append(button)}else document.body.append(button);
  const overlay=document.createElement('div');overlay.className='iv-help-overlay';overlay.hidden=true;overlay.innerHTML='<div class="iv-help-panel" role="dialog" aria-modal="true" aria-labelledby="iv-help-title"><button type="button" class="iv-help-close" aria-label="Fechar ajuda">×</button><h2 id="iv-help-title"></h2><div class="iv-help-text"></div></div>';document.body.append(overlay);
  const close=()=>{overlay.hidden=true;document.body.classList.remove('iv-help-open');button.focus()};
  button.addEventListener('click',()=>{const active=document.querySelector('.bottom-nav button.active,.page-nav button.active,.tabs .tab.active');const item=Array.isArray(entry)?entry:entry[active?.dataset.page]||Object.values(entry)[0];overlay.querySelector('h2').textContent=item[0];const target=overlay.querySelector('.iv-help-text');target.replaceChildren(...item.slice(1).map(t=>{const p=document.createElement('p');p.textContent=t;return p}));overlay.hidden=false;document.body.classList.add('iv-help-open');overlay.querySelector('.iv-help-close').focus()});
  overlay.querySelector('.iv-help-close').addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!overlay.hidden)close()});
  const nav=document.querySelector('.page-nav,.tabs nav'),papiNav=document.querySelector('.bottom-nav');
- if(!nav&&!papiNav){document.documentElement.classList.add('iv-canvas');return}
+ if(!nav&&!papiNav){document.body.classList.add('iv-no-bottom-nav');return}
  document.body.classList.add('iv-has-bottom-nav');
  if(papiNav){papiNav.classList.add('iv-fixed-nav');return}
  nav.classList.add('iv-bottom-nav','iv-fixed-nav');
