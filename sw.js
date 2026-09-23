@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v54-ils-20260923';
+const CACHE = 'iv-planner-v55-database-prompt-20260923';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -19,6 +19,7 @@ const APP_SHELL = [
   './global-nav.js',
   './page-ui.css',
   './page-ui.js',
+  './database-update-prompt.js',
 
   './prevoo/',
   './prevoo/index.html',

@@ -20,6 +20,7 @@
     footer{margin-top:auto;padding-top:32px;text-align:center;color:#8f969c;font-size:.75rem;letter-spacing:.08em}
     @media(min-width:620px){nav{grid-template-columns:1fr 1fr}.card{min-height:160px;align-items:flex-start;position:relative}.arrow{position:absolute;right:20px;bottom:18px}}
     html{background:#17191b}
+    .db-update-overlay[hidden]{display:none}.db-update-overlay{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:max(20px,env(safe-area-inset-top)) 20px max(20px,env(safe-area-inset-bottom));background:rgba(7,9,11,.53);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}.db-update-dialog{width:min(420px,100%);max-height:100%;overflow:auto;border:1px solid #596168;border-radius:20px;background:#24282b;padding:22px;box-shadow:0 24px 55px rgba(0,0,0,.48)}.db-update-dialog h2{font-size:1.3rem;margin:0 0 10px}.db-update-dialog p{font-size:1rem;line-height:1.45;color:#d2d7db;margin:0 0 14px}.db-update-dialog ul{padding-left:22px;margin:0 0 20px;line-height:1.5}.db-update-dialog li{overflow-wrap:anywhere}.db-update-actions{display:flex;gap:10px;justify-content:flex-end}.db-update-actions button{min-width:100px;min-height:48px;border:1px solid #168fc9;border-radius:12px;background:#078dd1;color:white;font:inherit;font-size:1rem;font-weight:700}.db-update-actions button.secondary{border-color:#596168;background:#363b3f}.db-update-actions button:disabled{opacity:.55}.db-update-progress{height:10px;border-radius:8px;overflow:hidden;background:#15181a;margin:14px 0 9px}.db-update-progress span{display:block;height:100%;background:#0aa4ef;width:0;transition:width .2s}.db-update-dialog .db-update-status{min-height:1.5em;font-size:.9rem;margin-bottom:18px;color:#bfcbd2}
   </style>
   <script src="./global-nav.js?v=20260922-1" defer></script>
   <link rel="stylesheet" href="page-ui.css?v=20260922-1">
@@ -36,7 +37,18 @@
     <a class="card" href="configuracoes/"><span class="icon" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M26.5 8h11l2 7a20 20 0 0 1 4.5 2.6l7-1.8 5.5 9.5-5 5.1a20 20 0 0 1 0 5.2l5 5.1-5.5 9.5-7-1.8a20 20 0 0 1-4.5 2.6l-2 7h-11l-2-7a20 20 0 0 1-4.5-2.6l-7 1.8-5.5-9.5 5-5.1a20 20 0 0 1 0-5.2l-5-5.1 5.5-9.5 7 1.8a20 20 0 0 1 4.5-2.6z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><circle cx="32" cy="33" r="8" fill="none" stroke="currentColor" stroke-width="3"/></svg></span><span class="copy"><strong>Configurações</strong><span>Bases de dados e recursos do aplicativo</span></span><span class="arrow" aria-hidden="true">›</span></a>
   </nav>
   <footer>PLANEJAMENTO E INSPEÇÃO EM VOO</footer>
-</main><script>['gesturestart','gesturechange','gestureend'].forEach(type=>document.addEventListener(type,event=>event.preventDefault(),{passive:false}));</script>
+</main>
+<div class="db-update-overlay" id="db-update-overlay" hidden>
+  <section class="db-update-dialog" id="db-update-dialog" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="db-update-title" aria-describedby="db-update-description">
+    <h2 id="db-update-title">Bases de dados disponíveis</h2>
+    <p id="db-update-description">Há bases que podem ser baixadas ou atualizadas neste dispositivo. Deseja baixar agora?</p>
+    <ul id="db-update-list"></ul>
+    <div id="db-update-download" hidden><p id="db-update-current"></p><div class="db-update-progress" id="db-update-progress" role="progressbar" aria-label="Progresso do pacote" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="db-update-fill"></span></div><p class="db-update-status" id="db-update-status" role="status"></p></div>
+    <div class="db-update-actions"><button type="button" class="secondary" id="db-update-no">Não</button><button type="button" id="db-update-yes">Sim</button></div>
+  </section>
+</div>
+<script src="database-update-prompt.js?v=20260923-1" defer></script>
+<script>['gesturestart','gesturechange','gestureend'].forEach(type=>document.addEventListener(type,event=>event.preventDefault(),{passive:false}));</script>
 <script>
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   const hadController = !!navigator.serviceWorker.controller;
