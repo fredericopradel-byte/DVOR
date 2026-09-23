@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v51-hawker-20260923';
+const CACHE = 'iv-planner-v40-legacy-afm-20260923';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -17,15 +17,13 @@ const APP_SHELL = [
   './icon-512.png',
   './global-nav.css',
   './global-nav.js',
-  './page-ui.css',
-  './page-ui.js',
 
   './prevoo/',
   './prevoo/index.html',
   './prevoo/legacy.html',
   './prevoo/legacy-data.js',
+  './prevoo/legacy-afm-performance.js',
   './prevoo/hawker.html',
-  './prevoo/hawker-data.js',
 
   './inspecao/',
   './inspecao/index.html',
@@ -49,7 +47,6 @@ const APP_SHELL = [
   './meteorologia/index.html',
   './configuracoes/',
   './configuracoes/index.html',
-  './configuracoes/backup.js',
   './configuracoes/bases.html',
   './configuracoes/database-registry.js',
   './configuracoes/package-manager.js',
