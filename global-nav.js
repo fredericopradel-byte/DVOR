@@ -143,7 +143,10 @@
         if(viewButton&&!viewButton.classList.contains('active')&&!viewButton.disabled)viewButton.click();
       }
       requestAnimationFrame(()=>{
-        window.scrollTo({top:Math.min(Number(prior.scrollY)||0,Math.max(0,document.documentElement.scrollHeight-innerHeight)),left:0,behavior:'auto'});
+        // No DVOR, a altura muda muito entre Missão, Planejar, Mapa e Execução.
+        // Restaurar o deslocamento de outra aba pode esconder o topo no iOS.
+        const restoreY=currentHref?.startsWith('inspecao/dvor-vor/')?0:Math.min(Number(prior.scrollY)||0,Math.max(0,document.documentElement.scrollHeight-innerHeight));
+        window.scrollTo({top:restoreY,left:0,behavior:'auto'});
         rememberCurrent();
       });
     };

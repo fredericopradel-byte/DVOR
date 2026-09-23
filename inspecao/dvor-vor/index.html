@@ -368,6 +368,10 @@
   @media(max-width:570px){#page-mission .metadata{grid-template-columns:1fr!important}.flight-step-panel{grid-template-columns:1fr!important;padding:13px!important;gap:10px!important}.step-now,.step-next{grid-column:1!important}.step-controls{grid-column:1!important;grid-row:auto!important;grid-template-columns:43px minmax(78px,104px) 43px 1fr 43px!important;width:100%}.map-corner-controls{top:10px;left:10px;grid-template-columns:repeat(5,40px);gap:5px}.map-corner-controls button{width:40px;height:40px;min-height:40px}.rose-stage{min-height:300px}}
 
 
+  /* Mantém o cabeçalho acessível sob a barra de status e troca de abas imediata. */
+  html{scroll-behavior:auto!important}
+  @media(max-width:570px){.app{padding-top:calc(max(12px, env(safe-area-inset-top)) + 8px)!important}}
+
   /* Ajuste iOS/Safari — campo Data contido no cartão */
   .mission-date-field{min-width:0;overflow:hidden;padding-right:2px}
   .mission-date-field #mission-date{display:block!important;width:calc(100% - 16px)!important;inline-size:calc(100% - 16px)!important;max-width:calc(100% - 16px)!important;max-inline-size:calc(100% - 16px)!important;min-width:0!important;box-sizing:border-box!important}
