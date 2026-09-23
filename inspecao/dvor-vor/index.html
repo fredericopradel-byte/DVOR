@@ -375,6 +375,8 @@
   /* Ajuste iOS/Safari — campo Data contido no cartão */
   .mission-date-field{min-width:0;overflow:hidden;padding-right:2px}
   .mission-date-field #mission-date{display:block!important;width:calc(100% - 16px)!important;inline-size:calc(100% - 16px)!important;max-width:calc(100% - 16px)!important;max-inline-size:calc(100% - 16px)!important;min-width:0!important;box-sizing:border-box!important}
+  .legend .map-color-toggle{min-height:40px;padding:5px 10px;border:1px solid rgba(255,255,255,.25);border-radius:999px;background:rgba(27,31,34,.78);color:var(--muted);font:700 11px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  .legend .map-color-toggle[aria-pressed="true"]{border-color:var(--blue2);color:#d5f3f5;background:rgba(7,141,209,.2)}
 </style>
   <script src="../../global-nav.js?v=20260922-1" defer></script>
   <link rel="stylesheet" href="../../page-ui.css?v=20260922-1">
@@ -545,6 +547,7 @@
       <div class="legend">
         <span><span class="swatch blue"></span>TX1</span>
         <span><span class="swatch red"></span>TX2</span>
+        <button id="map-group-colors" class="map-color-toggle" type="button" aria-pressed="false">Cores dos grupos: desligado</button>
       </div>
     </section>
   </section>
@@ -592,6 +595,7 @@
   let autoScrollFrame=null;
   let completionHistory=[];
   let planDirection='inbound';
+  let mapGroupColors=false;
   let aixmSearchTimer=null;
   let aixmSearchSequence=0;
 
@@ -794,25 +798,30 @@
     else{const offset=duplicateOffset(activity)+shift,start=point(activity.azimuth,activity.start,offset),end=point(activity.azimuth,activity.end,offset);mark=svgEl('line',{x1:start.x,y1:start.y,x2:end.x,y2:end.y,stroke:color,'stroke-width':width,'stroke-linecap':'round',opacity});group.append(svgEl('circle',{cx:start.x,cy:start.y,r:Math.max(2,width*.55),fill:color,opacity}));}
     group.append(mark);
   }
-  function drawLabel(activity){
+  function labelText(activity){return activity.type==='arc'?`${fmt(activity.arcStart)}°–${fmt(activity.arcEnd)}°`:`${fmt(activity.azimuth)}°`;}
+  function drawLabel(activity,placed){
     const group=$('#rose-lines');let bearing,distance;
     if(activity.type==='arc'){let finish=activity.arcEnd;if(finish<activity.arcStart)finish+=360;bearing=((activity.arcStart+finish)/2)%360;distance=activity.radius;}
     else{bearing=activity.azimuth;distance=Math.max(activity.start,activity.end);}
-    const p=point(bearing,Math.min(maxDistance(),distance+maxDistance()*.045),duplicateOffset(activity));
-    const t=svgEl('text',{x:p.x,y:p.y,'text-anchor':'middle',class:'radial-label'});t.textContent=activity.type==='arc'?`${fmt(activity.arcStart)}°–${fmt(activity.arcEnd)}°`:`${fmt(activity.azimuth)}°`;group.append(t);
+    const p=point(bearing,Math.min(maxDistance(),distance+maxDistance()*.045),duplicateOffset(activity)),label=labelText(activity),halfWidth=label.length*3.7;
+    const positions=[[0,0],[0,-17],[0,17],[-18,-17],[18,-17],[-18,17],[18,17],[0,-34],[0,34]];
+    const offset=positions.find(([dx,dy])=>placed.every(box=>Math.abs(p.x+dx-box.x)>halfWidth+box.halfWidth+4||Math.abs(p.y+dy-box.y)>15))||positions[0];
+    const x=p.x+offset[0],y=p.y+offset[1];placed.push({x,y,halfWidth});
+    const t=svgEl('text',{x,y,'text-anchor':'middle',class:'radial-label'});t.textContent=label;group.append(t);
   }
   function renderRose(){
     drawGrid();const lines=$('#rose-lines');lines.replaceChildren();ensureActive();
     const nxt=nextStep();
     mission.activities.forEach(a=>{
-      const color=a.tx==='TX2'?'var(--red)':'var(--blue)';
+      const color=mapGroupColors&&a.groupId?(a.groupColor||groupColorForIndex(a.groupColorIndex??0)):(a.tx==='TX2'?'var(--red)':'var(--blue)');
       const active=a.id===mission.activeId, upcoming=nxt&&a.id===nxt.id;
       const opacity=active?1:(a.done?.25:(upcoming?.88:.50));
       // A passagem ativa permanece em destaque; todas as demais têm a mesma espessura da rosa dos ventos.
       const width=active?7:1;
       drawActivity(a,color,0,opacity,width,false);
-      drawLabel(a);
     });
+    const seen=new Set(),placed=[];
+    [activeStep(),nxt,...mission.activities].filter(Boolean).forEach(a=>{const key=`${a.type}:${labelText(a)}`;if(seen.has(key))return;seen.add(key);drawLabel(a,placed);});
     drawAircraft();
     renderFlightStepPanel();
     $('#scale-info').textContent=`Escala: ${fmt(maxDistance())} NM`;
@@ -1352,6 +1361,7 @@
   document.querySelectorAll('[data-plan-dir]').forEach(b=>b.addEventListener('click',()=>setPlanDirection(b.dataset.planDir)));
   syncPlanDirectionUI();
   $('#gnss-toggle').addEventListener('click',toggleGnss);
+  $('#map-group-colors').addEventListener('click',()=>{mapGroupColors=!mapGroupColors;const button=$('#map-group-colors');button.setAttribute('aria-pressed',String(mapGroupColors));button.textContent=`Cores dos grupos: ${mapGroupColors?'ligado':'desligado'}`;$('#rose-desc').textContent=mapGroupColors?'Passagens agrupadas usam a cor de seus cartões; passagens sem grupo mantêm azul para TX1 e vermelho para TX2.':'Radiais planejadas no TX1 aparecem em azul e no TX2 em vermelho.';renderRose();});
   $('#step-complete').addEventListener('click',completeActive);
   $('#step-prev').addEventListener('click',()=>moveActive(-1));
   $('#step-next').addEventListener('click',()=>moveActive(1));
