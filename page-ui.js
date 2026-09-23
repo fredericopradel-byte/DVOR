@@ -24,7 +24,7 @@ const H={
  '/localidades/index.html':['Localidades e Auxílios','Escolha aeródromos ou auxílios para consultar os dados instalados e os registros cadastrados neste aparelho.'],
  '/localidades/aerodromos.html':['Aeródromos','Busque por ICAO, nome ou UF. Abra um registro para consultar pistas e cabeceiras ou adicione uma localidade manualmente.'],
  '/localidades/auxilios.html':['Auxílios','Busque por nome ou identificação. Consulte a base instalada e adicione ou edite registros manuais.'],
- '/configuracoes/index.html':['Configurações','Abra a base de dados para verificar os arquivos instalados e consultar as opções de atualização.'],
+ '/configuracoes/index.html':['Configurações','Use Backup para exportar seus registros em JSON ou importar um arquivo salvo. Em Base de dados, verifique arquivos instalados e atualizações.'],
  '/configuracoes/bases.html':['Base de dados','Verifique integridade e atualizações quando houver internet. A base instalada continua disponível offline.'],
  '/modulo-em-breve.html':['Módulo em breve','Este módulo ainda não está disponível. Use o botão Voltar para escolher outra ferramenta.']
 };

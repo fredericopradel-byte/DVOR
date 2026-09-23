@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v42-legacy-nav-layer-20260923';
+const CACHE = 'iv-planner-v43-backup-20260923';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -48,6 +48,7 @@ const APP_SHELL = [
   './meteorologia/index.html',
   './configuracoes/',
   './configuracoes/index.html',
+  './configuracoes/backup.js',
   './configuracoes/bases.html',
   './configuracoes/database-registry.js',
   './configuracoes/package-manager.js',
