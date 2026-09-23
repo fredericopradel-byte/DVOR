@@ -9,6 +9,8 @@ const GROUPS={
  'ivplanner-papi-current-v1':{type:'record',label:'rascunho PAPI'},
  'ivplanner-legacy-v1':{type:'record',label:'planejamento Legacy'},
  'ivplanner-legacy-defaults-v1':{type:'record',label:'Defaults Legacy'},
+ 'ivplanner-hawker-v1':{type:'record',label:'planejamento Hawker'},
+ 'ivplanner-hawker-defaults-v1':{type:'record',label:'Defaults Hawker'},
  'iv-weather-last':{type:'record',label:'última meteorologia'},
  'ivplanner-global-nav-v1':{type:'record',label:'memória da navegação'}
 };
@@ -20,6 +22,7 @@ function validateValue(key,value){const spec=GROUPS[key];if(!spec)throw Error('O
  if(key==='geiv-dvor-manual-offline-v1'&&(!validRecord(value.metadata)||!Array.isArray(value.activities)))throw Error('Rascunho DVOR/VOR inválido.');
  if(key==='ivplanner-papi-current-v1'&&(!validRecord(value.metadata)||!Array.isArray(value.passes)))throw Error('Rascunho PAPI inválido.');
  if(key==='ivplanner-legacy-v1'&&!Array.isArray(value.legs))throw Error('Planejamento Legacy inválido.');
+ if(key==='ivplanner-hawker-v1'&&!Array.isArray(value.legs))throw Error('Planejamento Hawker inválido.');
  return}
  if(!Array.isArray(value)||value.some(x=>!validRecord(x)))throw Error(`Lista inválida em ${spec.label}.`);
  const seen=new Set();for(const item of value){if(key.includes('missions')&&(!validRecord(item.metadata)||!Array.isArray(key.startsWith('ivplanner-papi')?item.passes:item.activities)))throw Error(`Missão inválida em ${spec.label}.`);if(key==='ivplanner-custom-localities-v1'&&typeof item.icao!=='string')throw Error('Localidade sem ICAO.');if(key==='ivplanner-custom-aids-v1'&&typeof item.id!=='string')throw Error('Auxílio sem identificação.');const id=identity(item,spec);if(seen.has(id))throw Error(`Identificação duplicada em ${spec.label}.`);seen.add(id)}

@@ -9,6 +9,12 @@ const H={
  performance:['Performance','Confira as pistas, o vento e a cabeceira escolhida. Você pode alternar entre a seleção automática e uma cabeceira manual.'],
  summary:['Resumo','Confira o plano consolidado, os pesos e as margens. Revise os dados informados nas outras abas antes da utilização.'],
  defaults:['Defaults','Ajuste consumos, tempos, reservas, níveis e PBO por matrícula. Restaurar padrões devolve os parâmetros originais.']},
+ '/prevoo/hawker.html':{
+ route:['Rota Hawker','Informe até cinco trechos de rota ou inspeção e, se necessário, uma alternativa. O último aeródromo alimenta a origem da alternativa.'],
+ weight:['Peso/Fuel Hawker','Escolha a matrícula, informe de zero a cinco passageiros, carga e combustível em libras. Confira os limites de peso.'],
+ performance:['Performance Hawker','Informe altitude pressão e temperatura manualmente ou atualize pelo METAR. Selecione flapes de decolagem e condição da pista de pouso. Confira as faixas da tabela e a cabeceira.'],
+ summary:['Resumo Hawker','Confira percurso, combustível, pesos e avisos antes de utilizar o planejamento.'],
+ defaults:['Defaults Hawker','Ajuste os consumos, os tempos, a reserva, os níveis sugeridos e o PBO das matrículas. Restaurar padrões recupera os valores iniciais.']},
  '/inspecao/index.html':['Inspeção em Voo','Selecione o sistema a planejar ou acompanhar. As missões de PAPI e DVOR/VOR podem ser mantidas neste aparelho.'],
  '/inspecao/dvor-vor/index.html':{
  mission:['Missão DVOR/VOR','Identifique a missão, informe o auxílio e sua declinação planejada, salve ou abra uma missão anterior. Também é possível importar e exportar.'],
