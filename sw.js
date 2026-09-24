@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v77-brand-inline-20260924';
+const CACHE = 'iv-planner-v78-prevoo-pdf-20260924';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -24,6 +24,7 @@ const APP_SHELL = [
   './prevoo/',
   './prevoo/index.html',
   './prevoo/legacy.html',
+  './prevoo/flight-report.js',
   './prevoo/legacy-data.js',
   './prevoo/legacy-afm-performance.js',
   './prevoo/hawker.html',
