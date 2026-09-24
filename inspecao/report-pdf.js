@@ -68,25 +68,37 @@
         const val=style.getPropertyValue(prop);if(val)target.style.setProperty(prop,val);
       }
     });
-    original.querySelector('#aircraft-layer,#map-aircraft')?.remove();
-    original.querySelectorAll('#rose-lines path,#rose-lines line,#map-routes path').forEach(route=>{
+    original.querySelector('#aircraft-layer,#map-aircraft,#vertical-aircraft')?.remove();
+    original.querySelectorAll('#rose-lines path,#rose-lines line,#map-routes path,#vertical-routes path').forEach(route=>{
       route.style.opacity='.9';
       route.style.strokeWidth='3';
     });
     original.querySelector('#map-world')?.removeAttribute('transform');
-    original.setAttribute('viewBox','0 0 500 500');original.setAttribute('width','500');original.setAttribute('height','500');
+    original.removeAttribute('hidden');original.removeAttribute('aria-hidden');
+    const profile=svg.id==='vertical-rose';
+    original.setAttribute('viewBox',profile?'0 130 500 270':'0 0 500 500');original.setAttribute('width','500');original.setAttribute('height',profile?'270':'500');
     original.setAttribute('xmlns','http://www.w3.org/2000/svg');
     original.style.background=C.map;
     return new XMLSerializer().serializeToString(original);
   }
-  async function mapPair(maps){
-    await room(665);section('Trajetórias planejadas');const w=(RIGHT-M-18)/2;
+  async function mapPair(maps,heading='Trajetórias planejadas',labels=['TRANSMISSORES • TX','GRUPOS • COR']){
+    await room(665);section(heading);const w=(RIGHT-M-18)/2;
     for(let i=0;i<2;i++){
       const x=M+i*(w+18);box(x,y,w,580,C.map,14);
-      line(i?'GRUPOS • COR':'TRANSMISSORES • TX',x+15,y+32,19,'#fff',700);
+      line(labels[i],x+15,y+32,19,'#fff',700);
       const image=await svgImage(maps[i]);ctx.drawImage(image,x+6,y+42,w-12,w-12);
     }
     y+=598;
+  }
+  async function glideProfiles(maps){
+    await room(1345);section('Perfil vertical • GLIDE');
+    const width=RIGHT-M,imageWidth=width-24,imageHeight=imageWidth*270/500,boxHeight=625;
+    for(let i=0;i<2;i++){
+      box(M,y,width,boxHeight,C.map,14);
+      line(i?'PASSAGENS • COR':'TRANSMISSORES • TX',M+16,y+32,20,'#fff',700);
+      const image=await svgImage(maps[i]);ctx.drawImage(image,M+12,y+41,imageWidth,imageHeight);
+      y+=boxHeight+14;
+    }
   }
   async function flightCards(cards){
     await room(80);section('Passagens na ordem atual');
@@ -168,7 +180,10 @@
       if(!data.passes.length){line('Nenhuma passagem registrada.',M,y+30,26,C.muted);y+=65;}
       for(let i=0;i<data.passes.length;i++)await papiPass(data.passes[i],i);
     }else{
-      await mapPair(data.maps);
+      if(data.kind==='ILS'){
+        await mapPair(data.maps,'Mapa horizontal • LOC',['TRANSMISSORES • TX','PASSAGENS • COR']);
+        if(data.profileMaps){await glideProfiles(data.profileMaps);await endPage();newPage();}
+      }else await mapPair(data.maps);
       await flightCards(data.cards);
     }
     await endPage();save(encodePdf(pages),`${data.kind}-${safeName(data.name)}`);
