@@ -96,33 +96,21 @@ function angularDifference(a,b){return((a-b+540)%360)-180}function windComponent
     function applyFuelStyles(m){const insufficient=m.fuel<m.minFuel,weightCard=el('planned-fuel')?.closest('.card'),summaryFuel=el('page-summary').querySelector('.summary-metrics div:last-child'),defaultsCard=el('page-defaults').querySelector('.card');weightCard?.classList.toggle('fuel-danger',insufficient);weightCard?.classList.toggle('blue',!insufficient);summaryFuel?.classList.toggle('fuel-danger',insufficient);defaultsCard?.classList.remove('blue')}
 
     function flightReportData(){
-      const m=model(),rows=(title,entries)=>({title,rows:entries}),fmt=v=>v===null||v===undefined||v===''?'Não informado':String(v),present=v=>v!==null&&v!==undefined&&v!=='';
-      const route=m.legs.slice(0,state.legCount).map((leg,i)=>[ `Trecho ${i+1}`,leg?`${leg.type==='inspection'?'Inspeção em '+leg.a.icao:leg.a.icao+' → '+leg.b.icao} · ${leg.type==='inspection'?'—':nm(leg.dist)} · ${minText(leg.minutes)} · ${kg(leg.burn)} · ${leg.fl}`:`Incompleto (${state.legs[i].from||'—'} → ${state.legs[i].to||'—'})`]);
-      route.push(['Alternativa',m.alt?`${m.alt.a.icao} → ${m.alt.b.icao} · ${nm(m.alt.dist)} · ${minText(m.alt.minutes)} · ${kg(m.alt.burn)} · ${m.alt.fl}`:fmt(state.alternate)]);
-      const REPORT_RESERVE=defaults.reserveKg,REPORT_EXTRA=['Extra fixo',kg(defaults.fixedExtraKg)],REPORT_PAYLOAD=[['Cabine FWD',`${state.payload.fwd} × 80 kg`],['Cabine AFT',`${state.payload.aft} × 80 kg`],['Toilet',`${state.payload.toilet} × 80 kg`],['Stowage',kg(state.payload.stowage)],['Cargo',kg(state.payload.cargo)]],REPORT_WEIGHT=[],REPORT_AIRCRAFT=`Legacy ${state.aircraft}`;
-      const sections=[rows('Rota e trechos',route),rows('Totais e combustível',[
-        ['Distância / tempo destino',`${nm(m.mainDistance)} · ${minText(m.mainMinutes)}`],['Distância / tempo total',`${nm(m.totalDistance)} · ${minText(m.totalMinutes)}`],
-        ['Consumo rota principal',kg(m.mainBurn)],['Consumo alternativa',kg(m.altBurn)],['Reserva',kg(REPORT_RESERVE)],REPORT_EXTRA,
-        ['Combustível mínimo',kg(m.minFuel)],['Combustível planejado',kg(m.fuel)],['Máximo permitido',kg(m.maxFuel)]
-      ]),rows('Pesos e carga',[
-        ['PBO',kg(m.pbo)],...REPORT_PAYLOAD,['Payload total',kg(m.payload)],['ZFW',`${kg(m.zfw)} / limite ${kg(D.limits.mzfw)}`],
-        ['TOW',`${kg(m.tow)} / limite ${kg(D.limits.mtow)}`],['LW no destino',`${kg(m.lw)} / limite ${kg(D.limits.mlw)}`],...REPORT_WEIGHT
-      ])];
+      const m=model(),fmt=v=>v===null||v===undefined||v===''?'Não informado':String(v),present=v=>v!==null&&v!==undefined&&v!=='';
+      const reportAircraft=`Legacy ${state.aircraft}`, reserve=defaults.reserveKg, extra=defaults.fixedExtraKg, payloadRows=[['Cabine FWD',`${state.payload.fwd} × 80 kg`],['Cabine AFT',`${state.payload.aft} × 80 kg`],['Toilet',`${state.payload.toilet} × 80 kg`],['Stowage',kg(state.payload.stowage)],['Cargo',kg(state.payload.cargo)]];
+      let accumulated=0;
+      const legs=m.legs.slice(0,state.legCount).filter(Boolean).map((leg,index)=>{
+        const fuelStart=Math.max(0,m.fuel-accumulated),weightStart=m.zfw+fuelStart;accumulated+=leg.burn;
+        return{number:index+1,type:leg.type==='inspection'?'Inspeção em voo':'Rota',route:leg.type==='inspection'?`INSPEÇÃO • ${leg.a.icao}`:`${leg.a.icao} → ${leg.b.icao}`,airports:leg.type==='inspection'?leg.a.name:`${leg.a.name} → ${leg.b.name}`,distance:leg.type==='inspection'?'—':nm(leg.dist),time:minText(leg.minutes),level:leg.fl,burn:kg(leg.burn),fuelStart:kg(fuelStart),fuelEnd:kg(Math.max(0,fuelStart-leg.burn)),weightStart:kg(weightStart),weightEnd:kg(weightStart-leg.burn),zfw:kg(m.zfw),note:leg.type==='inspection'?`Tempo de inspeção: ${minText(leg.minutes)}`:''}
+      });
+      const alt=m.alt?{number:'ALT',type:'Alternativa',route:`${m.alt.a.icao} → ${m.alt.b.icao}`,airports:`${m.alt.a.name} → ${m.alt.b.name}`,distance:nm(m.alt.dist),time:minText(m.alt.minutes),level:m.alt.fl,burn:kg(m.alt.burn),fuelStart:kg(Math.max(0,m.fuel-m.mainBurn)),fuelEnd:kg(Math.max(0,m.fuel-m.mainBurn-m.alt.burn)),weightStart:kg(m.zfw+Math.max(0,m.fuel-m.mainBurn)),weightEnd:kg(m.zfw+Math.max(0,m.fuel-m.mainBurn-m.alt.burn)),zfw:kg(m.zfw),note:''}:{number:'ALT',type:'Alternativa não definida',route:'—',airports:'Informe o aeródromo alternativo',distance:'—',time:'—',level:'—',burn:'—',fuelStart:'—',fuelEnd:'—',weightStart:'—',weightEnd:'—',zfw:kg(m.zfw),note:'Não há trecho de alternativa calculado.'};
+      const weather=[];
       for(const [role,label,airport,weight,kind] of [['adep','ADEP',m.adep,m.tow,'takeoff'],['adest','ADEST',m.adest,m.tow-m.mainBurn,'landing'],['altn','ALTN',m.alt?.b,m.tow-m.mainBurn-m.altBurn,'landing']]){
-        if(!airport)continue;
-        const wx=state.weather[role],runway=resolveRunway(airport,wx),component=runway?windComponent(wx.windDir,wx.windSpeed,runway.heading):null;
-        const report=(()=>{const flap=kind==='takeoff'?(wx.flap==='1'?'1':'2'):(wx.flap==='3'?'3':'FULL'),ice=wx.iceProtection==='ALL'?'ALL':'OFF',surface=wx.runwaySurface==='WET'?'WET':'DRY',perf=kind==='takeoff'?takeoffPerf(airport.elev,num(wx.temp),weight,flap,ice):landingPerf(airport.elev,component??0,weight,flap,ice,surface),margin=perf?(runway?.length||airport.runway||0)-perf.distance:null;return{rows:[['Flap / ice protection',`${flap} / ${ice}`],['Pista no pouso',kind==='landing'?(surface==='WET'?'Molhada':'Seca'):'Pista seca'],['Faixa da tabela',perf?`${kg(perf.weight)} · ${perf.alt} ft${kind==='landing'?` · vento ${perf.wind} kt`:` · ${perf.temp} °C`}`:'—']],perf,description:perf?`${Math.round(perf.distance)} m requeridos · margem ${Math.round(margin)} m${kind==='takeoff'?` · V1 ${perf.v1} / VR ${perf.vr} / V2 ${perf.v2} kt`:''}`:''}})();
-        sections.push(rows(`${label} • ${airport.icao} • meteorologia e performance`,[
-          ['Aeródromo',`${airport.name} · elevação ${airport.elev} ft`],['Peso usado',kg(weight)],
-          ['Cabeceira',runway?`${runway.id} · ${runwayHeadingText(runway)} · ${runway.length||airport.runway||0} m (${wx.runway==='AUTO'?'automática':'manual'})`:'Não disponível'],
-          ['Temperatura',present(wx.temp)?`${wx.temp} °C`:'Não informada'],['Vento',present(wx.windDir)&&present(wx.windSpeed)?`${wx.windDir}° / ${wx.windSpeed} kt`:'Não informado'],
-          ['Componente longitudinal',component===null?'Não calculada':`${Math.abs(component).toFixed(1)} kt ${component>=0?'PROA':'CAUDA'}`],
-          ...report.rows,['Performance',report.perf?report.description:'Indisponível para os dados informados'],
-          ['METAR completo',fmt(wx.metar)],['TAF completo',fmt(wx.taf)]
-        ]));
+        if(!airport)continue;const wx=state.weather[role],runway=resolveRunway(airport,wx),component=runway?windComponent(wx.windDir,wx.windSpeed,runway.heading):null;
+        const detail=(()=>{const flap=kind==='takeoff'?(wx.flap==='1'?'1':'2'):(wx.flap==='3'?'3':'FULL'),ice=wx.iceProtection==='ALL'?'ALL':'OFF',surface=wx.runwaySurface==='WET'?'WET':'DRY',perf=kind==='takeoff'?takeoffPerf(airport.elev,num(wx.temp),weight,flap,ice):landingPerf(airport.elev,component??0,weight,flap,ice,surface),margin=perf?(runway?.length||airport.runway||0)-perf.distance:null;return{conditions:`Temperatura ${present(wx.temp)?wx.temp+' °C':'não informada'} · vento ${present(wx.windDir)&&present(wx.windSpeed)?wx.windDir+'° / '+wx.windSpeed+' kt':'não informado'} · flap ${flap} · ice ${ice}${kind==='landing'?' · pista '+(surface==='WET'?'molhada':'seca'):''}`,performance:perf?`${Math.round(perf.distance)} m requeridos · margem ${Math.round(margin)} m${kind==='takeoff'?` · V1 ${perf.v1} / VR ${perf.vr} / V2 ${perf.v2} kt`:''}`:'Indisponível para os dados informados'}})();
+        weather.push({label,icao:airport.icao,airport:`${airport.name} · elevação ${airport.elev} ft`,conditions:detail.conditions,runway:runway?`${runway.id} · ${runwayHeadingText(runway)} · ${runway.length||airport.runway||0} m · ${component===null?'componente não calculada':Math.abs(component).toFixed(1)+' kt '+(component>=0?'PROA':'CAUDA')}`:'Cabeceira não disponível',performance:detail.performance,metar:fmt(wx.metar),taf:fmt(wx.taf)});
       }
-      sections.push(rows('Verificações',warnings(m).map(([,message],i)=>[`Aviso ${i+1}`,message])));
-      return {aircraft:REPORT_AIRCRAFT,sections};
+      return{aircraft:reportAircraft,totals:{route:legs.length?legs.map(l=>l.route).join('  •  '):'Rota não definida',metrics:[['Distância total',nm(m.totalDistance)],['Tempo total',minText(m.totalMinutes)],['Consumo total',kg(m.mainBurn+m.altBurn)],['Fuel mínimo',kg(m.minFuel)],['Fuel planejado',kg(m.fuel)],['Fuel máximo',kg(m.maxFuel)],['ZFW',kg(m.zfw)],['TOW',kg(m.tow)],['LW final',kg(m.lw)]],weights:[['PBO',kg(m.pbo)],['Payload total',kg(m.payload)],['ZFW',`${kg(m.zfw)} / limite ${kg(D.limits.mzfw)}`],['TOW',`${kg(m.tow)} / MTOW ${kg(D.limits.mtow)}`],['LW no destino',`${kg(m.lw)} / MLW ${kg(D.limits.mlw)}`],['Reserva',kg(reserve)],['Extra fixo',extra?kg(extra):'Não aplicável']] },legs,alternate:alt,weather,checks:warnings(m).map(([,message],i)=>[`Verificação ${i+1}`,message])};
     }
 
     function render(){const m=model();renderRoute(m);renderWeight(m);renderPerformance(m);renderSummary(m);renderDefaults();applyFuelStyles(m);bind();showPage(state.page,false);save()}
