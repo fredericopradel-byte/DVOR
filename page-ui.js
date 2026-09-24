@@ -26,6 +26,11 @@ const H={
  plan:['Planejar ILS','Confira o pacote P3, P2 e P4 e ajuste as passagens conforme o planejamento da inspeção.'],
  rose:['Mapa ILS','Veja as trajetórias planejadas e a posição auxiliar do GNSS quando houver coordenadas e declinação.'],
  execution:['Execução ILS','Ordene os cartões, acompanhe Atual e Próxima, conclua, refaça e agrupe passagens.']},
+ '/inspecao/radar.html':{
+ mission:['Missão Radar','Informe o sítio, a antena, a orientação e as distâncias das coberturas verticais previstas no planejamento.'],
+ plan:['Planejar Radar','Gere o pacote de orientação, P1 e P2 ou acrescente passagens conforme a missão.'],
+ execution:['Execução Radar','Ordene por toque longo, acompanhe Atual e Próxima e conclua ou refaça uma passagem.'],
+ map:['Mapa Radar','Veja as passagens em planta ou perfil. A posição GNSS é somente apoio visual.']},
  '/inspecao/papi.html':{
  plan:['Planejamento PAPI','Identifique a missão, selecione cabeceira, lado e conjunto, confira as coordenadas e os valores planejados antes da execução.'],
  execute:['Execução PAPI','Registre os quatro ângulos encontrados. Confirmar cria uma nova passagem sem substituir as anteriores.'],
