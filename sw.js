@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v65-ils-antenas-perfil-gp-20260924';
+const CACHE = 'iv-planner-v66-ils-marca-p3-controles-20260924';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
