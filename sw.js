@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v75-prevoo-icones-originais-20260924';
+const CACHE = 'iv-planner-v76-brand-nav-spacing-20260924';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -15,6 +15,7 @@ const APP_SHELL = [
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',
+  './iv-planner-brand.png',
   './global-nav.css',
   './global-nav.js',
   './page-ui.css',

@@ -34,3 +34,6 @@ body.iv-legacy-nav{padding-bottom:calc(92px + env(safe-area-inset-bottom))!impor
 @media(min-width:700px){.iv-fixed-nav{bottom:14px!important}}
 @media(max-width:360px){.iv-bottom-nav button{font-size:.61rem!important}.iv-bottom-nav button svg{flex-basis:19px;width:19px;height:19px}}
 @media(prefers-reduced-motion:reduce){.iv-bottom-nav.iv-ready .iv-nav-pill,.iv-bottom-nav button,.iv-bottom-nav .iv-nav-label,.iv-bottom-nav button.active .iv-nav-label{transition:none!important}}
+
+/* Barra flutuante de Legacy e Hawker: neutraliza a margem horizontal da aba antiga. */
+body.iv-legacy-nav .iv-bottom-nav .tab svg{margin:0!important}
