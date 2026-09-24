@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v64-ils-s6-localidades-20260924';
+const CACHE = 'iv-planner-v65-ils-antenas-perfil-gp-20260924';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -40,6 +40,10 @@ const APP_SHELL = [
   './inspecao/papi.html',
   './inspecao/legacy-map.png',
   './inspecao/legacy-profile.png',
+  './inspecao/loc-top.png',
+  './inspecao/loc-side.png',
+  './inspecao/glide-top.png',
+  './inspecao/glide-side.png',
   './inspecao/report-pdf.js',
   './inspecao/ils.html',
   './inspecao/radar.html',
