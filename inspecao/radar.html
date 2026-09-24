@@ -20,6 +20,7 @@
 
 </main>
 <nav class="nav page-nav"><button class="active" data-page="mission">Missão</button><button data-page="plan">Planejar</button><button data-page="map">Mapa</button><button data-page="execution">Execução</button></nav>
+<script src="../prevoo/legacy-data.js"></script>
 <script>
 (()=>{'use strict';const $=x=>document.getElementById(x),$$=x=>[...document.querySelectorAll(x)],K='ivplanner-radar-current-v1',F='ivplanner-radar-v1',num=x=>{if(x===null||x===undefined||String(x).trim()==='')return null;const n=Number(String(x).replace(',','.'));return Number.isFinite(n)?n:null},fmt=(x,d=0)=>Number.isFinite(Number(x))?Number(x).toFixed(d).replace('.',','):'—',deg=x=>(Number(x)%360+360)%360;
 const blank=()=>({schema:F,m:{title:'',date:new Date().toISOString().slice(0,10),inspection:'Homologação',radar:'',kind:'Terminal',site:'',alt:'',lat:null,lon:null,radial:'',orialt:'',oridist:'',p1alt:'',d1:'',d5:'',d10:'',d20:'',d30:'',modes:false,xpdr:'',notes:''},a:[],active:null,history:[]});let s=blank(),gps=null,pos=null,vertical=false,v={z:1,x:0,y:0},drag=null;
@@ -50,8 +51,36 @@ $$('.nav button').forEach(b=>b.onclick=()=>show(b.dataset.page));$$('#page-missi
   orientation?.querySelector('.grid')?.classList.add('orientation-grid');
   const guidance=document.createElement('p');
   guidance.className='hint';
-  guidance.textContent='Preencha os dados do planejamento S-6 e da coordenação. Esta tela não consulta uma base de radares automaticamente.';
+  guidance.textContent='Ao informar uma localidade, a coordenada inicial vem do banco de aeródromos instalado. Ajuste-a para a antena do radar antes de planejar.';
   mission.querySelector('.panel h2')?.after(guidance);
+
+  const norm=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().trim();
+  const site=document.getElementById('site'),radar=document.getElementById('radar'),altitude=document.getElementById('alt');
+  const airportRows=()=>{
+    const base=(window.LEGACY_DATA?.aerodromes||[]).map(row=>({icao:row[0],name:row[1],lat:Number(row[2]),lon:Number(row[3])}));
+    let manual=[];try{manual=JSON.parse(localStorage.getItem('ivplanner-custom-localities-v1')||'[]')}catch{}
+    if(!Array.isArray(manual))manual=[];
+    const byIcao=new Map(base.map(item=>[norm(item.icao),item]));
+    manual.forEach(item=>{if(item&&Number.isFinite(Number(item.lat))&&Number.isFinite(Number(item.lon)))byIcao.set(norm(item.icao),{icao:item.icao,name:item.name,lat:Number(item.lat),lon:Number(item.lon)})});
+    return [...byIcao.values()];
+  };
+  const airportOptions=document.createElement('datalist');
+  airportOptions.id='radar-airport-options';
+  airportRows().forEach(item=>{const option=document.createElement('option');option.value=item.icao;option.label=item.name;airportOptions.append(option)});
+  document.body.append(airportOptions);site.setAttribute('list',airportOptions.id);
+  const coordFields={lat:['lad','lam','lah',2,'S','N'],lon:['lod','lom','loh',3,'W','E']};
+  const setCoord=(axis,value)=>{const [degId,minId,hemId,width,negative,positive]=coordFields[axis],absolute=Math.abs(value),degree=Math.floor(absolute),minutes=(absolute-degree)*60;document.getElementById(degId).value=String(degree).padStart(width,'0');document.getElementById(minId).value=minutes.toFixed(2).padStart(5,'0');document.getElementById(hemId).value=value<0?negative:positive;[degId,minId,hemId].forEach(id=>document.getElementById(id).dispatchEvent(new Event('change',{bubbles:true})))};
+  const lookupAirport=()=>{const query=norm(site.value);if(!query)return null;const matches=airportRows().filter(item=>norm(item.icao)===query||norm(item.name)===query);return matches.length===1?matches[0]:null};
+  const pullAirport=()=>{const airport=lookupAirport();if(!airport)return;setCoord('lat',airport.lat);setCoord('lon',airport.lon);site.title=`Coordenada inicial: ${airport.icao} · ${airport.name}`;};
+  site.addEventListener('change',pullAirport);site.addEventListener('blur',pullAirport);
+
+  const aidSave=document.createElement('button');
+  aidSave.type='button';aidSave.className='primary';aidSave.id='save-radar-aid';aidSave.textContent='Salvar auxílio Radar';
+  const aidStatus=document.createElement('p');aidStatus.className='hint';aidStatus.textContent='Após ajustar a coordenada da antena, salve o Radar para reutilizá-lo em Auxílios.';
+  const antennaGroup=[...mission.querySelectorAll('.group')].find(group=>group.querySelector('h3')?.textContent.includes('Coordenadas'));
+  antennaGroup?.append(aidSave,aidStatus);
+  const readCoord=axis=>{const [degId,minId,hemId]=coordFields[axis],degree=Number(document.getElementById(degId).value),minutes=Number(String(document.getElementById(minId).value).replace(',','.'));if(!Number.isFinite(degree)||!Number.isFinite(minutes)||minutes<0||minutes>=60)return null;const value=degree+minutes/60;return document.getElementById(hemId).value==='S'||document.getElementById(hemId).value==='W'?-value:value};
+  aidSave.addEventListener('click',()=>{const name=radar.value.trim(),lat=readCoord('lat'),lon=readCoord('lon');if(!name){alert('Informe a identificação do radar antes de salvar o auxílio.');return}if(lat===null||lon===null){alert('Informe as coordenadas da antena antes de salvar o auxílio.');return}let aids=[];try{aids=JSON.parse(localStorage.getItem('ivplanner-custom-aids-v1')||'[]')}catch{}if(!Array.isArray(aids))aids=[];const same=item=>item&&item.type==='RADAR'&&norm(item.name||item.designator)===norm(name);const previous=aids.find(same);const siteIcao=/^[A-Z0-9]{4}$/.test(site.value.trim().toUpperCase())?site.value.trim().toUpperCase():'';const item={id:previous?.id||`manual-aid-radar-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,type:'RADAR',designator:'',name,frequencyValue:'',frequencyUom:'MHZ',channel:'',airportIcao:siteIcao,runway:'',elevationValue:altitude.value.trim().replace(',','.'),elevationUom:'FT',lat,lon,notes:'Cadastro salvo pela Inspeção Radar.',updatedAt:new Date().toISOString()};aids=aids.filter(entry=>entry.id!==item.id);aids.push(item);localStorage.setItem('ivplanner-custom-aids-v1',JSON.stringify(aids));aidStatus.textContent=`${name} salvo em Auxílios.`;});
 
   const stage=document.querySelector('.stage');
   const empty=document.createElement('div');

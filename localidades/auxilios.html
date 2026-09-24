@@ -22,18 +22,39 @@ html{background:var(--bg)}
 </main>
 <div class="modal" id="modal"><div class="sheet"><div class="sheet-head"><div><h2 id="form-title">Novo auxílio</h2><p>O cadastro manual permanece neste aparelho e não é removido por atualizações da base AIXM.</p></div><button class="close" id="close" type="button">×</button></div>
 <form id="form"><div class="grid">
-<div class="field"><label>Tipo</label><select id="f-type"><option>VOR</option><option>VOR_DME</option><option>DME</option><option>NDB</option><option>ILS</option><option>ILS_DME</option><option>LOC_DME</option><option>PAPI</option><option>APAPI</option><option>HAPI</option><option>VASIS</option><option>OUTRO</option></select></div>
+<div class="field"><label>Tipo</label><select id="f-type"><option>VOR</option>
+<option>VOR_DME</option>
+<option>DME</option>
+<option>NDB</option>
+<option>ILS</option>
+<option>ILS_DME</option>
+<option>LOC_DME</option>
+<option>PAPI</option>
+<option>APAPI</option>
+<option>HAPI</option>
+<option>VASIS</option>
+<option>RADAR</option>
+<option>OUTRO</option>
+</select></div>
 <div class="field"><label>Identificador</label><input id="f-ident" maxlength="12" autocapitalize="characters" placeholder="ABC"></div>
 <div class="field wide"><label>Nome</label><input id="f-name" required placeholder="Nome do auxílio"></div>
 <div class="field"><label>Frequência</label><input id="f-frequency" inputmode="decimal" placeholder="113.50"></div>
-<div class="field"><label>Unidade</label><select id="f-frequency-uom"><option value="MHZ">MHz</option><option value="KHZ">kHz</option></select></div>
+<div class="field"><label>Unidade</label><select id="f-frequency-uom"><option value="MHZ">MHz</option>
+<option value="KHZ">kHz</option>
+</select></div>
 <div class="field"><label>Canal DME</label><input id="f-channel" maxlength="8" autocapitalize="characters" placeholder="60X"></div>
 <div class="field"><label>Aeródromo associado</label><input id="f-airport" maxlength="4" autocapitalize="characters" placeholder="SBXX"></div>
 <div class="field"><label>Cabeceira</label><input id="f-runway" maxlength="3" autocapitalize="characters" placeholder="10R"></div>
 <div class="field"><label>Elevação</label><input id="f-elevation" inputmode="decimal" placeholder="0"></div>
-<div class="field"><label>Unidade da elevação</label><select id="f-elevation-uom"><option value="FT">ft</option><option value="M">m</option></select></div>
-<div class="field wide"><label>Latitude · GG MM.MM</label><div class="coord-fields"><input id="f-lat-deg" inputmode="numeric" maxlength="2" required placeholder="22" aria-label="Graus da latitude"><input id="f-lat-min" inputmode="decimal" maxlength="5" required placeholder="54.60" aria-label="Minutos da latitude"><select id="f-lat-hemi" aria-label="Hemisfério da latitude"><option>S</option><option>N</option></select></div></div>
-<div class="field wide"><label>Longitude · GGG MM.MM</label><div class="coord-fields"><input id="f-lon-deg" inputmode="numeric" maxlength="3" required placeholder="043" aria-label="Graus da longitude"><input id="f-lon-min" inputmode="decimal" maxlength="5" required placeholder="09.75" aria-label="Minutos da longitude"><select id="f-lon-hemi" aria-label="Hemisfério da longitude"><option>W</option><option>E</option></select></div></div>
+<div class="field"><label>Unidade da elevação</label><select id="f-elevation-uom"><option value="FT">ft</option>
+<option value="M">m</option>
+</select></div>
+<div class="field wide"><label>Latitude · GG MM.MM</label><div class="coord-fields"><input id="f-lat-deg" inputmode="numeric" maxlength="2" required placeholder="22" aria-label="Graus da latitude"><input id="f-lat-min" inputmode="decimal" maxlength="5" required placeholder="54.60" aria-label="Minutos da latitude"><select id="f-lat-hemi" aria-label="Hemisfério da latitude"><option>S</option>
+<option>N</option>
+</select></div></div>
+<div class="field wide"><label>Longitude · GGG MM.MM</label><div class="coord-fields"><input id="f-lon-deg" inputmode="numeric" maxlength="3" required placeholder="043" aria-label="Graus da longitude"><input id="f-lon-min" inputmode="decimal" maxlength="5" required placeholder="09.75" aria-label="Minutos da longitude"><select id="f-lon-hemi" aria-label="Hemisfério da longitude"><option>W</option>
+<option>E</option>
+</select></div></div>
 <div class="field wide"><label>Observações</label><textarea id="f-notes" placeholder="Informações complementares"></textarea></div>
 </div><div class="form-actions"><button type="button" class="button secondary" id="cancel">Cancelar</button><button type="submit" class="button">Salvar auxílio</button></div><div class="notice">Confirme os dados em publicação aeronáutica vigente. Cadastros manuais são identificados separadamente dos registros AIXM.</div></form>
 </div></div>
