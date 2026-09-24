@@ -239,7 +239,7 @@
   .exec-card.is-done::after{content:"";position:absolute;inset:0;border-radius:inherit;background:rgba(9,11,13,.42);pointer-events:none;z-index:1}
   .exec-card.is-done .done-live-action{position:relative;z-index:2;opacity:1;filter:none}
   .exec-card.is-grouped{border-left:4px solid var(--group-color,var(--amber))}
-  .exec-card.is-grouped .group-badge{border-color:var(--group-color,var(--amber));color:var(--group-color,var(--amber))}
+  .exec-card.is-grouped .group-badge{border-color:var(--group-color,var(--amber));color:var(--group-color,var(--amber));max-width:min(260px,55vw);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .exec-card.group-selected{box-shadow:0 0 0 2px var(--amber);border-color:var(--amber)}
   .exec-card.dragging{opacity:.94;z-index:1000;transition:box-shadow .14s,opacity .14s;will-change:left,top;cursor:grabbing}
   .exec-card.longpress-ready{box-shadow:0 14px 34px rgba(0,0,0,.46),0 0 0 2px color-mix(in srgb,var(--text) 65%,transparent)}
@@ -671,10 +671,11 @@
     for(let i=0;i<cards.length;i++){
       const card=cards[i],accent=card.tx==='TX2'?C.red:C.blue;
       font(22);const words=human(card.description).split(/\s+/);const details=human(card.detail);
-      const estimated=125+Math.ceil(words.join(' ').length/60)*30+Math.ceil(details.length/80)*29;
+      const estimated=125+Math.ceil(words.join(' ').length/60)*30+Math.ceil(details.length/80)*29+(card.group?27:0);
       await room(Math.min(400,estimated));
       const top=y;box(M,y,RIGHT-M,Math.min(400,estimated)-8,card.done?'#e7ebec':C.pale,14,C.line);
       ctx.fillStyle=accent;ctx.fillRect(M,top,9,Math.min(400,estimated)-8);
+      if(card.group){ctx.fillStyle=card.groupColor||C.amber;ctx.fillRect(RIGHT-9,top,9,Math.min(400,estimated)-8);}
       line(`${String(i+1).padStart(2,'0')}   ${card.tx}   ${card.type||''}`,M+23,y+34,23,accent,750);
       line(card.done?'CONCLUÍDA':card.current?'ATUAL':'A FAZER',RIGHT-195,y+34,19,card.done?C.green:C.muted,750);
       y=wrap(card.description,M+23,y+70,RIGHT-M-48,25,card.done?'#4d585c':C.ink,700,33)+6;
@@ -1014,7 +1015,7 @@
       mapGroupColors=true;renderRose();const groups=IVReport.captureMap($('#rose'));
       mapGroupColors=previous;renderRose();
       const m=mission.metadata;
-      await IVReport.exportReport({kind:'DVOR-VOR',name:m.missionTitle||m.name||'Missão',meta:[['Missão',m.missionTitle||''],['Auxílio',m.name||''],['Número',m.number||''],['Data',m.date||''],['Coordenada do auxílio',m.stationLat!==''&&m.stationLon!==''?`${m.stationLat}, ${m.stationLon}`:''],['Declinação informada',m.magVar?`${m.magVar}° ${m.magVarDir||''}`:''],['Passagens',`${mission.activities.filter(a=>a.done).length} concluídas / ${mission.activities.length} planejadas`]],maps:[tx,groups],cards:mission.activities.map(a=>({tx:a.tx,type:a.type==='arc'?'ARCO':'RADIAL',description:a.description||'',detail:segmentText(a)+(a.notes?` · ${a.notes}`:''),done:a.done,current:a.id===mission.activeId,group:a.groupId?'Cartões agrupados':'',groupColor:a.groupColor||groupColorForIndex(a.groupColorIndex||0)}))});
+      await IVReport.exportReport({kind:'DVOR-VOR',name:m.missionTitle||m.name||'Missão',meta:[['Missão',m.missionTitle||''],['Auxílio',m.name||''],['Número',m.number||''],['Data',m.date||''],['Coordenada do auxílio',m.stationLat!==''&&m.stationLon!==''?`${m.stationLat}, ${m.stationLon}`:''],['Declinação informada',m.magVar?`${m.magVar}° ${m.magVarDir||''}`:''],['Passagens',`${mission.activities.filter(a=>a.done).length} concluídas / ${mission.activities.length} planejadas`]],maps:[tx,groups],cards:mission.activities.map(a=>({tx:a.tx,type:a.type==='arc'?'ARCO':'RADIAL',description:a.description||'',detail:segmentText(a)+(a.notes?` · ${a.notes}`:''),done:a.done,current:a.id===mission.activeId,group:a.groupId?(a.groupName||'Sem nome'):'',groupColor:a.groupColor||groupColorForIndex(a.groupColorIndex||0)}))});
     }catch(error){alert(`Não foi possível gerar o PDF: ${error.message}`)}finally{mapGroupColors=previous;renderRose();button.disabled=false;}
   }
   function toRad(v){return v*Math.PI/180;}
@@ -1171,11 +1172,12 @@
     const groups=new Map();mission.activities.forEach(a=>{if(a.groupId){if(!groups.has(a.groupId))groups.set(a.groupId,[]);groups.get(a.groupId).push(a)}});
     const used=new Set(mission.activities.map(a=>Number(a.groupColorIndex)).filter(Number.isInteger));let next=0;
     groups.forEach(items=>{
-      if(items.length<2){items.forEach(a=>{delete a.groupId;delete a.groupColor;delete a.groupColorIndex});return;}
+      if(items.length<2){items.forEach(a=>{delete a.groupId;delete a.groupColor;delete a.groupColorIndex;delete a.groupName});return;}
       let index=items.map(a=>Number(a.groupColorIndex)).find(Number.isInteger);
       if(!Number.isInteger(index)){while(used.has(next))next++;index=next;used.add(index);}
       const color=items.find(a=>a.groupColor)?.groupColor||groupColorForIndex(index);
-      items.forEach(a=>{a.groupColorIndex=index;a.groupColor=color;});
+      const name=items.find(a=>typeof a.groupName==='string'&&a.groupName.trim())?.groupName.trim().slice(0,40)||'';
+      items.forEach(a=>{a.groupColorIndex=index;a.groupColor=color;if(name)a.groupName=name;});
     });
   }
   function groupColorForIndex(index){if(Number(index)===0)return'#ffb020';const hue=(40+Number(index)*137.508)%360;return`hsl(${hue.toFixed(1)} 88% 62%)`;}
@@ -1189,16 +1191,23 @@
   function setGroupMode(enabled){groupMode=enabled;groupSelection.clear();renderTable();}
   function confirmGroup(){
     const chosen=selectedActivities();if(chosen.length<2){alert('Selecione pelo menos dois cartões para agrupar.');return;}
+    const proposed=prompt('Nome do novo grupo (até 40 caracteres):','Grupo');if(proposed===null)return;
+    const groupName=proposed.trim().slice(0,40)||'Grupo';
     const ids=new Set(chosen.map(a=>a.id)),first=mission.activities.findIndex(a=>ids.has(a.id));
     const before=mission.activities.slice(0,first).filter(a=>!ids.has(a.id)).length;
     const remaining=mission.activities.filter(a=>!ids.has(a.id));
     const groupId=`group-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,groupColorIndex=nextGroupColorIndex(),groupColor=groupColorForIndex(groupColorIndex);
-    chosen.forEach(a=>{a.groupId=groupId;a.groupColorIndex=groupColorIndex;a.groupColor=groupColor;});remaining.splice(before,0,...chosen);mission.activities=remaining;
+    chosen.forEach(a=>{a.groupId=groupId;a.groupColorIndex=groupColorIndex;a.groupColor=groupColor;a.groupName=groupName;});remaining.splice(before,0,...chosen);mission.activities=remaining;
     setGroupMode(false);save();renderAll();
   }
   function ungroupById(groupId){
-    mission.activities.filter(a=>a.groupId===groupId).forEach(a=>{delete a.groupId;delete a.groupColor;delete a.groupColorIndex;});
+    mission.activities.filter(a=>a.groupId===groupId).forEach(a=>{delete a.groupId;delete a.groupColor;delete a.groupColorIndex;delete a.groupName;});
     save();renderAll();
+  }
+  function renameGroup(groupId){
+    const items=mission.activities.filter(a=>a.groupId===groupId);if(!items.length)return;
+    const proposed=prompt('Nome do grupo (até 40 caracteres):',items[0].groupName||'Grupo');if(proposed===null)return;
+    const name=proposed.trim().slice(0,40)||'Grupo';items.forEach(a=>{a.groupName=name});save();renderAll();
   }
   function updateGroupToolbar(){
     const mode=$('#group-mode'),confirmButton=$('#group-confirm'),cancel=$('#group-cancel');if(!mode)return;
@@ -1227,14 +1236,14 @@
       if(a.id===mission.activeId){const s=document.createElement('span');s.className='state-badge';s.textContent='ATIVA';head.append(s);}
       else if(nxt&&a.id===nxt.id){const s=document.createElement('span');s.className='state-badge';s.textContent='PRÓXIMA';head.append(s);}
       else if(a.done){const s=document.createElement('span');s.className='state-badge';s.textContent='✓ CONCLUÍDA';head.append(s);}
-      if(a.groupId){const s=document.createElement('span');s.className='state-badge group-badge';s.textContent='GRUPO';head.append(s);}
+      if(a.groupId){const s=document.createElement('span');s.className='state-badge group-badge';s.textContent=a.groupName||'GRUPO';s.title=a.groupName||'Grupo';head.append(s);}
       const title=document.createElement('div');title.className='exec-title';title.textContent=a.description;
       const detail=document.createElement('div');detail.className='exec-detail';detail.textContent=segmentText(a)+(a.notes?` · ${a.notes}`:'');
       main.append(head,title,detail);
 
       const actions=document.createElement('div');actions.className='exec-actions';
       if(groupMode){if(a.groupId){const locked=actionButton('Já agrupado',()=>{});locked.disabled=true;actions.append(locked);}else{const picker=actionButton(groupSelection.has(a.id)?'✓':'○',()=>toggleGroupSelection(a));picker.classList.add('group-picker');if(groupSelection.has(a.id))picker.classList.add('selected');actions.append(picker);}}
-      else if(a.groupId)actions.append(actionButton('Desagrupar',()=>ungroupById(a.groupId)));
+      else if(a.groupId){if(mission.activities.find(x=>x.groupId===a.groupId)===a)actions.append(actionButton('Nomear',()=>renameGroup(a.groupId)));actions.append(actionButton('Desagrupar',()=>ungroupById(a.groupId)));}
       if(!a.done) actions.append(actionButton(a.id===mission.activeId?'Ativa':'Tornar ativa',()=>setActive(a.id)));
       if(a.done) actions.append(actionButton('Refazer',()=>restoreActivity(a.id),'primary done-live-action'));
       if(a.id===mission.activeId) actions.append(actionButton('Concluir',completeActive,'primary'));
