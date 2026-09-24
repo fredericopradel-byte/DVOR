@@ -90,15 +90,13 @@
     }
     y+=598;
   }
-  async function glideProfiles(maps){
-    await room(1345);section('Perfil vertical • GLIDE');
+  async function glideProfile(map){
+    await room(690);section('Perfil vertical • GLIDE');
     const width=RIGHT-M,imageWidth=width-24,imageHeight=imageWidth*270/500,boxHeight=625;
-    for(let i=0;i<2;i++){
-      box(M,y,width,boxHeight,C.map,14);
-      line(i?'PASSAGENS • COR':'TRANSMISSORES • TX',M+16,y+32,20,'#fff',700);
-      const image=await svgImage(maps[i]);ctx.drawImage(image,M+12,y+41,imageWidth,imageHeight);
-      y+=boxHeight+14;
-    }
+    box(M,y,width,boxHeight,C.map,14);
+    line('PASSAGENS • COR',M+16,y+32,20,'#fff',700);
+    const image=await svgImage(map);ctx.drawImage(image,M+12,y+41,imageWidth,imageHeight);
+    y+=boxHeight;
   }
   async function flightCards(cards){
     await room(80);section('Passagens na ordem atual');
@@ -181,8 +179,9 @@
       for(let i=0;i<data.passes.length;i++)await papiPass(data.passes[i],i);
     }else{
       if(data.kind==='ILS'){
+        await room(1360);
         await mapPair(data.maps,'Mapa horizontal • LOC',['TRANSMISSORES • TX','PASSAGENS • COR']);
-        if(data.profileMaps){await glideProfiles(data.profileMaps);await endPage();newPage();}
+        if(data.profileMap){await glideProfile(data.profileMap);await endPage();newPage();}
       }else await mapPair(data.maps);
       await flightCards(data.cards);
     }

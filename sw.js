@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v69-ils-pdf-perfil-20260924';
+const CACHE = 'iv-planner-v70-ils-gp-p2-pdf-20260924';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
