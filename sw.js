@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v85-weather-latest-20260924';
+const CACHE = 'iv-planner-v86-papi-pdf-toolbar-20260924';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
