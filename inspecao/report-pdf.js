@@ -98,17 +98,22 @@
     const image=await svgImage(map);ctx.drawImage(image,M+12,y+41,imageWidth,imageHeight);
     y+=boxHeight;
   }
-  async function flightCards(cards){
+  async function flightCards(cards,kind){
     await room(80);section('Passagens na ordem atual');
     if(!cards.length){line('Nenhuma passagem planejada.',M,y+30,26,C.muted);y+=55;return;}
     for(let i=0;i<cards.length;i++){
       const card=cards[i],accent=card.tx==='TX2'?C.red:C.blue;
+      const passageColor=kind==='ILS'?card.type==='P2'?(card.alarm?'#ffd18a':'#ffad32'):card.type==='P3'?(card.alarm?'#a5efff':'#38cbea'):card.type==='P4'?(card.alarm?'#a7f2ba':'#47ce82'):null:null;
+      const passageTextColor=card.type==='P2'?'#9b620b':card.type==='P3'?'#127f98':'#287a44';
       font(22);const words=human(card.description).split(/\s+/);const details=human(card.detail);
       const estimated=125+Math.ceil(words.join(' ').length/60)*30+Math.ceil(details.length/80)*29;
       await room(Math.min(400,estimated));
       const top=y;box(M,y,RIGHT-M,Math.min(400,estimated)-8,card.done?'#e7ebec':C.pale,14,C.line);
       ctx.fillStyle=accent;ctx.fillRect(M,top,9,Math.min(400,estimated)-8);
-      line(`${String(i+1).padStart(2,'0')}   ${card.tx}   ${card.type||''}`,M+23,y+34,23,accent,750);
+      if(passageColor){ctx.fillStyle=passageColor;ctx.fillRect(RIGHT-9,top,9,Math.min(400,estimated)-8)}
+      const heading=`${String(i+1).padStart(2,'0')}   ${card.tx}`;
+      line(passageColor?heading:`${heading}   ${card.type||''}`,M+23,y+34,23,accent,750);
+      if(passageColor){font(23,750);line(card.type,M+23+ctx.measureText(`${heading}   `).width,y+34,23,passageTextColor,750)}
       line(card.done?'CONCLUÍDA':card.current?'ATUAL':'A FAZER',RIGHT-195,y+34,19,card.done?C.green:C.muted,750);
       y=wrap(card.description,M+23,y+70,RIGHT-M-48,25,card.done?'#4d585c':C.ink,700,33)+6;
       y=wrap(details,M+23,y,RIGHT-M-48,21,C.muted,400,29);
@@ -183,7 +188,7 @@
         await mapPair(data.maps,'Mapa horizontal • LOC',['TRANSMISSORES • TX','PASSAGENS • COR']);
         if(data.profileMap){await glideProfile(data.profileMap);await endPage();newPage();}
       }else await mapPair(data.maps);
-      await flightCards(data.cards);
+      await flightCards(data.cards,data.kind);
     }
     await endPage();save(encodePdf(pages),`${data.kind}-${safeName(data.name)}`);
   }
