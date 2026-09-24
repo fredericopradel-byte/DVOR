@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v71-ils-pdf-cartoes-cores-20260924';
+const CACHE = 'iv-planner-v72-prevoo-icones-aeronaves-20260924';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -28,6 +28,8 @@ const APP_SHELL = [
   './prevoo/legacy-afm-performance.js',
   './prevoo/hawker.html',
   './prevoo/hawker-data.js',
+  './prevoo/hawker-silhouette.png',
+  './prevoo/legacy-silhouette.png',
 
   './inspecao/',
   './inspecao/index.html',
@@ -40,6 +42,8 @@ const APP_SHELL = [
   './inspecao/papi.html',
   './inspecao/legacy-map.png',
   './inspecao/legacy-profile.png',
+  './inspecao/hawker-map.png',
+  './inspecao/hawker-profile.png',
   './inspecao/loc-top.png',
   './inspecao/loc-side.png',
   './inspecao/glide-top.png',
