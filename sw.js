@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v61-ils-perfil-visivel-20260924';
+const CACHE = 'iv-planner-v62-ils-perfil-faf-loc-20260924';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -39,6 +39,7 @@ const APP_SHELL = [
   './inspecao/dvor-vor/icon-source.svg',
   './inspecao/papi.html',
   './inspecao/legacy-map.png',
+  './inspecao/legacy-profile.png',
   './inspecao/report-pdf.js',
   './inspecao/ils.html',
   './inspecao/radar.html',
