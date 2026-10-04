@@ -1,19 +1,1079 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#17191b"><title>IV-PLANNER · Radar</title><link rel="stylesheet" href="../page-ui.css?v=20260922-1"><script src="../global-nav.js?v=20260922-1" defer></script><script src="../page-ui.js?v=20260922-1" defer></script><script src="../prevoo/legacy-data.js"></script><style>
-:root{color-scheme:dark;--bg:#17191b;--p:#272a2d;--t:#f4f5f6;--m:#adb3b9;--b:#51565b;--a:#078dd1;--o:#ffb020;--g:#39d98a}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--t);font-family:Arial,sans-serif;-webkit-text-size-adjust:100%;overscroll-behavior:none}button,input,select,textarea{font:inherit}button{min-height:42px;padding:8px 11px;border:1px solid var(--b);border-radius:8px;background:var(--p);color:var(--t);font-weight:700}button.primary{background:var(--a);border-color:var(--a)}button.danger{color:#e1797e}input,select,textarea{width:100%;min-height:42px;padding:8px;border:1px solid var(--b);border-radius:7px;background:var(--p);color:var(--t);font-size:16px}label{display:block;color:var(--m);font-size:13px}label>*{margin-top:4px}.app{max-width:940px;margin:auto;padding:18px 18px calc(100px + env(safe-area-inset-bottom))}.top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}.brand small{display:block;color:#00a8ff;font-weight:900;letter-spacing:.15em}.brand strong{font-size:24px;font-style:italic}.back{color:var(--t);text-decoration:none;padding:8px;border:1px solid var(--b);border-radius:8px}.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;position:sticky;top:0;z-index:20;padding:8px 0;background:var(--bg)}.nav button.active,.pick button.active{background:#666d73}.page[hidden]{display:none!important}.heading,.summary{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:12px 0}.heading h1{margin:0;font-size:24px}.muted{color:var(--m)}.panel{padding:14px;margin-bottom:14px;border:1px solid var(--b);border-radius:12px;background:var(--p)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.full{grid-column:1/-1}.sub{grid-column:1/-1;border-top:1px solid #ffffff1c;padding-top:12px;margin-top:2px}.coords{display:grid;grid-template-columns:1fr 1fr;gap:10px}.coord{padding:9px;border:1px solid var(--b);border-radius:9px}.parts{display:grid;grid-template-columns:.8fr 1fr .7fr;gap:6px}.parts label{font-size:11px}.check{display:flex;gap:8px;align-items:center;color:var(--t)}.check input{width:21px;min-height:21px;margin:0}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.saved{display:grid;gap:7px}.saved div{display:flex;gap:8px;padding:8px;border:1px solid var(--b);border-radius:8px}.saved button:first-child{flex:1;border:0;text-align:left}.pick{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:10px 0}.fields{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:10px;border:1px solid var(--b);border-radius:9px}.card{position:relative;padding:12px 12px 12px 17px;margin-bottom:9px;border:1px solid var(--b);border-radius:11px;background:#0002;overflow:hidden}.card:before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:var(--c)}.card.done{opacity:.55}.card.active{box-shadow:0 0 0 2px color-mix(in srgb,var(--c) 50%,transparent)}.card.next{box-shadow:0 0 0 1px #fff8}.badge{display:inline-block;padding:3px 7px;border-radius:8px;background:color-mix(in srgb,var(--c) 20%,transparent);color:var(--c);font-size:11px;font-weight:900}.state{margin-left:5px;color:var(--m);font-size:11px;font-weight:800}.title{margin-top:7px;font-weight:800}.detail,.note{margin-top:4px;color:var(--m);font-size:13px;line-height:1.35}.note{padding-top:7px;border-top:1px solid #ffffff18}.flight{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;padding:10px;border:1px solid var(--b);border-radius:10px;background:#0002}.k{display:block;color:var(--m);font-size:11px;font-weight:900}.flight strong{display:block;margin-top:3px;font-size:14px}.step{display:grid;grid-template-columns:38px auto 38px 38px;gap:5px;align-items:center}.step button{min-height:38px;padding:4px}.stage{position:relative;overflow:hidden;border:1px solid var(--b);border-radius:12px;background:#101619}.stage svg{display:block;width:100%;min-height:430px;touch-action:none}.controls{position:absolute;top:8px;left:8px;display:grid;grid-template-columns:repeat(5,42px);gap:5px}.controls button{min-height:42px;padding:1px;background:#1b1f22eF}.controls small{display:block;font-size:9px}.read{position:absolute;right:7px;bottom:7px;padding:4px 6px;background:#101619df;color:var(--m);font-size:11px}.hud{display:grid;grid-template-columns:auto 1fr;gap:7px;padding:8px;margin-top:8px;border:1px solid var(--b);border-radius:9px;font-size:12px}.warn{color:var(--m);font-size:10px;margin-top:3px}.legend{margin-top:8px;text-align:center;color:var(--m);font-size:12px}.drag{position:fixed;z-index:999;pointer-events:none;opacity:.94;filter:drop-shadow(0 12px 18px #0009)}.placeholder{border:2px dashed #00a8ff;border-radius:11px;margin-bottom:9px}.moving{opacity:.35}@media(max-width:570px){.app{padding:8px 8px calc(94px + env(safe-area-inset-bottom))}.top{margin:0 2px 8px}.back{position:absolute;right:8px;top:max(7px,env(safe-area-inset-top));font-size:11px}.nav{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:100;padding:5px 6px calc(5px + env(safe-area-inset-bottom));background:#272a2df8;gap:3px}.nav button{min-height:44px;padding:4px;border:0;font-size:11px}.grid,.fields{grid-template-columns:1fr 1fr;gap:7px}.full,.sub{grid-column:1/-1}.coords{grid-template-columns:1fr;gap:7px}.panel{padding:10px}.flight{grid-template-columns:1fr 1fr;gap:6px}.step{grid-column:1/-1;justify-self:end}.stage svg{min-height:360px}.controls{grid-template-columns:repeat(5,39px);gap:4px}.controls button{min-height:39px}.pick button{font-size:11px;padding:5px}.actions{gap:6px}}
-</style></head><body><main class="app"><header class="top"><div class="brand"><small>IV-PLANNER</small><strong>RADAR</strong></div><a class="back" href="./">← Inspeção</a></header><nav class="nav"><button class="active" data-p="mission">Missão</button><button data-p="plan">Planejar</button><button data-p="map">Mapa</button><button data-p="execution">Execução</button></nav>
-<section class="page" id="mission"><div class="heading"><div><h1>Missão</h1><span class="muted">Dados do sítio, planejamento e coordenação.</span></div></div><div class="panel"><div class="grid"><h2 class="full">Identificação</h2><label class="full">Nome da missão<input id="title"></label><label>Data<input id="date" type="date"></label><label>Tipo<select id="insp"><option>Homologação</option><option>Aceitação</option><option>Especial</option></select></label><label>Emprego<select id="use"><option>Terminal</option><option>Rota</option><option>Terminal e rota</option></select></label><label>Identificação do radar<input id="radar" placeholder="Ex.: RDR SBXX"></label><label>Localidade / sítio<input id="site" list="airports" placeholder="ICAO ou nome"></label><label>Altitude do radar (ft MSL)<input id="alt" type="number" inputmode="decimal"></label><label>Declinação magnética (°)<input id="mag" type="number" min="0" max="90" step=".1" inputmode="decimal"></label><label>Hem.<select id="mdir"><option>W</option><option>E</option></select></label><div class="sub"><h2>Coordenadas da antena</h2><p class="muted">A localidade fornece a referência do aeródromo. Ajuste-a para a antena.</p><div class="coords"><div class="coord">Latitude · GG MM.MM<div class="parts"><label>Graus<input id="lad"></label><label>Minutos<input id="lam"></label><label>Hem.<select id="lah"><option>N</option><option>S</option></select></label></div></div><div class="coord">Longitude · GGG MM.MM<div class="parts"><label>Graus<input id="lod"></label><label>Minutos<input id="lom"></label><label>Hem.<select id="loh"><option>E</option><option>W</option></select></label></div></div></div><div class="actions"><button id="saveaid">Salvar auxílio Radar</button></div></div><div class="sub"><h2>Orientação e acuracidade</h2><div class="grid"><label>Radial / azimute (°)<input id="radial" type="number"></label><label>Altitude orientação (ft MSL)<input id="orialt" type="number"></label><label>Distância orientação (NM)<input id="oridist" type="number"></label></div></div><div class="sub"><h2>Cobertura horizontal · P1</h2><p class="muted">P1 entre 10 e 20 NM. A altitude é maior obstáculo + 300 ft.</p><div class="grid"><label>Maior obstáculo (ft MSL)<input id="obst" type="number"></label><label>Altitude P1 calculada<input id="p1alt" readonly></label></div></div><div class="sub"><h2>Cobertura vertical · P2</h2><p class="muted">Distância final a partir da antena; altitude do radar + altura indicada.</p><div class="grid"><label>+1.000 ft · NM<input id="d1" type="number"></label><label>+5.000 ft · NM<input id="d5" type="number"></label><label>+10.000 ft · NM<input id="d10" type="number"></label><label>+20.000 ft · NM<input id="d20" type="number"></label><label>+30.000 ft · NM<input id="d30" type="number"></label><label class="check full"><input id="modes" type="checkbox">Modos e códigos solicitados</label></div></div><div class="sub"><h2>Coordenação</h2><div class="grid"><label>Código transponder<input id="xpdr"></label><label class="full">Observações<textarea id="notes"></textarea></label></div></div></div><datalist id="airports"></datalist><div id="saved" class="saved"></div><div class="actions"><button id="new">Nova missão</button><button id="imp">Importar</button><button id="exp">Exportar</button><button id="save">Salvar missão</button><button id="ok" class="primary">OK · Planejar</button><input id="file" type="file" accept=".json,application/json" hidden></div></div></section>
-<section class="page" id="plan" hidden><div class="heading"><div><h1>Planejar</h1><span class="muted">Pacote básico e passagens adicionais.</span></div><strong id="count"></strong></div><div class="panel"><div class="actions"><button id="basic" class="primary">Gerar pacote básico</button><button id="add">Adicionar P1/P2</button></div><form id="form" hidden><h2>Passagem</h2><div class="pick"><button type="button" data-t="P1" class="active">P1 · Horizontal</button><button type="button" data-t="P2">P2 · Vertical</button><button type="button" data-t="ORI">Orientação</button></div><input id="eid" type="hidden"><input id="typ" type="hidden" value="P1"><div class="fields"><label id="frad">Radial / azimute<input id="ar" type="number"></label><label>Distância inicial<input id="as" type="number"></label><label>Distância final<input id="ae" type="number"></label><label id="fraio">Raio P1<input id="raio" type="number"></label><label>Altitude MSL<input id="aa" type="number"></label><label class="full">Descrição<input id="at"></label><label class="full">Observações<textarea id="an"></textarea></label></div><div id="err"></div><div class="actions"><button class="primary">Salvar passagem</button><button id="cancel" type="button">Cancelar</button></div></form></div><div class="panel" id="plist"></div></section>
-<section class="page" id="map" hidden><div class="heading"><div><h1>Mapa</h1><span class="muted">Passagem atual, próxima e GNSS auxiliar.</span></div><strong id="mprog"></strong></div><div class="panel"><div class="flight"><div><span class="k">ATUAL</span><strong id="now">Nenhuma passagem ativa</strong><span class="detail" id="nowd">—</span></div><div><span class="k">PRÓXIMA</span><strong id="next">—</strong><span class="detail" id="nextd">—</span></div><div class="step"><button id="prev">←</button><button id="done" class="primary">Concluir</button><button id="nxt">→</button><button id="undo">↶</button></div></div><div class="stage" id="stage"><svg id="rose" viewBox="0 0 500 500"><g id="world"><g id="grid"></g><g id="lines"></g><g id="plane"></g></g></svg><svg id="profile" viewBox="0 0 500 500" hidden></svg><div class="controls"><button id="minus">−</button><button id="plus">+</button><button id="anv">✈<small>ANV</small></button><button id="aux">◎<small>AUX</small></button><button id="prof">↗<small>PERFIL</small></button></div><span class="read" id="read"></span></div><div class="hud"><button id="gps">⌖ GPS</button><div><div id="gnss"><strong>GNSS desligado</strong></div><div class="warn">POSIÇÃO AUXILIAR — NÃO UTILIZAR PARA NAVEGAÇÃO OU DADO DE INSPEÇÃO.</div></div></div><div class="legend">Azul: Orientação · Laranja: P1 horizontal · Verde: P2 vertical</div></div></section>
-<section class="page" id="execution" hidden><div class="heading"><div><h1>Execução</h1><span class="muted">Toque longo e arraste para reordenar os cartões.</span></div><strong id="eprog"></strong></div><div class="panel" id="elist"></div></section></main><script>
-(()=>{'use strict';const $=x=>document.getElementById(x),$$=x=>[...document.querySelectorAll(x)],K='ivplanner-radar-current-v1',L='ivplanner-radar-missions-v2',A='ivplanner-custom-aids-v1',N=x=>{x=String(x??'').replace(',','.').trim();return x===''?NaN:Number(x)},F=(x,d=1)=>Number.isFinite(Number(x))?Number(x).toLocaleString('pt-BR',{maximumFractionDigits:d}):'—',D=x=>(x%360+360)%360,B=()=>({schema:'ivplanner-radar-v2',savedMissionId:null,m:{title:'',date:new Date().toISOString().slice(0,10),insp:'Homologação',use:'Terminal',radar:'',site:'',alt:'',lat:'',lon:'',mag:'',mdir:'W',radial:'',orialt:'',oridist:'',obst:'',d1:'',d5:'',d10:'',d20:'',d30:'',modes:false,xpdr:'',notes:''},a:[],active:null,history:[]});let s=B(),pos=null,watch=null,v={z:1,x:0,y:0,r:0},pts=new Map(),pinch=null,angle=null,vert=false,drag=null;const color=a=>a.t==='P1'?'#ffb020':a.t==='P2'?'#39d98a':'#00a8ff',esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function migrate(x){if(!x)return B();if(x.m&&Array.isArray(x.a))return {...B(),...x,m:{...B().m,...x.m},history:x.history||[]};if(x.metadata&&Array.isArray(x.activities)){let m=x.metadata;return {schema:'ivplanner-radar-v2',savedMissionId:x.savedMissionId||null,m:{...B().m,title:m.title||'',date:m.date||'',insp:m.inspection||'',use:m.employment||'',radar:m.radar||'',site:m.site||'',alt:m.alt||'',lat:m.lat||'',lon:m.lon||'',mag:m.magVar||'',mdir:m.magDir||'W',radial:m.radial||'',orialt:m.orientationAlt||'',oridist:m.orientationDistance||'',obst:m.p1Obstacle||'',d1:m.d1||'',d5:m.d5||'',d10:m.d10||'',d20:m.d20||'',d30:m.d30||'',modes:!!m.modes,xpdr:m.xpdr||'',notes:m.notes||''},a:x.activities.map(a=>({id:a.id,t:a.type,title:a.title,r:a.radial,start:a.start,end:a.end,radius:a.radius,alt:a.alt,agl:a.agl,note:a.note,done:!!a.done})),active:x.activeId,history:x.history||[]}}return B()}function savecur(){localStorage.setItem(K,JSON.stringify(s))}function lib(){try{return JSON.parse(localStorage.getItem(L)||'[]')}catch{return[]}}function active(){return s.a.find(a=>a.id===s.active)}function ensure(){if(!s.a.some(a=>a.id===s.active&&!a.done))s.active=s.a.find(a=>!a.done)?.id||null}function next(){let i=s.a.findIndex(a=>a.id===s.active);return s.a.slice(i+1).find(a=>!a.done)||s.a.slice(0,i).find(a=>!a.done)}
-function pc(id,lat){let z=N($(id+'d').value),m=N($(id+'m').value),h=$(id+'h').value;if(!Number.isFinite(z)||!Number.isFinite(m)||m<0||m>=60)return '';z+=m/60;return h==='S'||h==='W'?-z:z}function put(id,lat,x){x=Number(x);if(!Number.isFinite(x))return;let d=Math.floor(Math.abs(x)),m=((Math.abs(x)-d)*60).toFixed(2);$(id+'d').value=String(d).padStart(lat?2:3,'0');$(id+'m').value=m;$(id+'h').value=lat?(x<0?'S':'N'):(x<0?'W':'E')}function fill(){for(const k in s.m){let e=$(k);if(e)e.type==='checkbox'?e.checked=!!s.m[k]:e.value=s.m[k]??''}put('la',true,s.m.lat);put('lo',false,s.m.lon);p1()}function collect(){for(const k in s.m){let e=$(k);if(e)s.m[k]=e.type==='checkbox'?e.checked:e.value.trim()}s.m.lat=pc('la',true);s.m.lon=pc('lo');savecur()}function p1(){let x=N($('obst').value);$('p1alt').value=Number.isFinite(x)?x+300:''}function valid(){let m=s.m;if(!m.radar&&!m.site)return'Informe a identificação ou localidade do radar.';if(!Number.isFinite(N(m.alt))||!Number.isFinite(Number(m.lat))||!Number.isFinite(Number(m.lon)))return'Informe altitude e coordenadas da antena.';if(![m.radial,m.orialt,m.oridist,m.obst,m.d1,m.d5,m.d10,m.d20,m.d30].every(x=>Number.isFinite(N(x))))return'Preencha orientação, obstáculo e todas as distâncias P2.';return''}
-function saved(){let h=$('saved');h.replaceChildren();lib().forEach(x=>{let d=document.createElement('div'),o=document.createElement('button'),r=document.createElement('button');o.innerHTML='<b>'+esc(x.m?.title||x.m?.radar||'Missão Radar')+'</b><small>'+esc(x.m?.date||'')+' · '+esc(x.m?.radar||'')+'</small>';o.onclick=()=>{s=migrate(x);ensure();fill();render();page('mission')};r.textContent='Excluir';r.className='danger';r.onclick=()=>{localStorage.setItem(L,JSON.stringify(lib().filter(y=>y.savedMissionId!==x.savedMissionId)));saved()};d.append(o,r);h.append(d)})}function save(){collect();if(!s.savedMissionId)s.savedMissionId='radar-'+Date.now();let x=lib(),i=x.findIndex(y=>y.savedMissionId===s.savedMissionId);i<0?x.unshift(JSON.parse(JSON.stringify(s))):x[i]=JSON.parse(JSON.stringify(s));localStorage.setItem(L,JSON.stringify(x));saved();alert('Missão Radar salva neste aparelho.')}function aid(){collect();if(!s.m.radar||!Number.isFinite(Number(s.m.lat))||!Number.isFinite(Number(s.m.lon)))return alert('Informe radar e coordenadas válidas.');let x=[];try{x=JSON.parse(localStorage.getItem(A)||'[]')}catch{}let e={id:'radar-'+Date.now(),type:'RADAR',name:s.m.radar,designator:s.m.radar,position:{lat:Number(s.m.lat),lon:Number(s.m.lon)},elevation:N(s.m.alt)||null};let i=x.findIndex(a=>a.type==='RADAR'&&a.name?.toUpperCase()===e.name.toUpperCase());i<0?x.unshift(e):x[i]={...x[i],...e};localStorage.setItem(A,JSON.stringify(x));alert('Auxílio Radar salvo para uso futuro.')}
-function make(t,title,o={}){return{id:'r-'+Date.now()+Math.random(),t,title,r:'',start:0,end:'',radius:'',alt:'',agl:'',note:'',done:false,...o}}function basic(){collect();let e=valid();if(e){alert(e);return page('mission')}if(s.a.length&&!confirm('O pacote básico substituirá as passagens atuais, inclusive concluídas. Continuar?'))return;let m=s.m,a=N(m.alt),o=N(m.obst),note=m.modes?'Modos e códigos previstos: 0707 · 7070 · 3500 · 3600 · 3700'+(m.xpdr?' · Transponder: '+m.xpdr:'')+'.':'';s.a=[make('ORI','Orientação e acuracidade',{r:N(m.radial),end:N(m.oridist),alt:N(m.orialt),note:'Marcas transversais a cada 5 NM.'}),make('P1','Cobertura horizontal',{start:10,end:20,radius:15,alt:o+300,note:'Manter entre 10 e 20 NM · maior obstáculo + 300 ft.'}),...[['d1',1000],['d5',5000],['d10',10000],['d20',20000],['d30',30000]].map(([k,z])=>make('P2','Cobertura vertical · +'+z.toLocaleString('pt-BR')+' ft AGL',{r:N(m.radial),end:N(m[k]),alt:a+z,agl:z,note}))];s.active=s.a[0].id;s.history=[];savecur();render()}function det(a){return a.t==='P1'?'Faixa '+F(a.start)+'–'+F(a.end)+' NM · raio '+F(a.radius)+' NM · '+F(a.alt,0)+' ft MSL':F(a.r)+'° · '+F(a.start)+'–'+F(a.end)+' NM · '+F(a.alt,0)+' ft MSL'}function form(t='P1',a){$('form').hidden=false;$('typ').value=t;$('eid').value=a?.id||'';['ar','as','ae','raio','aa','at','an'].forEach((k,i)=>$(k).value=a?.[({ar:'r',as:'start',ae:'end',raio:'radius',aa:'alt',at:'title',an:'note'}[k])]??({as:t==='P1'?10:0,ae:t==='P1'?20:'',raio:t==='P1'?15:'',at:{P1:'Cobertura horizontal adicional',P2:'Cobertura vertical adicional',ORI:'Orientação adicional'}[t]}[k]??''));$('frad').hidden=t==='P1';$('fraio').hidden=t!=='P1';$$('.pick button').forEach(x=>x.classList.toggle('active',x.dataset.t===t))}function submit(e){e.preventDefault();let t=$('typ').value,r=N($('ar').value),start=N($('as').value),end=N($('ae').value),radius=N($('raio').value),alt=N($('aa').value);if(!Number.isFinite(start)||!Number.isFinite(end)||!Number.isFinite(alt)||(t==='P1'&&!Number.isFinite(radius))||(t!=='P1'&&!Number.isFinite(r)))return $('err').textContent='Preencha os dados da passagem.';let q={t,title:$('at').value||'Passagem Radar',r:t==='P1'?'':r,start,end,radius:t==='P1'?radius:'',alt,note:$('an').value};let a=s.a.find(x=>x.id===$('eid').value);a?Object.assign(a,q):s.a.push(make(t,q.title,q));if(!s.active)s.active=s.a.at(-1).id;$('form').hidden=true;savecur();render()}
-function card(a,i,exec){let now=a.id===s.active,nx=a.id===next()?.id,e=document.createElement('article');e.className='card'+(a.done?' done':'')+(now?' active':'')+(nx?' next':'');e.style.setProperty('--c',color(a));e.dataset.id=a.id;e.innerHTML='<span class="badge">'+a.t+'</span>'+(now?'<span class="state">ATIVA</span>':nx?'<span class="state">PRÓXIMA</span>':a.done?'<span class="state">✓ CONCLUÍDA</span>':'')+'<div class="title">'+esc(a.title)+'</div><div class="detail">'+esc(det(a))+'</div>'+(a.note?'<div class="note">'+esc(a.note)+'</div>':'')+'<div class="actions"></div>';let z=e.querySelector('.actions'),b=document.createElement('button');if(exec){for(const [tx,fn] of [['Tornar ativa',()=>{s.active=a.id;savecur();render()}],[a.done?'Refazer':'Concluir',()=>{a.done=!a.done;if(a.done)s.history.push(a.id);ensure();savecur();render()}],['Editar',()=>{page('plan');form(a.t,a)}]]){let q=document.createElement('button');q.textContent=tx;if(tx!=='Tornar ativa'&&tx!=='Editar')q.className='primary';q.onclick=fn;z.append(q)}dragcard(e)}else{b.textContent='Editar';b.onclick=()=>form(a.t,a);let d=document.createElement('button');d.textContent='Excluir';d.className='danger';d.onclick=()=>{if(confirm('Excluir passagem?')){s.a=s.a.filter(x=>x!==a);ensure();savecur();render()}};z.append(b,d)}return e}function render(){ensure();let p=$('plist'),e=$('elist');p.replaceChildren();e.replaceChildren();s.a.forEach((a,i)=>{p.append(card(a,i));e.append(card(a,i,true))});let z=s.a.filter(a=>a.done).length+'/'+s.a.length+' passagens feitas';$('count').textContent=s.a.length+' passagens';$('eprog').textContent=z;$('mprog').textContent=z;let a=active(),q=next();$('now').textContent=a?.title||'Nenhuma passagem ativa';$('nowd').textContent=a?det(a):'—';$('next').textContent=q?.title||'—';$('nextd').textContent=q?det(q):'—';draw();saved()}
-function dragcard(c){let time,start,armed=false;let finish=()=>{clearTimeout(time);if(armed&&drag){c.classList.remove('moving');drag.ph.replaceWith(c);drag.f.remove();let ids=[...$('elist').children].map(x=>x.dataset.id);s.a.sort((a,b)=>ids.indexOf(a.id)-ids.indexOf(b.id));drag=null;armed=false;savecur();render()}};let arm=(x,y)=>{armed=true;let r=c.getBoundingClientRect(),ph=document.createElement('div'),f=document.createElement('div');ph.className='placeholder';ph.style.height=r.height+'px';c.before(ph);f.className='drag';f.style.cssText+='left:'+r.left+'px;top:'+r.top+'px;width:'+r.width+'px';document.body.append(f);f.append(c);c.classList.add('moving');drag={ph,f,dx:x-r.left,dy:y-r.top}};let move=(x,y)=>{if(!drag)return;drag.f.style.left=x-drag.dx+'px';drag.f.style.top=y-drag.dy+'px';let t=document.elementsFromPoint(x,y).map(x=>x.closest?.('.card')).find(x=>x&&x!==c);if(t){let r=t.getBoundingClientRect();$('elist').insertBefore(drag.ph,y<r.top+r.height/2?t:t.nextSibling)}};c.addEventListener('touchstart',x=>{if(x.target.closest('button'))return;let t=x.touches[0];start={x:t.clientX,y:t.clientY};time=setTimeout(()=>arm(t.clientX,t.clientY),650)},{passive:true});c.addEventListener('touchmove',x=>{let t=x.touches[0];if(!armed&&Math.hypot(t.clientX-start.x,t.clientY-start.y)>12)clearTimeout(time);if(armed){x.preventDefault();move(t.clientX,t.clientY)}},{passive:false});c.addEventListener('touchend',finish);c.addEventListener('pointerdown',x=>{if(x.pointerType==='mouse'&&!x.target.closest('button')){start={x:x.clientX,y:x.clientY};time=setTimeout(()=>arm(x.clientX,x.clientY),650)}});c.addEventListener('pointermove',x=>armed&&move(x.clientX,x.clientY));c.addEventListener('pointerup',finish)}
-function max(){return Math.max(25,...s.a.map(a=>N(a.t==='P1'?a.end:a.end)).filter(Number.isFinite))*1.15}function pt(b,d,m){let r=208*d/m,q=b*Math.PI/180;return{x:250+r*Math.sin(q),y:250-r*Math.cos(q)}}function bd(a,b,c,d){let r=x=>x*Math.PI/180,R=3440.065,p1=r(a),p2=r(c),dp=r(c-a),dl=r(d-b),q=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;return{d:2*Math.atan2(Math.sqrt(q),Math.sqrt(1-q))*R,b:D(Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))*180/Math.PI)}}function mag(b){let x=N(s.m.mag);return D(b-(Number.isFinite(x)&&(s.m.mdir==='W'?-x:x)||0))}function draw(){let M=max(),g='',l='',a=active(),q=next();for(let d=5;d<M;d+=5){let r=208*d/M;g+='<circle cx="250" cy="250" r="'+r+'" fill="none" stroke="#ffffff24"/><text x="256" y="'+(250-r+11)+'" fill="#adb3b9" font-size="10">'+F(d,0)+' NM</text>'}for(const [x,y,t] of [[250,30,'N'],[470,254,'E'],[250,474,'S'],[30,254,'W']])g+='<text x="'+x+'" y="'+y+'" text-anchor="middle" fill="#adb3b9" font-size="11">'+t+'</text>';s.a.forEach(x=>{let c=color(x),op=x===a?1:x===q?.85:x.done?.25:.42,w=x===a?6:2;if(x.t==='P1'){for(let d of [N(x.start),N(x.end),N(x.radius)])l+='<circle cx="250" cy="250" r="'+208*d/M+'" fill="none" stroke="'+c+'" stroke-width="'+(d===N(x.radius)?w:1.4)+'" stroke-dasharray="'+(d===N(x.radius)?'3 5':'6 6')+'" opacity="'+op+'"/>';return}let p=pt(N(x.r),N(x.start)||0,M),z=pt(N(x.r),N(x.end),M);l+='<line x1="'+p.x+'" y1="'+p.y+'" x2="'+z.x+'" y2="'+z.y+'" stroke="'+c+'" stroke-width="'+w+'" stroke-linecap="round" opacity="'+op+'"/>';if(x.t==='ORI')for(let d=5;d<N(x.end);d+=5){let u=pt(N(x.r),d,M),k=N(x.r)*Math.PI/180;l+='<line x1="'+(u.x-Math.cos(k)*4)+'" y1="'+(u.y-Math.sin(k)*4)+'" x2="'+(u.x+Math.cos(k)*4)+'" y2="'+(u.y+Math.sin(k)*4)+'" stroke="'+c+'" opacity="'+op+'"/>'}});if(pos&&Number.isFinite(Number(s.m.lat))){let b=bd(Number(s.m.lat),Number(s.m.lon),pos.coords.latitude,pos.coords.longitude),p=pt(mag(b.b),Math.min(b.d,M),M),course=mag(Number.isFinite(pos.coords.heading)?pos.coords.heading:b.b);l+='<image href="../legacy-map.png" x="'+(p.x-13)+'" y="'+(p.y-13)+'" width="26" height="26" transform="rotate('+course+' '+p.x+' '+p.y+')"/>'}$('grid').innerHTML=g;$('lines').innerHTML=l+'<circle cx="250" cy="250" r="7" fill="#ff5264" stroke="#fff" stroke-width="2"/><text x="261" y="240" fill="#fff" font-size="12">'+esc(s.m.radar||'RADAR')+'</text>';$('world').setAttribute('transform','translate('+v.x+' '+v.y+') rotate('+v.r+' 250 250) scale('+v.z+')');$('read').textContent='Zoom '+Math.round(v.z*100)+'% · Giro '+Math.round(v.r)+'°';profile(M,a,q)}
-function profile(M,a,q){let base=N(s.m.alt)||0,top=base+32000,y=z=>450-(z-Math.max(0,base-1000))/(top-Math.max(0,base-1000))*370,x=d=>56+d/M*414,o='<rect width="500" height="500" fill="#101619"/>';for(let z=Math.ceil(base/5000)*5000;z<=top;z+=5000)o+='<line x1="56" y1="'+y(z)+'" x2="470" y2="'+y(z)+'" stroke="#ffffff18"/><text x="5" y="'+(y(z)+3)+'" fill="#adb3b9" font-size="9">'+z+'</text>';s.a.filter(z=>z.t!=='P1').forEach(z=>o+='<line x1="'+x(N(z.start)||0)+'" y1="'+y(N(z.alt))+'" x2="'+x(N(z.end))+'" y2="'+y(N(z.alt))+'" stroke="'+color(z)+'" stroke-width="'+(z===a?5:2)+'" opacity="'+(z===a?1:z===q?.8:.4)+'"/>');$('profile').innerHTML=o+'<line x1="56" y1="450" x2="470" y2="450" stroke="#fff8"/><line x1="56" y1="65" x2="56" y2="450" stroke="#fff8"/><text x="16" y="28" fill="#fff" font-size="12">PERFIL VERTICAL</text>'}
-function page(p){collect();$$('.page').forEach(x=>x.hidden=x.id!==p);$$('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.p===p));scrollTo(0,0);if(p==='map')draw()}function complete(){let a=active();if(a){a.done=true;s.history.push(a.id);ensure();savecur();render()}}function undo(){let i=s.history.pop(),a=s.a.find(x=>x.id===i)||s.a.slice().reverse().find(x=>x.done);if(a){a.done=false;s.active=a.id;savecur();render()}}function gps(){if(watch!==null){navigator.geolocation.clearWatch(watch);watch=null;pos=null;$('gnss').innerHTML='<strong>GNSS desligado</strong>';return draw()}if(!navigator.geolocation)return $('gnss').textContent='GNSS indisponível.';watch=navigator.geolocation.watchPosition(p=>{pos=p;let b=bd(Number(s.m.lat),Number(s.m.lon),p.coords.latitude,p.coords.longitude);$('gnss').innerHTML='<strong>RDL '+F(mag(b.b),0)+'° · DST '+F(b.d)+' NM</strong><br>GS '+(Number.isFinite(p.coords.speed)?F(p.coords.speed*1.94384,0)+' kt':'—')+' · ±'+Math.round(p.coords.accuracy)+' m';draw()},()=>$('gnss').textContent='Não foi possível obter posição GNSS.',{enableHighAccuracy:true,maximumAge:1000,timeout:15000})}
-function mapbind(){let st=$('stage');st.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;st.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pts.size===2){let p=[...pts.values()];pinch=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);angle=Math.atan2(p[1].y-p[0].y,p[1].x-p[0].x)}});st.addEventListener('pointermove',e=>{let old=pts.get(e.pointerId);if(!old)return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pts.size===1){let z=500/(v.z*st.getBoundingClientRect().width);v.x+=(e.clientX-old.x)*z;v.y+=(e.clientY-old.y)*z}else{let p=[...pts.values()],d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),a=Math.atan2(p[1].y-p[0].y,p[1].x-p[0].x);v.z=Math.max(1,Math.min(6,v.z*d/pinch));v.r=D(v.r+(a-angle)*180/Math.PI);pinch=d;angle=a}draw()});for(const t of ['pointerup','pointercancel'])st.addEventListener(t,e=>pts.delete(e.pointerId))}
-$$('.nav button').forEach(x=>x.onclick=()=>page(x.dataset.p));$$('#mission input,#mission select,#mission textarea').forEach(x=>x.onchange=()=>{p1();collect()});$('obst').oninput=p1;$('new').onclick=()=>{if(confirm('Criar nova missão?')){s=B();fill();render()}};$('save').onclick=save;$('saveaid').onclick=aid;$('ok').onclick=()=>{collect();let e=valid();e?alert(e):(!s.a.length&&basic(),page('plan'))};$('basic').onclick=basic;$('add').onclick=()=>form();$$('.pick button').forEach(x=>x.onclick=()=>form(x.dataset.t));$('cancel').onclick=()=>$('form').hidden=true;$('form').onsubmit=submit;$('prev').onclick=()=>{let i=s.a.findIndex(x=>x.id===s.active);if(s.a[i-1]){s.active=s.a[i-1].id;render()}};$('nxt').onclick=()=>{let i=s.a.findIndex(x=>x.id===s.active);if(s.a[i+1]){s.active=s.a[i+1].id;render()}};$('done').onclick=complete;$('undo').onclick=undo;$('gps').onclick=gps;$('minus').onclick=()=>{v.z=Math.max(1,v.z/1.35);draw()};$('plus').onclick=()=>{v.z=Math.min(6,v.z*1.35);draw()};$('aux').onclick=()=>{v={z:1,x:0,y:0,r:0};draw()};$('anv').onclick=()=>{if(pos){let b=bd(Number(s.m.lat),Number(s.m.lon),pos.coords.latitude,pos.coords.longitude),p=pt(mag(b.b),Math.min(b.d,max()),max());v.x=250-p.x;v.y=250-p.y;draw()}};$('prof').onclick=()=>{vert=!vert;$('rose').hidden=vert;$('profile').hidden=!vert;$('prof').querySelector('small').textContent=vert?'MAPA':'PERFIL'};$('exp').onclick=()=>{collect();let u=URL.createObjectURL(new Blob([JSON.stringify(s)],{type:'application/json'})),a=document.createElement('a');a.href=u;a.download='IV-PLANNER-Radar-missao.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),2000)};$('imp').onclick=()=>$('file').click();$('file').onchange=e=>{let r=new FileReader;r.onload=()=>{try{s=migrate(JSON.parse(r.result));ensure();fill();render()}catch{alert('Arquivo inválido')}};r.readAsText(e.target.files[0])};try{s=migrate(JSON.parse(localStorage.getItem(K)||'null'))}catch{}ensure();fill();render();mapbind()})();</script></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover,interactive-widget=resizes-content">
+<meta name="theme-color" content="#17191b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="IV-PLANNER">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../icon-192.png">
+<title>IV-PLANNER</title>
+<!-- Radar: estrutura e mecânicas derivadas do DVOR deste projeto. -->
+<meta name="iv-planner-build" content="3.1-visual-unificado">
+<style>
+  :root{color-scheme:dark;--bg:#17191b;--panel:#272a2d;--text:#f4f5f6;--muted:#adb3b9;--border:#51565b;--accent:#666d73;--blue:#737a80;--red:#a94f55;--danger:#e1797e;--soft:#34383c}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+  button,input,select,textarea{font:inherit}
+  button{min-height:42px;border:1px solid var(--border);border-radius:8px;background:var(--panel);color:var(--text);padding:8px 12px;cursor:pointer}
+  button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  button.danger{color:var(--danger)}
+  button.small{min-height:36px;padding:6px 9px}
+  input,select,textarea{width:100%;min-height:42px;border:1px solid var(--border);border-radius:7px;background:var(--panel);color:var(--text);padding:8px}
+  input[type=checkbox]{width:21px;min-height:auto;height:21px;padding:0}
+  textarea{resize:vertical;min-height:42px}
+  label{display:block;font-size:13px;color:var(--muted)}
+  label>input,label>select,label>textarea{margin-top:4px;color:var(--text)}
+  .app{max-width:1500px;margin:auto;padding:18px}
+  .topbar{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;margin-bottom:14px}
+  .back-to-inspection{display:inline-flex;align-items:center;min-height:38px;padding:7px 11px;border:1px solid var(--border);border-radius:9px;background:var(--panel);color:var(--text);font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap}
+  .back-to-inspection:active{background:var(--soft);transform:scale(.98)}
+  h1{font-size:24px;margin:0 0 4px;font-weight:600}
+  h2{font-size:17px;margin:0 0 12px;font-weight:600}
+  .subtitle,.muted{color:var(--muted)}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+  .panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px}
+  .metadata{display:grid;grid-template-columns:1.4fr .8fr .6fr;gap:10px}
+  .builder{display:grid;grid-template-columns:minmax(330px,.8fr) minmax(500px,1.2fr);gap:14px;align-items:start}
+  .form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .full{grid-column:1/-1}
+  .type-choice{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+  .type-choice button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .activity-fields{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:12px;border:1px solid var(--border);border-radius:9px}
+  .activity-fields[hidden]{display:none}
+  .activity-fields h3{grid-column:1/-1;font-size:15px;margin:0;color:var(--text)}
+  .tx-plan{display:flex;gap:18px;align-items:center;min-height:42px}
+  .tx-plan label{display:flex;align-items:center;gap:7px;color:var(--text);font-size:14px}
+  .form-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .error{color:var(--danger);min-height:18px;margin:8px 0 0;font-size:13px}
+  .rose-toolbar{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;align-items:center;margin-bottom:5px}
+  .zoom-level{min-width:52px;text-align:center;color:var(--muted)}
+  #rose{width:100%;height:auto;display:block;touch-action:none;user-select:none;cursor:grab}
+  #rose.dragging{cursor:grabbing}
+  .grid-circle{fill:none;stroke:var(--border);stroke-width:1}
+  .axis{stroke:var(--muted);stroke-width:1}
+  .grid-label{fill:var(--muted);font-size:12px}
+  .cardinal,.radial-label{fill:var(--text);font-size:12px;font-weight:600}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;color:var(--muted);font-size:13px;margin-top:7px}
+  .swatch{display:inline-block;width:25px;height:4px;margin-right:5px;vertical-align:middle}
+  .blue{background:var(--blue)}.red{background:var(--red)}
+  #rose-panel:fullscreen{background:var(--panel);padding:18px;overflow:auto;display:flex;flex-direction:column;justify-content:center}
+  #rose-panel:fullscreen #rose{max-height:calc(100vh - 115px)}
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;background:var(--panel)}
+  th,td{padding:8px 6px;border-bottom:1px solid var(--border);text-align:left;vertical-align:middle}
+  th{font-size:13px;color:var(--muted);font-weight:600}
+  td.center,th.center{text-align:center}
+  td.check{min-width:72px}
+  td.check label{min-height:44px;display:flex;align-items:center;justify-content:center}
+  tr.selected{background:var(--soft)}
+  tr.done{opacity:.5}
+  .empty{text-align:center;color:var(--muted);padding:24px}
+  .activity-title{font-weight:600;white-space:nowrap}
+  .activity-detail{min-width:190px}
+  .row-actions{display:flex;gap:5px;white-space:nowrap}
+  .summary{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+  @media(max-width:950px){.builder{grid-template-columns:1fr}.rose-panel{max-width:680px;margin:auto}.metadata{grid-template-columns:1fr 1fr}.metadata label:first-child{grid-column:1/-1}}
+  @media(max-width:570px){.app{padding:10px 10px 82px}.topbar{display:block}.toolbar{justify-content:flex-start;margin-top:10px}.metadata,.form-grid,.activity-fields{grid-template-columns:1fr}.metadata label:first-child,.full,.activity-fields h3{grid-column:auto}h1{font-size:21px}.subtitle{font-size:13px}.page-nav{position:fixed;left:0;right:0;bottom:0;top:auto;margin:0;padding:7px 8px calc(7px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--border);z-index:50;gap:5px}.page-nav button{min-height:48px;padding:5px 3px;font-size:12px;border:none;background:transparent}.page-nav button.active{border-radius:9px}.panel{margin-bottom:10px}.page-heading{align-items:flex-start}.rose-toolbar button{min-height:38px;padding:6px 8px}.table-wrap{margin:0 -14px;padding:0 14px}}
+
+  .page-nav{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;position:sticky;top:0;z-index:20;background:var(--bg);padding:8px 0}
+  .page-nav button{font-weight:600}
+  .page-nav button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .app-page[hidden]{display:none!important}
+  .page-heading{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:12px}
+  .page-heading h2{margin:0}
+  .mission-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .rose-page .rose-panel{max-width:900px;margin:0 auto 14px}
+  .execution-page .panel{margin-bottom:0}
+  .gnss-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.coord-box{border:1px solid var(--border);border-radius:9px;padding:10px}.coord-title{font-size:13px;color:var(--muted);margin-bottom:7px}.coord-parts{display:grid;grid-template-columns:.8fr 1fr .7fr;gap:6px;align-items:end}.coord-parts.lon{grid-template-columns:.8fr 1fr .7fr}.coord-parts label{font-size:11px}.coord-parts select{padding-left:6px;padding-right:6px}
+  .gnss-status{margin-top:10px;padding:10px;border:1px solid var(--border);border-radius:9px;background:var(--bg);font-size:13px;line-height:1.5}
+  .gnss-status strong{font-size:15px}
+  .gnss-warning{font-size:12px;color:var(--muted);margin-top:8px}
+  @media(prefers-color-scheme:light){:root{--bg:#e8eaec;--panel:#f8f9fa;--text:#24272a;--muted:#646a70;--border:#b8bdc2;--accent:#5d646a;--blue:#777e84;--red:#a4464c;--danger:#922f35;--soft:#d8dbde}}
+
+
+  /* IV-PLANNER — otimização mobile/iPhone */
+  @media (max-width:570px){
+    html,body{min-height:100%;overscroll-behavior-y:none}
+    body{-webkit-text-size-adjust:100%}
+    .app{max-width:none;padding:7px 8px calc(72px + env(safe-area-inset-bottom));}
+    .topbar{margin:0 2px 7px;display:block}
+    .back-to-inspection{position:absolute;top:max(7px,env(safe-area-inset-top));right:8px;min-height:34px;padding:5px 8px;font-size:10px}
+    h1{font-size:19px;line-height:1.05;margin:0;font-weight:700;letter-spacing:.2px}
+    .subtitle{font-size:11px;line-height:1.2;margin-top:2px}
+    h2{font-size:15px;margin-bottom:8px}
+    .panel{border-radius:10px;padding:10px;margin-bottom:8px}
+    .page-heading{margin-bottom:8px}
+
+    /* barra inferior sempre acessível e segura no iPhone */
+    .page-nav{position:fixed;left:0;right:0;bottom:0;top:auto;margin:0;padding:5px 6px calc(5px + env(safe-area-inset-bottom));background:color-mix(in srgb,var(--panel) 96%,transparent);border-top:1px solid var(--border);z-index:100;gap:3px;box-shadow:0 -3px 12px rgba(0,0,0,.08)}
+    .page-nav button{min-height:44px;padding:4px 2px;font-size:11px;line-height:1.05;border:0;background:transparent;border-radius:8px}
+    .page-nav button.active{background:var(--accent);color:#fff}
+
+    /* controles com alvo de toque adequado, mas mais compactos */
+    button{min-height:40px;padding:6px 9px;border-radius:8px}
+    input,select,textarea{min-height:40px;padding:6px 8px;font-size:16px} /* 16px evita zoom automático do iOS */
+    textarea{min-height:40px;max-height:70px}
+    label{font-size:11px}
+    label>input,label>select,label>textarea{margin-top:2px}
+
+    /* MISSÃO: usa largura horizontal sem empilhar tudo */
+    #page-mission .metadata{display:grid;grid-template-columns:1.35fr .65fr;gap:6px}
+    #page-mission .metadata label{min-width:0}
+    #page-mission .metadata label:first-child{grid-column:1/-1}
+    #page-mission .metadata label:last-child{grid-column:auto}
+    #mission-date{width:100%;min-width:0;max-width:100%;font-size:16px;padding-left:7px;padding-right:5px}
+    .gnss-grid{display:grid;grid-template-columns:1fr;gap:6px;margin-top:7px}
+    .coord-box{padding:7px;border-radius:8px}
+    .coord-title{font-size:11px;margin-bottom:4px;line-height:1.15}
+    .coord-parts,.coord-parts.lon{grid-template-columns:.68fr 1fr .62fr;gap:5px}
+    .coord-parts label{font-size:10px}
+    .coord-parts input,.coord-parts select{min-height:36px;padding:5px 6px}
+    .gnss-grid .coord-box:last-child .coord-parts{grid-template-columns:1fr .72fr;max-width:245px}
+    .mission-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+    .mission-actions button{width:100%;min-height:40px;font-size:12px;padding:5px}
+    #new-mission{grid-column:1/-1}
+
+    /* PLANEJAR: campos essenciais lado a lado */
+    #page-plan .panel{padding:9px}
+    #page-plan #form-title{margin-bottom:7px}
+    .type-choice{gap:6px;margin-bottom:7px}
+    .type-choice button{min-height:39px;font-size:12px}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+    .activity-fields{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:7px}
+    .activity-fields h3{grid-column:1/-1;font-size:12px;margin:0 0 1px}
+    .activity-fields label{min-width:0}
+    .activity-fields input{padding-left:5px;padding-right:5px}
+    .form-grid>.full{grid-column:1/-1}
+    .tx-plan{grid-column:1/-1;min-height:34px;gap:14px;padding:0 2px}
+    .tx-plan label{font-size:12px;gap:5px}
+    input[type=checkbox]{width:22px;height:22px}
+    .error{font-size:11px;min-height:14px;margin-top:4px}
+    .form-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:5px}
+    .form-actions button{width:100%;font-size:12px}
+    #cancel-edit[hidden]{display:none}
+    #cancel-edit[hidden]+*{grid-column:auto}
+
+    /* MAPA: prioriza área gráfica no viewport */
+    #page-rose .rose-panel{margin:0;max-width:none;padding:7px;min-height:calc(100dvh - 116px);display:flex;flex-direction:column;overflow:hidden}
+    #page-rose .summary{margin-bottom:4px;gap:4px;align-items:center}
+    #page-rose .summary h2{margin:0;font-size:14px}
+    #page-rose .summary>div{font-size:10px}
+    .rose-toolbar{display:grid;grid-template-columns:40px 46px 40px 1fr 1fr;gap:4px;margin-bottom:4px}
+    .rose-toolbar button{min-height:34px;padding:3px 4px;font-size:10px}
+    .zoom-level{min-width:0;font-size:10px;align-self:center}
+    .gnss-status{display:grid;grid-template-columns:auto 1fr;column-gap:7px;row-gap:2px;margin-top:0;margin-bottom:4px;padding:5px 6px;font-size:10px;line-height:1.15}
+    #gnss-toggle{grid-row:1/3;align-self:center;min-height:36px;font-size:10px;padding:4px 7px}
+    #gnss-readout{margin-top:0!important;align-self:center;min-width:0}
+    #gnss-readout strong{font-size:11px}
+    .gnss-warning{grid-column:1/-1;font-size:8px;margin-top:2px;text-align:center;line-height:1.05}
+    #rose{flex:1 1 auto;width:100%;height:min(58dvh,calc(100dvh - 255px));min-height:280px;object-fit:contain}
+    .legend{gap:9px;font-size:9px;margin-top:2px;line-height:1}
+    .swatch{width:18px;height:3px}
+
+    /* EXECUÇÃO: transforma a tabela larga em cartões operacionais */
+    #page-execution .panel{padding:8px}
+    #page-execution .summary{margin-bottom:6px;align-items:center}
+    #page-execution .summary h2{margin:0;font-size:14px}
+    #page-execution .summary>div{font-size:11px}
+    #page-execution .table-wrap{margin:0;padding:0;overflow:visible}
+    #page-execution table,#page-execution tbody{display:block;width:100%}
+    #page-execution thead{display:none}
+    #page-execution tr{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:3px 5px;border:1px solid var(--border);border-radius:9px;padding:7px;margin-bottom:6px;background:var(--panel)}
+    #page-execution td{border:0;padding:2px;min-width:0}
+    #page-execution td.activity-title{grid-column:1/3;font-size:13px;white-space:normal;align-self:center}
+    #page-execution td.activity-detail{grid-column:1/-1;grid-row:2;font-size:10px;color:var(--muted);min-width:0;white-space:normal;line-height:1.2}
+    #page-execution td.check{min-width:0;grid-row:3;position:relative;padding-top:15px}
+    #page-execution td.check::before{position:absolute;top:1px;left:0;right:0;text-align:center;font-size:8px;color:var(--muted);font-weight:600}
+    #page-execution td.check:nth-child(3)::before{content:'TX1 PLAN'}
+    #page-execution td.check:nth-child(4)::before{content:'TX1 FEITO'}
+    #page-execution td.check:nth-child(5)::before{content:'TX2 PLAN'}
+    #page-execution td.check:nth-child(6)::before{content:'TX2 FEITO'}
+    #page-execution td.check label{min-height:32px}
+    #page-execution td:last-child{grid-column:3/5;grid-row:1;justify-self:end}
+    #page-execution .row-actions{gap:4px}
+    #page-execution .row-actions button{min-height:32px;padding:3px 6px;font-size:9px}
+    #page-execution tr.done{opacity:.48}
+    #page-execution tr.selected{outline:2px solid var(--accent);outline-offset:-1px}
+    #page-execution tr:has(td.empty){display:block;padding:18px}
+    #page-execution td.empty{display:block;text-align:center;font-size:12px}
+  }
+
+  /* telas móveis muito baixas: ganha mais área útil sem comprometer controles */
+  @media (max-width:570px) and (max-height:760px){
+    .subtitle{display:none}.topbar{margin-bottom:4px}
+    #page-rose .rose-panel{min-height:calc(100dvh - 96px)}
+    #rose{min-height:235px;height:calc(100dvh - 225px)}
+  }
+
+  /* IV-PLANNER — execução operacional v2 */
+  #mission-date{box-sizing:border-box;width:100%;min-width:0;max-width:100%}
+  .metadata>label{min-width:0}
+
+  .flight-step-panel{display:grid;grid-template-columns:1.2fr 1fr auto;gap:8px;align-items:center;
+    padding:8px 10px;margin:6px 0;border:1px solid var(--border);border-radius:10px;background:var(--bg)}
+  .step-now,.step-next{min-width:0;display:flex;flex-direction:column;gap:2px}
+  .step-kicker{font-size:9px;font-weight:800;letter-spacing:.08em;color:var(--muted)}
+  #active-step-text,#next-step-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
+  .step-notes{font-size:11px;line-height:1.3;color:var(--muted);white-space:normal;overflow-wrap:anywhere}
+  .step-now.active-tx1{border-left:4px solid var(--blue);padding-left:7px}
+  .step-now.active-tx2{border-left:4px solid var(--red);padding-left:7px}
+  .step-controls{display:grid;grid-template-columns:34px auto 34px 34px;gap:4px;align-items:center}
+  .step-controls button{min-height:34px;padding:4px 7px;font-size:11px;font-weight:800}
+  .step-controls #step-prev,.step-controls #step-next,.step-controls #step-undo{font-size:17px;padding:2px}
+
+  .direction-plan-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:5px 0 8px}.direction-plan-row .hint{font-size:10px;color:var(--muted)}
+  .direction-choice{display:inline-flex;gap:3px;align-items:center}
+  .direction-choice button{min-width:34px;min-height:30px;padding:3px 7px;font-size:10px;font-weight:800}
+  .direction-choice button.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .direction-choice .curve{font-size:17px;line-height:1;padding:2px 7px}
+  .execution-list{display:flex;flex-direction:column;gap:8px}
+  .exec-card{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;
+    border:1px solid var(--border);border-radius:11px;padding:9px;background:var(--panel);
+    transition:opacity .15s,border-color .15s,box-shadow .15s,transform .15s}
+  .exec-card.is-active{box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 70%,transparent);border-color:var(--accent)}
+  .exec-card.is-next{box-shadow:0 0 0 1px color-mix(in srgb,var(--text) 35%,transparent)}
+  .exec-card.is-done{opacity:1;position:relative;isolation:isolate}
+  .exec-card.is-done::after{content:"";position:absolute;inset:0;border-radius:inherit;background:rgba(9,11,13,.42);pointer-events:none;z-index:1}
+  .exec-card.is-done .done-live-action{position:relative;z-index:2;opacity:1;filter:none}
+  .exec-card.is-grouped{border-left:4px solid var(--group-color,var(--amber))}
+  .exec-card.is-grouped .group-badge{border-color:var(--group-color,var(--amber));color:var(--group-color,var(--amber));max-width:min(260px,55vw);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .exec-card.group-selected{box-shadow:0 0 0 2px var(--amber);border-color:var(--amber)}
+  .exec-card.dragging{opacity:.94;z-index:1000;transition:box-shadow .14s,opacity .14s;will-change:left,top;cursor:grabbing}
+  .exec-card.longpress-ready{box-shadow:0 14px 34px rgba(0,0,0,.46),0 0 0 2px color-mix(in srgb,var(--text) 65%,transparent)}
+  .exec-placeholder{border:1px dashed color-mix(in srgb,var(--accent) 55%,var(--border));border-radius:11px;background:color-mix(in srgb,var(--accent) 7%,transparent)}
+  .drag-block{position:fixed;z-index:1000;display:flex;flex-direction:column;gap:8px;margin:0;pointer-events:none}
+  .drag-block .exec-card{width:100%;opacity:.94;box-shadow:0 14px 34px rgba(0,0,0,.46)}
+  .exec-card.reflowing{transition:transform .18s cubic-bezier(.2,.8,.2,1),opacity .15s,border-color .15s,box-shadow .15s}
+  .exec-card{touch-action:pan-y;-webkit-user-select:none;user-select:none}
+  .execution-list.reordering{touch-action:none;overscroll-behavior:contain}
+  .exec-card button{touch-action:manipulation}
+  .exec-main{min-width:0}
+  .exec-head{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+  .exec-number{font-size:11px;font-weight:800;color:var(--muted)}
+  .tx-badge{font-size:10px;font-weight:800;color:#fff;border-radius:999px;padding:3px 7px}
+  .tx-badge.tx1{background:var(--blue)} .tx-badge.tx2{background:var(--red)}
+  .state-badge{font-size:9px;font-weight:800;border:1px solid var(--border);border-radius:999px;padding:2px 6px}
+  .exec-title{font-weight:700;font-size:14px;margin-top:4px}
+  .exec-detail{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.25}
+  .exec-actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+  .exec-actions button{font-size:10px;padding:5px 7px;min-height:34px}
+  .group-toolbar{position:sticky;top:max(8px,env(safe-area-inset-top));z-index:40;display:flex;gap:7px;flex-wrap:wrap;margin:0 0 10px;padding:7px;border:1px solid rgba(255,255,255,.13);border-radius:13px;background:rgba(31,34,36,.96);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 8px 20px rgba(0,0,0,.24)}.group-toolbar button{min-height:38px;font-size:11px}.group-picker{min-width:34px!important;background:transparent!important}.group-picker.selected{background:var(--amber)!important;color:#17191b!important;border-color:var(--amber)!important}
+
+  /* Tablet também usa navegação inferior */
+  @media (max-width:1100px){
+    .app{padding-bottom:calc(78px + env(safe-area-inset-bottom))}
+    .page-nav{position:fixed;left:0;right:0;bottom:0;top:auto;margin:0;
+      padding:7px 10px calc(7px + env(safe-area-inset-bottom));background:var(--panel);
+      border-top:1px solid var(--border);z-index:100;gap:6px;box-shadow:0 -3px 12px rgba(0,0,0,.10)}
+    .page-nav button{min-height:48px;border:0;background:transparent}
+    .page-nav button.active{background:var(--accent);color:#fff;border-radius:10px}
+  }
+
+  @media (max-width:570px){
+    #page-mission .metadata{grid-template-columns:1.35fr .65fr!important}
+    #page-mission .metadata label{min-width:0}
+    #page-mission .metadata>label:last-child{min-width:0;overflow:hidden;padding-right:3px}
+    #mission-date{display:block;inline-size:100%!important;width:100%!important;max-inline-size:100%!important;max-width:100%!important;min-inline-size:0!important;min-width:0!important;box-sizing:border-box!important;font-size:16px!important;padding-left:6px!important;padding-right:3px!important}
+    .rose-toolbar{grid-template-columns:34px 40px 34px 1fr 1fr 1fr 1fr!important}
+    .rose-toolbar button{font-size:9px!important;padding:3px!important}
+    .flight-step-panel{grid-template-columns:1fr auto;gap:5px;padding:6px}
+    .step-next{grid-column:1}
+    .step-controls{grid-column:2;grid-row:1/3;grid-template-columns:28px auto 28px 28px;gap:3px}
+    .step-controls button{min-height:42px;padding:3px 5px;font-size:9px}
+    .step-controls #step-prev,.step-controls #step-next,.step-controls #step-undo{font-size:16px}
+    #active-step-text,#next-step-text{font-size:10px}
+    .exec-card{grid-template-columns:1fr;gap:5px;padding:7px}
+    .exec-actions{grid-column:1;justify-content:flex-start}
+  }
+
+
+  /* Direção: IN/OUT exclusivamente para radiais; setas exclusivamente para arcos */
+  #plan-radial-direction[hidden],#plan-arc-direction[hidden]{display:none!important}
+
+
+  #export-mission{background:var(--panel)!important;color:var(--text)!important;border:1px solid var(--border)!important}
+
+
+  .saved-missions{margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
+  .saved-missions-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline;margin-bottom:7px}
+  .saved-missions-head strong{font-size:13px}.saved-missions-head .muted{font-size:9px}
+  .saved-missions-list{display:flex;flex-direction:column;gap:5px}
+  .saved-mission-item{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;border:1px solid var(--border);
+    border-radius:8px;padding:6px 7px;background:var(--bg)}
+  .saved-mission-open{border:0;background:transparent;color:var(--text);padding:2px;text-align:left;min-height:34px}
+  .saved-mission-open strong{display:block;font-size:12px}.saved-mission-open span{display:block;font-size:9px;color:var(--muted);margin-top:2px}
+  .saved-mission-delete{min-width:32px;min-height:32px;padding:2px 7px;font-size:12px}
+  .saved-mission-item.current{border-color:var(--accent)}
+  .aixm-assist{grid-column:1/-1;position:relative;margin-top:-5px}
+  .aixm-status{min-height:15px;color:var(--muted);font-size:10px;line-height:1.35;padding:0 2px}
+  .aixm-status.ok{color:#75c991}.aixm-status.warning{color:#e7b96b}
+  .aixm-results{position:absolute;z-index:80;left:0;right:0;top:19px;max-height:260px;overflow:auto;
+    border:1px solid var(--border);border-radius:12px;background:#202326;box-shadow:0 14px 30px rgba(0,0,0,.42);padding:5px}
+  .aixm-results[hidden]{display:none}
+  .aixm-result{display:block;width:100%;min-height:48px;border:0;border-radius:8px;background:transparent;padding:7px 8px;text-align:left}
+  .aixm-result:active,.aixm-result:hover,.aixm-result:focus{background:rgba(10,164,239,.14)}
+  .aixm-result strong,.aixm-result span{display:block}.aixm-result strong{font-size:12px}.aixm-result span{margin-top:2px;color:var(--muted);font-size:9px}
+
+
+  /* Coordenadas FMS: campos de texto numérico, sem valor/stepper nativo do input number */
+  #station-lat-deg,#station-lat-min,#station-lon-deg,#station-lon-min{
+    appearance:none;-webkit-appearance:none;
+  }
+
+  /* Tema IV-PLANNER cinza — regra final intencional para todo o módulo */
+  :root{color-scheme:dark!important;--bg:#17191b!important;--panel:#272a2d!important;--text:#f4f5f6!important;--muted:#adb3b9!important;--border:#51565b!important;--accent:#087fbd!important;--blue:#00a8ff!important;--red:#ff3045!important;--danger:#ff5b69!important;--soft:#34383c!important}
+  html,body{background:#17191b!important}
+
+  /* Mapa operacional alinhado ao visual atual do PAPI. */
+  #rose-panel{overflow:hidden}
+  #rose{border:1px solid rgba(255,255,255,.14);border-radius:16px;background-color:#101619;
+    background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+    background-size:30px 30px;box-shadow:inset 0 0 32px rgba(0,0,0,.26)}
+  .grid-circle{stroke:rgba(255,255,255,.32);stroke-dasharray:7 7}.axis{stroke:rgba(255,255,255,.2);stroke-dasharray:5 7}
+  .rose-stage{position:relative;flex:1 1 auto;min-height:280px}
+  .rose-stage #rose{width:100%;height:100%}
+  .map-corner-controls{position:absolute;z-index:5;top:12px;left:12px;display:grid;grid-template-columns:repeat(5,46px);gap:7px}
+  .map-corner-controls button{display:grid;place-items:center;width:46px;height:46px;min-height:46px;padding:3px;border:1px solid rgba(255,255,255,.24);border-radius:11px;background:rgba(27,31,34,.9);backdrop-filter:blur(8px);box-shadow:0 5px 14px rgba(0,0,0,.3);font-size:1.1rem}
+  .map-corner-controls button small{display:block;font-size:.48rem;line-height:1;color:#dce2e6;letter-spacing:.04em}
+  .map-readout{position:absolute;z-index:4;right:10px;bottom:10px;padding:5px 7px;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(18,21,23,.82);backdrop-filter:blur(8px);color:var(--muted);font-size:.6rem;pointer-events:none}
+  .gnss-hud{position:absolute;z-index:4;left:10px;bottom:10px;max-width:62%;padding:6px 8px;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(18,21,23,.84);backdrop-filter:blur(8px);color:var(--muted);font-size:.58rem;line-height:1.25;pointer-events:none}.gnss-hud strong{color:var(--text)}.gnss-hud .gnss-warning{margin-top:3px;font-size:.5rem}.map-corner-controls #gnss-toggle{margin-top:-5px}.map-corner-controls #gnss-toggle.gnss-on{background:rgba(57,217,138,.25);border-color:var(--green);color:var(--green)}
+  .flight-step-panel{grid-template-columns:1fr 1fr;border-color:rgba(255,255,255,.14);background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));border-radius:15px;padding:15px;gap:13px 16px;margin-bottom:8px}
+  .step-controls{grid-column:1/-1;grid-template-columns:46px minmax(82px,110px) 46px 1fr 46px;justify-self:stretch}
+  .step-controls button{min-height:42px;border-radius:10px}.step-controls #step-complete{background:var(--accent);border-color:var(--blue2);font-size:10px}.step-controls #step-undo{grid-column:5;border-color:rgba(255,176,32,.65);color:var(--amber)}
+
+  /* Sistema visual unificado com o módulo Legacy */
+  :root{--bg:#17191b!important;--panel:#24272a!important;--text:#f5f7f9!important;--muted:#aeb5bc!important;--border:#4d5359!important;--accent:#078dd1!important;--blue:#00a8ff!important;--red:#ff3045!important;--danger:#ff5b69!important;--soft:#34383c!important;--blue2:#0aa4ef;--green:#39d98a;--amber:#ffb020;--shadow:0 16px 35px rgba(0,0,0,.24)}
+  html{scroll-behavior:smooth}body{min-height:100svh;background:radial-gradient(circle at 100% 0,#44494d 0,transparent 30%),linear-gradient(155deg,#151719,#292c2f)!important;background-attachment:fixed!important;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
+  .app{width:min(1100px,100%);max-width:none;padding:18px 18px calc(96px + env(safe-area-inset-bottom))}
+  .topbar{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:14px;margin:0 0 22px!important;position:static!important}
+  .back-to-inspection{position:static!important;display:grid!important;place-items:center;width:42px;height:42px;min-height:42px;padding:0!important;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.05)!important;color:#fff!important;font-size:1.7rem!important;font-weight:500;text-decoration:none;flex:0 0 auto}
+  .module-brand small{display:block;color:var(--blue2);font-size:.68rem;font-weight:800;letter-spacing:.16em}.module-brand strong{display:block;font-size:1.18rem;font-style:italic;letter-spacing:-.03em}.module-brand span{display:block;color:var(--muted);font-size:.72rem;margin-top:3px}
+  h1{font-size:clamp(1.9rem,7vw,2.7rem);font-weight:750}h2{font-size:1.05rem;font-weight:750}.page-heading h2,.summary h2{letter-spacing:-.01em}
+  .panel{background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.035));border:1px solid var(--border);border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-bottom:14px}
+  button{border:1px solid var(--border);border-radius:13px;background:#303438;color:var(--text);font-weight:700;transition:transform .14s,background .14s,border-color .14s;-webkit-tap-highlight-color:transparent}button:active{transform:scale(.975)}button.primary{background:var(--accent);border-color:var(--blue2);color:#fff}button.danger{color:#ff8993}
+  input,select,textarea{border:1px solid #596067;border-radius:13px;background:#191b1d;color:#fff;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(10,164,239,.16)}label{color:var(--muted);font-weight:650}.activity-fields>label{display:flex;flex-direction:column;line-height:1.25}.activity-fields>label>input{margin-top:auto}
+  .coord-box,.gnss-status,.activity-fields,.flight-step-panel{background:rgba(0,0,0,.16);border-color:var(--border);border-radius:14px}.activity-fields h3,.coord-title{color:var(--text)}
+  .type-choice button.active,.direction-choice button.selected{background:var(--accent);border-color:var(--blue2);color:#fff}
+  .saved-missions{border-color:rgba(255,255,255,.1)}.saved-mission-item{background:rgba(0,0,0,.18);border-radius:12px}.saved-mission-item.current{border-color:var(--blue2);background:rgba(7,141,209,.12)}
+  .page-nav{position:fixed!important;z-index:100;left:50%!important;right:auto!important;top:auto!important;bottom:14px!important;transform:translateX(-50%);width:min(620px,calc(100% - 28px));margin:0!important;padding:7px!important;display:grid;grid-template-columns:repeat(4,1fr);gap:5px!important;border:1px solid rgba(255,255,255,.13)!important;border-radius:18px;background:rgba(22,24,26,.94)!important;backdrop-filter:blur(18px);box-shadow:0 12px 30px rgba(0,0,0,.34)!important}
+  .page-nav button{min-height:47px;border:0!important;border-radius:11px!important;background:transparent!important;color:#929aa1!important;padding:7px 3px 5px!important;font-size:.7rem!important;font-weight:750}.page-nav button::before{content:"";display:block;width:8px;height:8px;border-radius:50%;background:#5c6369;margin:0 auto 5px}.page-nav button.active{background:rgba(7,141,209,.18)!important;color:#fff!important}.page-nav button.active::before{background:var(--blue2);box-shadow:0 0 10px var(--blue2)}
+  .exec-card{border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.025));padding:11px}.exec-card.is-active{border-color:var(--blue2);box-shadow:0 0 0 2px rgba(10,164,239,.3),var(--shadow)}.exec-card.is-next{box-shadow:0 0 0 1px rgba(255,255,255,.24)}.exec-card.is-done{opacity:1}.exec-placeholder{border-radius:16px;border-color:rgba(10,164,239,.55);background:rgba(7,141,209,.08)}.state-badge,.tx-badge{border-radius:999px}.tx-badge.tx1{background:#00a8ff}.tx-badge.tx2{background:#ff3045}
+  .step-now.active-tx1{border-color:#00a8ff}.step-now.active-tx2{border-color:#ff3045}.swatch.blue{background:#00a8ff}.swatch.red{background:#ff3045}
+  #rose-panel:fullscreen{background:radial-gradient(circle at 100% 0,#44494d 0,transparent 30%),linear-gradient(155deg,#151719,#292c2f);padding:18px}.rose-toolbar button{background:#303438}.gnss-warning{color:#8f969c;letter-spacing:.025em}
+  @media(max-width:570px){.app{padding:10px 10px calc(82px + env(safe-area-inset-bottom))}.topbar{margin:0 2px 16px!important}.module-brand span{display:none}.panel{padding:11px;border-radius:17px;margin-bottom:10px}.page-nav{left:0!important;right:0!important;bottom:0!important;transform:none;width:100%;border-left:0!important;border-right:0!important;border-bottom:0!important;border-radius:0!important;padding:7px 8px calc(7px + env(safe-area-inset-bottom))!important}.page-nav button{min-height:46px!important}.coord-box{border-radius:12px}.exec-card{border-radius:14px}}
+  .mission-title-field,.mission-locality-field,.mission-date-field{grid-column:1/-1!important}.metadata>label{min-width:0}.mission-date-field input{width:100%;min-width:0;max-width:100%}
+  @media(max-width:570px){#page-mission .metadata{grid-template-columns:1fr!important}.flight-step-panel{grid-template-columns:1fr!important;padding:13px!important;gap:10px!important}.step-now,.step-next{grid-column:1!important}.step-controls{grid-column:1!important;grid-row:auto!important;grid-template-columns:43px minmax(78px,104px) 43px 1fr 43px!important;width:100%}.map-corner-controls{top:10px;left:10px;grid-template-columns:repeat(5,40px);gap:5px}.map-corner-controls button{width:40px;height:40px;min-height:40px}.rose-stage{min-height:300px}}
+
+
+  /* Mantém o cabeçalho acessível sob a barra de status e troca de abas imediata. */
+  html{scroll-behavior:auto!important}
+  @media(max-width:570px){.app{padding-top:calc(max(12px, env(safe-area-inset-top)) + 8px)!important}}
+
+  /* Ajuste iOS/Safari — campo Data contido no cartão */
+  .mission-date-field{min-width:0;overflow:hidden;padding-right:2px}
+  .mission-date-field #mission-date{display:block!important;width:calc(100% - 16px)!important;inline-size:calc(100% - 16px)!important;max-width:calc(100% - 16px)!important;max-inline-size:calc(100% - 16px)!important;min-width:0!important;box-sizing:border-box!important}
+  .rose-stage .map-color-toggle{position:absolute;z-index:5;left:50%;bottom:80px;transform:translateX(-50%);min-width:50px;min-height:44px;padding:5px 10px;border:1px solid rgba(255,255,255,.25);border-radius:999px;background:rgba(27,31,34,.78);color:var(--muted);font:700 11px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  .rose-stage .map-color-toggle[aria-pressed="true"]{border-color:var(--blue2);color:#d5f3f5;background:rgba(7,141,209,.2)}
+
+  .radar-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}.radar-fields .full{grid-column:1/-1}
+  .radar-fields label{min-width:0}.radar-fields input,.radar-fields select,.radar-fields textarea{font-size:16px}.radar-fields h3{grid-column:1/-1;margin:8px 0 0}
+  .exec-card{border-left:4px solid var(--passage-color)}.exec-card.is-active{border-color:var(--passage-color);box-shadow:0 0 0 2px color-mix(in srgb,var(--passage-color) 40%,transparent)}
+  .step-now{border-left:4px solid var(--passage-color,#00a8ff);padding-left:7px}.radar-type{color:var(--passage-color);border:1px solid currentColor}
+  .exec-card.is-done .radar-type{position:relative;z-index:2}.radar-plan-list{display:grid;gap:8px;margin-top:15px}.radar-plan-list .exec-card{grid-template-columns:1fr auto}
+  .radar-check{display:flex;gap:8px;align-items:center}.radar-check input{width:21px}
+  @media(max-width:700px){.radar-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:570px){.radar-fields{grid-template-columns:1fr}.radar-plan-list .exec-card{grid-template-columns:1fr}}
+</style>
+  <script src="../global-nav.js?v=20260922-1" defer></script>
+  <link rel="stylesheet" href="../page-ui.css?v=20260922-1">
+  <script src="../page-ui.js?v=20260922-1" defer></script>
+</head>
+<body>
+<main class="app">
+  <div class="topbar">
+    <a class="back-to-inspection" href="index.html" aria-label="Voltar para Inspeção em Voo">‹</a>
+    <div class="module-brand"><small>IV-PLANNER</small><strong>Radar</strong><span>Planejamento e acompanhamento da inspeção</span></div>
+  </div>
+
+  <nav class="page-nav" aria-label="Páginas do aplicativo">
+    <button type="button" class="active" data-page="mission">Missão</button>
+    <button type="button" data-page="plan">Planejar</button>
+    <button type="button" data-page="rose">Mapa</button>
+    <button type="button" data-page="execution">Execução</button>
+  </nav>
+
+  <section class="app-page" id="page-mission">
+    <section class="panel">
+      <div class="page-heading"><h2>Identificação da missão</h2></div>
+      <div class="metadata">
+        <label class="mission-title-field">Nome da missão<input id="mission-title" placeholder="Ex.: Missão Norte 01" autocomplete="off"></label>
+        <label class="mission-locality-field">Localidade / sítio<input id="mission-name" placeholder="Ex.: SBRJ ou Santos Dumont" autocomplete="off" aria-autocomplete="list" list="airport-options"></label>
+        <input id="mission-number" type="hidden">
+        <label class="mission-date-field">Data<input id="mission-date" type="date" lang="pt-BR" aria-label="Data da missão"></label>
+      </div>
+      <div class="gnss-grid">
+        <div class="coord-box">
+          <div class="coord-title">Latitude do auxílio — formato FMS (GG MM.MM)</div>
+          <div class="coord-parts">
+            <label>Graus<input id="station-lat-deg" type="text" inputmode="numeric" maxlength="2" placeholder="08" autocomplete="off"></label>
+            <label>Minutos<input id="station-lat-min" type="text" inputmode="decimal" maxlength="5" placeholder="42.83" autocomplete="off"></label>
+            <label>Hemisfério<select id="station-lat-hemi"><option>N</option><option selected>S</option></select></label>
+          </div>
+        </div>
+        <div class="coord-box">
+          <div class="coord-title">Longitude do auxílio — formato FMS (GGG MM.MM)</div>
+          <div class="coord-parts lon">
+            <label>Graus<input id="station-lon-deg" type="text" inputmode="numeric" maxlength="3" placeholder="063" autocomplete="off"></label>
+            <label>Minutos<input id="station-lon-min" type="text" inputmode="decimal" maxlength="5" placeholder="54.20" autocomplete="off"></label>
+            <label>Hemisfério<select id="station-lon-hemi"><option>E</option><option selected>W</option></select></label>
+          </div>
+        </div>
+        <div class="coord-box">
+          <div class="coord-title">Declinação magnética do auxílio</div>
+          <div class="coord-parts">
+            <label>Valor (°)<input id="station-magvar" type="number" min="0" max="90" step="0.01" inputmode="decimal" placeholder="14.43"></label>
+            <label>Sentido<select id="station-magvar-hemi"><option>E</option><option selected>W</option></select></label>
+          </div>
+        </div>
+      </div>
+<div class="radar-fields"><label>Tipo<select id="radar-inspection"><option>Homologação</option><option>Aceitação</option><option>Periódica</option><option>Especial</option></select></label><label>Identificação do Radar<input id="radar-radar" type="text"></label><label>Emprego<select id="radar-kind"><option>Terminal</option><option>Rota</option><option>Terminal e rota</option></select></label><label>Altitude da antena (ft MSL)<input id="radar-alt" type="number" step="any" inputmode="decimal"></label><h3>Orientação e acuracidade</h3><label>Radial / azimute magnético (°)<input id="radar-radial" type="number" step="any" inputmode="decimal"></label><label>Altitude orientação (ft MSL)<input id="radar-orialt" type="number" step="any" inputmode="decimal"></label><label>Distância orientação (NM)<input id="radar-oridist" type="number" step="any" inputmode="decimal"></label><h3>Cobertura horizontal · P1</h3><p class="full muted">Altitude P1 = maior obstáculo + 300 ft MSL. Órbita de 15 NM entre 10 e 20 NM.</p><label>Maior obstáculo (ft MSL)<input id="radar-p1obstacle" type="number" step="any" inputmode="decimal"></label><h3>Cobertura vertical · P2</h3><label>P2 +1.000 ft · distância (NM)<input id="radar-d1" type="number" step="any" inputmode="decimal"></label><label>P2 +5.000 ft · distância (NM)<input id="radar-d5" type="number" step="any" inputmode="decimal"></label><label>P2 +10.000 ft · distância (NM)<input id="radar-d10" type="number" step="any" inputmode="decimal"></label><label>P2 +20.000 ft · distância (NM)<input id="radar-d20" type="number" step="any" inputmode="decimal"></label><label>P2 +30.000 ft · distância (NM)<input id="radar-d30" type="number" step="any" inputmode="decimal"></label><label class="full radar-check"><input id="radar-modes" type="checkbox">Incluir modos/códigos 0707, 7070, 3500, 3600 e 3700 nas P2</label><label>Código transponder<input id="radar-xpdr" type="text"></label><label class="full">Observações<textarea id="radar-notes"></textarea></label></div><button id="save-radar-aid" type="button">Salvar auxílio Radar</button><p class="muted" id="aid-status">A coordenada da localidade é inicial; ajuste para a antena antes de salvar.</p><datalist id="airport-options"></datalist>      <div class="saved-missions">
+        <div class="saved-missions-head">
+          <strong>Missões salvas</strong>
+          <span class="muted">Acesso rápido neste aparelho</span>
+        </div>
+        <div id="saved-missions-list" class="saved-missions-list"></div>
+      </div>
+      <div class="mission-actions">
+        <button id="new-mission" type="button">Nova missão</button>
+        <button id="import-btn" type="button">Importar missão</button>
+        <button id="export-mission" type="button">Exportar missão</button>
+        <button id="save-mission" type="button">Salvar missão</button>
+        <button class="primary" id="mission-ok" type="button">OK</button>
+        <input id="import-file" type="file" accept="application/json,.json" hidden>
+      </div>
+    </section>
+  </section>
+
+  <section class="app-page" id="page-plan" hidden>
+    <section class="panel">
+      <div class="form-actions"><button id="generate-package" class="primary" type="button">Gerar pacote básico</button></div>
+      <h2 id="form-title">Adicionar passagem</h2>
+      <form id="activity-form" novalidate>
+        <div class="radar-fields">
+          <label>Tipo<select id="activity-kind"><option value="P1">P1 · Cobertura horizontal</option><option value="P2" selected>P2 · Cobertura vertical</option><option value="ORI">Orientação e acuracidade</option></select></label>
+          <label id="manual-radial-label">Radial magnética (°)<input id="manual-radial" type="number" step="any" inputmode="decimal"></label>
+          <label id="manual-radius-label" hidden>Raio (NM)<input id="manual-radius" type="number" step="any" inputmode="decimal" value="15"></label>
+          <label>Distância inicial (NM)<input id="manual-start" type="number" step="any" inputmode="decimal" value="0"></label>
+          <label>Distância final (NM)<input id="manual-end" type="number" step="any" inputmode="decimal"></label>
+          <label>Altitude (ft MSL)<input id="manual-alt" type="number" step="any" inputmode="decimal"></label>
+          <label class="full">Título<input id="activity-description" maxlength="100"></label>
+          <label class="full">Observações<textarea id="activity-notes"></textarea></label>
+        </div>
+        <div id="form-error" class="error" role="alert"></div>
+        <div class="form-actions"><button id="save-activity" class="primary" type="submit">Adicionar passagem</button><button id="cancel-edit" type="button" hidden>Cancelar edição</button></div>
+      </form><div id="plan-list" class="radar-plan-list"></div>
+    </section>
+  </section>
+
+  <section class="app-page rose-page" id="page-rose" hidden>
+    <section class="panel rose-panel" id="rose-panel">
+      <div class="summary">
+        <h2>Mapa da missão</h2>
+        <div><strong id="progress-rose">0/0 passagens feitas</strong> · <span id="scale-info" class="muted">Escala: 10 NM</span></div>
+      </div>
+      <div class="flight-step-panel" id="flight-step-panel">
+        <div class="step-now">
+          <span class="step-kicker">ATUAL</span>
+          <strong id="active-step-text">Nenhuma passagem ativa</strong>
+          <span id="active-step-notes" class="step-notes">—</span>
+        </div>
+        <div class="step-next">
+          <span class="step-kicker">PRÓXIMA</span>
+          <span id="next-step-text">—</span>
+          <span id="next-step-notes" class="step-notes">—</span>
+        </div>
+        <div class="step-controls" aria-label="Controles da passagem ativa">
+          <button id="step-prev" type="button" title="Passagem anterior">←</button>
+          <button class="primary" id="step-complete" type="button">Concluir</button>
+          <button id="step-next" type="button" title="Próxima passagem">→</button>
+          <button id="step-undo" type="button" title="Desfazer última conclusão">↶</button>
+        </div>
+      </div>
+      <div class="rose-stage">
+        <svg id="rose" viewBox="0 0 500 500" role="img" aria-labelledby="rose-title rose-desc">
+          <title id="rose-title">Mapa Radar da missão</title>
+          <desc id="rose-desc">Orientação azul, P1 laranja e P2 verde.</desc>
+          <g id="map-world"><g id="rose-grid"></g><g id="rose-lines"></g><g id="aircraft-layer"></g></g>
+        </svg>
+        <div class="map-corner-controls" aria-label="Controles do mapa">
+          <button id="zoom-out" type="button" aria-label="Reduzir zoom">−</button>
+          <button id="zoom-in" type="button" aria-label="Aumentar zoom">+</button>
+          <button id="center-aircraft" type="button" aria-label="Centralizar na aeronave"><span>✈</span><small>ANV</small></button>
+          <button id="center-aid" type="button" aria-label="Centralizar no auxílio"><span>◎</span><small>AUX</small></button>
+          <button id="gnss-toggle" type="button" aria-label="Ligar ou desligar posição GNSS"><span>⌖</span><small>GPS</small></button>
+        </div>
+        <button id="map-profile" class="map-color-toggle" type="button" aria-pressed="false">PERFIL</button>
+        <div class="gnss-hud" aria-live="polite">
+          <div id="gnss-readout"><strong>GNSS desligado</strong></div>
+          <div class="gnss-warning">POSIÇÃO AUXILIAR — NÃO UTILIZAR PARA NAVEGAÇÃO OU COMO DADO DE INSPEÇÃO.</div>
+        </div>
+        <span id="map-readout" class="map-readout" aria-live="polite">Zoom 100% · Giro 0°</span>
+      </div>
+      <div class="legend"><span style="color:#00a8ff">● Orientação</span><span style="color:#ffb020">● P1</span><span style="color:#39d98a">● P2</span></div>
+    </section>
+  </section>
+
+  <section class="app-page execution-page" id="page-execution" hidden>
+    <section class="panel">
+      <div class="summary">
+        <h2>Execução da missão</h2>
+        <div><strong id="progress">0/0 passagens feitas</strong></div>
+      </div>
+
+      <div id="execution-list" class="execution-list" aria-live="polite"></div>
+    </section>
+  </section>
+</main>
+
+<script src="../prevoo/legacy-data.js"></script>
+<script>
+
+(() => {
+  'use strict';
+  const STORAGE_KEY='ivplanner-radar-current-v1', MISSIONS_LIBRARY_KEY='ivplanner-radar-v1';
+  const $=selector=>document.querySelector(selector), svgNS='http://www.w3.org/2000/svg', center=250,radius=190;
+  let mission,editingId=null,selectedId=null,currentPage='mission',viewZoom=1,viewX=center,viewY=center,viewRotation=0,lastPinch=null,lastAngle=null;
+  const pointers=new Map(); let gnssWatchId=null,lastPosition=null,dragState=null,autoScrollFrame=null,completionHistory=[],vertical=false;
+  const fields=["inspection", "radar", "kind", "alt", "radial", "orialt", "oridist", "p1obstacle", "d1", "d5", "d10", "d20", "d30", "xpdr", "notes"];
+  const fresh=()=>({schema:'ivplanner-radar-v2',savedMissionId:null,metadata:{missionTitle:'',name:'',date:new Date().toLocaleDateString('sv-SE'),stationLat:'',stationLon:'',magVar:'',magVarDir:'W',inspection:'Homologação',kind:'Terminal'},activities:[],activeId:null});
+  const readStore=(key,fallback)=>{try{const x=JSON.parse(localStorage.getItem(key)||'null');return x===null?fallback:x}catch{return fallback}};
+  const norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().trim();
+  const color=a=>a.kind==='P1'?'#ffb020':a.kind==='P2'?'#39d98a':'#00a8ff';
+  const safeNumber=x=>x===null||x===undefined||String(x).trim()===''?'':Number.isFinite(num(x))?num(x):'';
+  function convert(data){
+    if(!data||typeof data!=='object')throw Error('Missão inválida');
+    let out;
+    if(data.metadata&&Array.isArray(data.activities))out={...fresh(),...data,metadata:{...fresh().metadata,...data.metadata},activities:data.activities.map(a=>({...a}))};
+    else if(data.m&&Array.isArray(data.a)){
+      const m=data.m;out={...data,...fresh(),savedMissionId:data.savedMissionId||data.id||null,legacy:data,metadata:{...m,missionTitle:m.title||'',name:m.site||'',stationLat:safeNumber(m.lat),stationLon:safeNumber(m.lon),magVar:m.magVar??m.magvar??'',magVarDir:m.magVarDir||m.magvarhemi||'W'},activities:data.a.map(a=>({...a,kind:a.t,type:a.t==='P1'?'arc':'radial',description:a.title||a.t,azimuth:safeNumber(a.r),start:safeNumber(a.start??a.s) || 0,end:safeNumber(a.e),radius:safeNumber(a.radius),notes:a.note||'',direction:a.direction||(a.t==='P1'?'cw':'outbound')})),activeId:data.active||null};
+    }else throw Error('Formato de missão inválido');
+    const ids=new Set();out.activities=out.activities.filter(a=>a&&typeof a==='object').map(a=>{
+      const kind=['ORI','P1','P2'].includes(a.kind||a.t)?a.kind||a.t:(a.type==='arc'?'P1':'P2');
+      let id=String(a.id||'');if(!id||ids.has(id))id='r-'+Date.now()+'-'+Math.random().toString(36).slice(2,9);ids.add(id);
+      const b={...a,id,kind,type:kind==='P1'?'arc':'radial',description:String(a.description||a.title||kind),notes:String(a.notes||a.note||''),done:!!a.done,alt:safeNumber(a.alt),start:safeNumber(a.start)||0,end:safeNumber(a.end),radius:safeNumber(a.radius),azimuth:safeNumber(a.azimuth),direction:a.direction||(kind==='P1'?'cw':'outbound')};
+      delete b.tx;delete b.groupId;delete b.groupColor;delete b.groupName;
+      return b;
+    });out.schema='ivplanner-radar-v2';return out;
+  }
+  function syncMetadata(){
+    const st=stationCoords();mission.metadata={...mission.metadata,missionTitle:$('#mission-title').value,name:$('#mission-name').value,date:formatDateBR($('#mission-date').value),stationLat:st?st.lat:'',stationLon:st?st.lon:'',magVar:$('#station-magvar').value,magVarDir:$('#station-magvar-hemi').value,modes:$('#radar-modes').checked};
+    fields.forEach(k=>mission.metadata[k]=$('#radar-'+k).value);
+  }
+  function save(){try{preserveLegacy(STORAGE_KEY);localStorage.setItem(STORAGE_KEY,JSON.stringify(mission))}catch{alert('Não foi possível salvar neste aparelho. Exporte a missão para preservar as alterações.')}}
+  function load(){
+    try{mission=convert(readStore(STORAGE_KEY,fresh()))}catch{mission=fresh()}
+    const m=mission.metadata;$('#mission-title').value=m.missionTitle||'';$('#mission-name').value=m.name||'';$('#mission-date').value=dateBRToISO(m.date);
+    for(const [axis,key] of [['lat','stationLat'],['lon','stationLon']]){
+      const value=m[key],p=value===''||value===null||value===undefined?{deg:'',min:'',hemi:axis==='lat'?'S':'W'}:decimalToFms(value,axis);
+      for(const part of ['deg','min','hemi'])$('#station-'+axis+'-'+part).value=p[part];
+    }
+    $('#station-magvar').value=m.magVar??'';$('#station-magvar-hemi').value=m.magVarDir||'W';
+    fields.forEach(k=>{const e=$('#radar-'+k);e.value=m[k]??(k==='inspection'?'Homologação':k==='kind'?'Terminal':'');if(e.tagName==='SELECT'&&!e.value&&m[k]){e.add(new Option(m[k],m[k]));e.value=m[k]}});$('#radar-modes').checked=!!m.modes;
+    completionHistory=[];ensureActive();
+  }
+  function getMissionLibrary(){
+    const raw=readStore(MISSIONS_LIBRARY_KEY,[]),items=Array.isArray(raw)?raw:Array.isArray(raw.missions)?raw.missions:raw.m&&raw.a?[raw]:[];
+    return items.map((x,i)=>{try{const m=convert(x);m.savedMissionId=m.savedMissionId||'legacy-radar-'+i;return m}catch{return null}}).filter(Boolean);
+  }
+  function preserveLegacy(key){const raw=localStorage.getItem(key);if(raw!==null&&!localStorage.getItem(key+'-pre-v2')){let x;try{x=JSON.parse(raw)}catch{return}if((Array.isArray(x)&&x.some(m=>m?.m))||x?.m||x?.missions)localStorage.setItem(key+'-pre-v2',raw)}}
+  function setMissionLibrary(items){preserveLegacy(MISSIONS_LIBRARY_KEY);localStorage.setItem(MISSIONS_LIBRARY_KEY,JSON.stringify(items))}
+  function saveMissionToLibrary(){syncMetadata();if(!mission.savedMissionId)mission.savedMissionId='radar-m-'+Date.now();const items=getMissionLibrary(),i=items.findIndex(x=>x.savedMissionId===mission.savedMissionId),copy=JSON.parse(JSON.stringify(mission));copy.savedAt=new Date().toISOString();if(i<0)items.unshift(copy);else items[i]=copy;try{setMissionLibrary(items);save();renderSavedMissions()}catch{alert('Não foi possível salvar a missão. Exporte o JSON.')}}
+  function openSavedMission(id){const m=getMissionLibrary().find(x=>x.savedMissionId===id);if(!m)return;mission=m;save();load();resetForm();fitMission();renderAll();renderSavedMissions();showPage('mission')}
+  function deleteSavedMission(id){if(!confirm('Excluir esta missão da lista de missões salvas?'))return;setMissionLibrary(getMissionLibrary().filter(x=>x.savedMissionId!==id));if(mission.savedMissionId===id)mission.savedMissionId=null;save();renderSavedMissions()}
+  function renderSavedMissions(){const list=$('#saved-missions-list');list.replaceChildren();const items=getMissionLibrary();if(!items.length){const p=document.createElement('p');p.className='muted';p.textContent='Nenhuma missão salva.';list.append(p)}items.forEach(m=>{const row=document.createElement('div');row.className='saved-mission-item'+(m.savedMissionId===mission.savedMissionId?' current':'');const open=document.createElement('button');open.className='saved-mission-open';const t=document.createElement('strong'),d=document.createElement('span');t.textContent=m.metadata.missionTitle||m.metadata.radar||m.metadata.name||'Missão sem nome';d.textContent=formatDateBR(m.metadata.date)+' · '+m.activities.length+' passagens';open.append(t,d);open.onclick=()=>openSavedMission(m.savedMissionId);const del=actionButton('×',()=>deleteSavedMission(m.savedMissionId),'saved-mission-delete');row.append(open,del);list.append(row)})}
+  function exportMission(){syncMetadata();save();const u=URL.createObjectURL(new Blob([JSON.stringify(mission,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=u;a.download='IV-PLANNER-Radar-missao.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+  function importMission(file){if(!file||file.size>5*1024*1024){alert('Arquivo de missão muito grande.');return}const r=new FileReader();r.onload=()=>{try{const m=convert(JSON.parse(r.result));mission=m;save();load();resetForm();fitMission();renderAll();renderSavedMissions();showPage('mission')}catch{alert('Arquivo de missão inválido.')}};r.readAsText(file)}
+  function activeIndex(){return mission.activities.findIndex(a=>a.id===mission.activeId);}
+
+  function activeStep(){return mission.activities[activeIndex()]||null;}
+
+  function nextStep(){
+    const i=activeIndex();
+    if(i<0)return mission.activities.find(a=>!a.done)||null;
+    return mission.activities.slice(i+1).find(a=>!a.done)||mission.activities.find((a,j)=>j<i&&!a.done)||null;
+  }
+
+  function pendingStep(direction){
+    const i=activeIndex();
+    if(i<0)return mission.activities.find(a=>!a.done)||null;
+    for(let j=i+direction;j>=0&&j<mission.activities.length;j+=direction){
+      if(!mission.activities[j].done)return mission.activities[j];
+    }
+    return null;
+  }
+
+  function ensureActive(){
+    const a=activeStep();
+    if(!a || a.done) mission.activeId=(mission.activities.find(x=>!x.done)||{}).id||null;
+  }
+
+  function showPage(page){
+    currentPage=page;
+    document.querySelectorAll('.app-page').forEach(el=>el.hidden=el.id!==`page-${page}`);
+    document.querySelectorAll('.page-nav button').forEach(btn=>btn.classList.toggle('active',btn.dataset.page===page));
+    window.scrollTo({top:0,behavior:'instant'});
+    if(page==='rose'){renderRose();applyView();}
+    if(page==='execution')renderTable();
+  }
+
+
+
+  function formatDateBR(value){
+    const v=String(value||'').trim();
+    if(/^\d{2}\/\d{2}\/\d{4}$/.test(v))return v;
+    const m=v.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    return m?`${m[3]}/${m[2]}/${m[1]}`:v;
+  }
+
+  function dateBRToISO(value){
+    const v=String(value||'').trim();
+    if(/^\d{4}-\d{2}-\d{2}$/.test(v))return v;
+    const m=v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    return m?`${m[3]}-${m[2]}-${m[1]}`:'';
+  }
+
+  function num(value){const normalized=String(value).trim().replace(',','.');return normalized===''?NaN:Number(normalized);}
+
+  function fmt(value){return Number(value).toLocaleString('pt-BR',{maximumFractionDigits:1});}
+
+  function point(bearing,distance,offset=0){
+    const angle=bearing*Math.PI/180, length=radius*distance/maxDistance();
+    return{x:center+length*Math.sin(angle)+offset*Math.cos(angle),y:center-length*Math.cos(angle)+offset*Math.sin(angle)};
+  }
+
+  function svgEl(name,attrs={}){const node=document.createElementNS(svgNS,name);Object.entries(attrs).forEach(([k,v])=>node.setAttribute(k,v));return node;}
+
+  function niceRings(max){
+    const steps=[1,2,5,10,20,25,50,100,200,500];
+    const step=steps.find(v=>max/v<=5.5)||max, rings=[];
+    for(let d=step;d<max;d+=step)rings.push(Number(d.toFixed(1)));
+    rings.push(max);return rings;
+  }
+
+  function drawGrid(){
+    const grid=$('#rose-grid');grid.replaceChildren();const max=maxDistance();
+    niceRings(max).forEach(d=>{const r=radius*d/max;grid.append(svgEl('circle',{cx:center,cy:center,r,class:'grid-circle'}));const t=svgEl('text',{x:center+5,y:center-r+14,class:'grid-label'});t.textContent=`D${fmt(d)}`;grid.append(t);});
+    [[0,-1,'N'],[1,0,'E'],[0,1,'S'],[-1,0,'W']].forEach(([dx,dy,label])=>{grid.append(svgEl('line',{x1:center,y1:center,x2:center+dx*radius,y2:center+dy*radius,class:'axis'}));const t=svgEl('text',{x:center+dx*(radius+17),y:center+dy*(radius+17)+4,'text-anchor':'middle',class:'cardinal'});t.textContent=label;grid.append(t);});
+    grid.append(svgEl('circle',{cx:center,cy:center,r:4,fill:'var(--text)'}));
+  }
+
+  function toRad(v){return v*Math.PI/180;}
+
+  function toDeg(v){return v*180/Math.PI;}
+
+  function fmsToDecimal(degValue,minValue,hemi,isLat){
+    const deg=num(degValue),min=num(minValue),limit=isLat?90:180;if(!Number.isFinite(deg)||!Number.isFinite(min)||deg<0||deg>limit||min<0||min>=60||(deg===limit&&min>0))return NaN;
+    const sign=(hemi==='S'||hemi==='W')?-1:1;return sign*(deg+min/60);
+  }
+
+
+  function decimalToFms(value,type){
+    const v=Number(value);if(!Number.isFinite(v))return{deg:'',min:'',hemi:type==='lat'?'S':'W'};const total=Math.round(Math.abs(v)*6000)/100,deg=Math.floor(total/60),min=(total-deg*60).toFixed(2).padStart(5,'0');return{deg:String(deg).padStart(type==='lat'?2:3,'0'),min,hemi:type==='lat'?(v<0?'S':'N'):(v<0?'W':'E')};
+  }
+
+  function stationCoords(){
+    const num=id=>{const s=String($(id).value||'').trim().replace(',','.');return s===''?NaN:Number(s);};
+    const latDeg=num('#station-lat-deg'),latMin=num('#station-lat-min');
+    const lonDeg=num('#station-lon-deg'),lonMin=num('#station-lon-min');
+    if(![latDeg,latMin,lonDeg,lonMin].every(Number.isFinite)||latDeg<0||latDeg>90||lonDeg<0||lonDeg>180||latMin<0||latMin>=60||lonMin<0||lonMin>=60||(latDeg===90&&latMin>0)||(lonDeg===180&&lonMin>0))return null;
+    let lat=latDeg+latMin/60,lon=lonDeg+lonMin/60;
+    if($('#station-lat-hemi').value==='S')lat=-lat;
+    if($('#station-lon-hemi').value==='W')lon=-lon;
+    return {lat,lon};
+  }
+
+  function normalizeStationCoordInputs(){
+    const st=stationCoords();if(!st)return;
+    const lat=decimalToFms(st.lat,'lat'),lon=decimalToFms(st.lon,'lon');
+    $('#station-lat-deg').value=lat.deg;$('#station-lat-min').value=lat.min;$('#station-lat-hemi').value=lat.hemi;
+    $('#station-lon-deg').value=lon.deg;$('#station-lon-min').value=lon.min;$('#station-lon-hemi').value=lon.hemi;
+  }
+
+  function magneticVariation(){
+    const value=num($('#station-magvar').value);
+    if(!Number.isFinite(value)||value<0||value>90)return 0;
+    return $('#station-magvar-hemi').value==='W'?-value:value;
+  }
+
+  function trueToMagnetic(trueBearing){return (trueBearing-magneticVariation()+360)%360;}
+
+  function bearingDistance(lat1,lon1,lat2,lon2){
+    const Rnm=3440.065,p1=toRad(lat1),p2=toRad(lat2),dp=toRad(lat2-lat1),dl=toRad(lon2-lon1);
+    const a=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2;
+    const d=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))*Rnm;
+    const y=Math.sin(dl)*Math.cos(p2),x=Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl);
+    return{distance:d,bearing:(toDeg(Math.atan2(y,x))+360)%360};
+  }
+
+  function mapAircraftChoice(){try{return JSON.parse(localStorage.getItem('ivplanner-visual-preferences-v1')||'{}').aircraft==='hawker'?'hawker':'legacy'}catch{return'legacy'}}
+
+  function updateGnssReadout(){
+    const out=$('#gnss-readout');if(!out)return;if(!lastPosition){out.innerHTML='<strong>GNSS aguardando posição…</strong>';return;}
+    const st=stationCoords();if(!st){out.innerHTML='<strong>Informe latitude e longitude do auxílio.</strong>';return;}
+    const c=lastPosition.coords,bd=bearingDistance(st.lat,st.lon,c.latitude,c.longitude),rdl=trueToMagnetic(bd.bearing);
+    const acc=Number.isFinite(c.accuracy)?Math.round(c.accuracy):'—';
+    const gs=Number.isFinite(c.speed)?Math.round(c.speed*1.943844):'—';
+    const trk=Number.isFinite(c.heading)&&c.speed>0.5?Math.round(trueToMagnetic(c.heading)):'—';
+    out.innerHTML=`<strong>RDL ${fmt(rdl)}° · DST ${fmt(bd.distance)} NM · GS ${gs} kt · TRK ${trk}° · ±${acc} m</strong>`;
+  }
+
+  function setGnssButton(on){const button=$('#gnss-toggle');button.classList.toggle('gnss-on',on);button.innerHTML=`<span>⌖</span><small>${on?'ON':'GPS'}</small>`;button.setAttribute('aria-label',on?'Desativar posição GNSS':'Ativar posição GNSS');}
+
+  function stopGnss(){if(gnssWatchId!==null&&navigator.geolocation)navigator.geolocation.clearWatch(gnssWatchId);gnssWatchId=null;lastPosition=null;setGnssButton(false);$('#gnss-readout').innerHTML='<strong>GNSS desligado</strong>';drawAircraft();}
+
+  function toggleGnss(){
+    if(gnssWatchId!==null){stopGnss();return;}if(!stationCoords()){alert('Informe primeiro a latitude e a longitude do auxílio na página Missão.');showPage('mission');return;}
+    if(!navigator.geolocation){alert('Geolocalização não disponível neste aparelho.');return;}
+    setGnssButton(true);$('#gnss-readout').innerHTML='<strong>Solicitando posição…</strong>';
+    gnssWatchId=navigator.geolocation.watchPosition(pos=>{lastPosition=pos;updateGnssReadout();drawAircraft();},err=>{const msg=err.code===1?'Permissão de localização negada. Ative a Localização para este app/site nos Ajustes do iPhone.':'Não foi possível obter a posição GNSS.';$('#gnss-readout').innerHTML=`<strong>${msg}</strong>`;},{enableHighAccuracy:true,maximumAge:1000,timeout:15000});
+  }
+
+  function directionLabel(a){
+    if(a.type==='arc')return a.direction==='ccw'?'ANTI-HORÁRIO':'HORÁRIO';
+    return a.direction==='inbound'?'INBOUND':'OUTBOUND';
+  }
+
+  function setActivityDirection(id,direction){
+    const a=mission.activities.find(x=>x.id===id);if(!a)return;
+    a.direction=direction;save();renderAll();
+  }
+
+  function actionButton(text,handler,kind=''){const b=document.createElement('button');b.type='button';b.className=`small ${kind}`;b.textContent=text;b.addEventListener('click',e=>{e.stopPropagation();handler();});return b;}
+
+  function setActive(id){const a=mission.activities.find(x=>x.id===id);if(!a||a.done)return;mission.activeId=id;save();renderAll();}
+
+  function completeActive(){
+    ensureActive();const a=activeStep();if(!a||a.done)return;
+    completionHistory.push({id:a.id,activeId:a.id});
+    a.done=true;const n=nextStep();mission.activeId=n?n.id:null;save();renderAll();
+  }
+
+  function undoComplete(){
+    let rec=completionHistory.pop();
+    let a=rec&&mission.activities.find(x=>x.id===rec.id);
+    if(!a){
+      for(let i=mission.activities.length-1;i>=0;i--){
+        if(mission.activities[i].done){a=mission.activities[i];break;}
+      }
+    }
+    if(!a)return;
+    a.done=false;mission.activeId=a.id;save();renderAll();
+  }
+
+  function restoreActivity(id){
+    const a=mission.activities.find(item=>item.id===id);if(!a||!a.done)return;
+    a.done=false;mission.activeId=a.id;
+    for(let i=completionHistory.length-1;i>=0;i--)if(completionHistory[i].id===id)completionHistory.splice(i,1);
+    save();renderAll();
+  }
+
+  function moveActive(direction){
+    const target=pendingStep(direction);
+    if(!target)return;
+    mission.activeId=target.id;
+    save();renderAll();
+  }
+
+  function persistVisualOrder(){
+    const ids=[...$('#execution-list').querySelectorAll('.exec-card')].map(x=>x.dataset.id);
+    mission.activities.sort((a,b)=>ids.indexOf(a.id)-ids.indexOf(b.id));save();
+  }
+
+  function animateExecutionReflow(change){
+    const cards=[...$('#execution-list').querySelectorAll('.exec-card:not(.dragging)')];
+    const before=new Map(cards.map(el=>[el,el.getBoundingClientRect().top]));
+    change();
+    cards.forEach(el=>{
+      const dy=before.get(el)-el.getBoundingClientRect().top;if(!dy)return;
+      el.classList.add('reflowing');el.style.transform=`translateY(${dy}px)`;
+      void el.offsetWidth;
+      requestAnimationFrame(()=>{el.style.transform='';});
+      el.addEventListener('transitionend',()=>el.classList.remove('reflowing'),{once:true});
+    });
+  }
+
+  function moveDraggedCard(card,x,y){
+    if(!dragState)return;
+    dragState.lastX=x;dragState.lastY=y;
+    dragState.floating.style.left=`${x-dragState.offsetX}px`;
+    dragState.floating.style.top=`${y-dragState.offsetY}px`;
+    const dragged=new Set(dragState.cards);
+    const target=document.elementsFromPoint(x,y).map(el=>el.closest?.('.exec-card')).find(el=>el&&!dragged.has(el));
+    if(!target)return;
+    const placeholder=dragState.placeholder,rect=target.getBoundingClientRect();
+    const reference=y<rect.top+rect.height/2?target:target.nextSibling;
+    if(reference===placeholder||reference===placeholder.nextSibling)return;
+    animateExecutionReflow(()=>$('#execution-list').insertBefore(placeholder,reference));
+  }
+
+  function stopAutoScroll(){if(autoScrollFrame!==null)cancelAnimationFrame(autoScrollFrame);autoScrollFrame=null;}
+
+  function updateAutoScroll(y){
+    if(!dragState)return;dragState.edgeY=y;if(autoScrollFrame!==null)return;
+    const tick=()=>{
+      if(!dragState){autoScrollFrame=null;return;}
+      const viewport=window.visualViewport,viewportTop=viewport?.offsetTop||0,viewportBottom=viewportTop+(viewport?.height||window.innerHeight);
+      const navTop=$('.page-nav')?.getBoundingClientRect().top;
+      const topLimit=viewportTop+8,bottomLimit=Number.isFinite(navTop)?Math.min(viewportBottom,navTop-8):viewportBottom-8;
+      const edge=112,yPos=dragState.edgeY;let speed=0;
+  if(yPos<topLimit+edge)speed=-Math.ceil(Math.max(0,(topLimit+edge-yPos)/edge)*240);
+  else if(yPos>bottomLimit-edge)speed=Math.ceil(Math.max(0,(yPos-(bottomLimit-edge))/edge)*240);
+      if(speed){window.scrollBy(0,speed);moveDraggedCard(dragState.card,dragState.lastX,dragState.lastY);}
+      autoScrollFrame=requestAnimationFrame(tick);
+    };
+    autoScrollFrame=requestAnimationFrame(tick);
+  }
+
+  function neutralPoint(target){
+    return !target.closest('button,input,select,textarea,a,label');
+  }
+
+  function installLongPressDrag(card){
+    let timer=null,armed=false,startX=0,startY=0,lastX=0,lastY=0;
+    let suppressClick=false;
+    let mousePointerId=null,mouseTracking=false,mouseCaptureTarget=null;
+
+    const clearArm=()=>{if(timer){clearTimeout(timer);timer=null;}};
+
+    function stopMouseTracking(){
+      if(!mouseTracking)return;
+      mouseTracking=false;
+      window.removeEventListener('pointermove',handleMouseMove,true);
+      window.removeEventListener('pointerup',handleMouseEnd,true);
+      window.removeEventListener('pointercancel',handleMouseEnd,true);
+      window.removeEventListener('blur',handleMouseAbort);
+      document.removeEventListener('keydown',handleDesktopKey);
+      const pointerId=mousePointerId,captureTarget=mouseCaptureTarget;
+      mousePointerId=null;mouseCaptureTarget=null;
+      captureTarget?.removeEventListener('lostpointercapture',handleLostPointerCapture);
+      if(pointerId!==null&&captureTarget?.hasPointerCapture?.(pointerId)){
+        try{captureTarget.releasePointerCapture(pointerId);}catch{}
+      }
+    }
+
+    const arm=(x,y)=>{
+      armed=true;suppressClick=true;lastX=x;lastY=y;
+      const groupId=card.dataset.groupId,cards=groupId?[...$('#execution-list').querySelectorAll(`.exec-card[data-group-id="${CSS.escape(groupId)}"]`)]:[card];
+      const rect=card.getBoundingClientRect(),firstRect=cards[0].getBoundingClientRect(),placeholder=document.createElement('div'),floating=document.createElement('div');
+      const totalHeight=cards.reduce((sum,item)=>sum+item.getBoundingClientRect().height,0)+Math.max(0,cards.length-1)*8;
+      placeholder.className='exec-placeholder';placeholder.style.height=`${totalHeight}px`;
+      cards[0].before(placeholder);
+      floating.className='drag-block';
+      Object.assign(floating.style,{left:`${firstRect.left}px`,top:`${firstRect.top}px`,width:`${firstRect.width}px`});
+      document.body.append(floating);
+      cards.forEach(item=>{item.classList.add('dragging','longpress-ready');floating.append(item);});
+      dragState={card,cards,placeholder,floating,offsetX:x-firstRect.left,offsetY:y-firstRect.top,lastX:x,lastY:y,edgeY:y};
+      $('#execution-list').classList.add('reordering');
+      if(navigator.vibrate)navigator.vibrate(25);
+    };
+
+    function finish(){
+      clearArm();
+      stopMouseTracking();
+      if(armed){
+        armed=false;
+        stopAutoScroll();
+        const placeholder=dragState?.placeholder,cards=dragState?.cards||[card],floating=dragState?.floating;
+        if(placeholder){const fragment=document.createDocumentFragment();cards.forEach(item=>{item.classList.remove('dragging','longpress-ready');fragment.append(item);});placeholder.replaceWith(fragment);}
+        floating?.remove();
+        $('#execution-list').classList.remove('reordering');
+        dragState=null;
+        persistVisualOrder();
+        renderAll();
+      }
+      setTimeout(()=>{suppressClick=false;},250);
+    }
+
+    function handleMouseAbort(){if(mouseTracking)finish();}
+    function handleMouseMove(e){
+      if(!mouseTracking||e.pointerType!=='mouse'||e.pointerId!==mousePointerId)return;
+      lastX=e.clientX;lastY=e.clientY;
+      if(!armed){
+        if(timer&&Math.hypot(lastX-startX,lastY-startY)>8)clearArm();
+        return;
+      }
+      e.preventDefault();moveDraggedCard(card,lastX,lastY);updateAutoScroll(lastY);
+    }
+    function handleMouseEnd(e){
+      if(mouseTracking&&e.pointerType==='mouse'&&e.pointerId===mousePointerId)finish();
+    }
+    function handleLostPointerCapture(e){
+      if(mouseTracking&&e.pointerId===mousePointerId)finish();
+    }
+    function handleDesktopKey(e){
+      if(e.key!=='Escape'||!mouseTracking)return;
+      e.preventDefault();finish();
+    }
+
+    card.addEventListener('touchstart',e=>{
+      if(e.touches.length!==1||!neutralPoint(e.target))return;
+      const t=e.touches[0];
+      startX=lastX=t.clientX;startY=lastY=t.clientY;
+      clearArm();
+      timer=setTimeout(()=>arm(lastX,lastY),650);
+    },{passive:true});
+
+    card.addEventListener('touchmove',e=>{
+      if(e.touches.length!==1)return;
+      const t=e.touches[0];lastX=t.clientX;lastY=t.clientY;
+      if(!armed){
+        if(Math.hypot(lastX-startX,lastY-startY)>12)clearArm();
+        return;
+      }
+      e.preventDefault();
+      moveDraggedCard(card,lastX,lastY);
+      updateAutoScroll(lastY);
+    },{passive:false});
+
+    card.addEventListener('touchend',finish,{passive:true});
+    card.addEventListener('touchcancel',finish,{passive:true});
+
+    // Desktop: mesma interação com o mouse.
+    card.addEventListener('pointerdown',e=>{
+      if(e.pointerType!=='mouse'||e.button!==0||!neutralPoint(e.target))return;
+      startX=lastX=e.clientX;startY=lastY=e.clientY;
+      mousePointerId=e.pointerId;mouseTracking=true;
+      mouseCaptureTarget=$('#execution-list')||card;
+      try{mouseCaptureTarget.setPointerCapture(e.pointerId);}catch{}
+      window.addEventListener('pointermove',handleMouseMove,true);
+      window.addEventListener('pointerup',handleMouseEnd,true);
+      window.addEventListener('pointercancel',handleMouseEnd,true);
+      window.addEventListener('blur',handleMouseAbort);
+      document.addEventListener('keydown',handleDesktopKey);
+      mouseCaptureTarget.addEventListener('lostpointercapture',handleLostPointerCapture);
+      clearArm();timer=setTimeout(()=>arm(lastX,lastY),650);
+    });
+
+    card.addEventListener('click',e=>{
+      if(suppressClick){e.preventDefault();e.stopImmediatePropagation();}
+    },true);
+    card.addEventListener('contextmenu',e=>{if(armed||timer)e.preventDefault();});
+  }
+
+  function clampView(){const half=center/viewZoom;viewX=Math.max(half,Math.min(500-half,viewX));viewY=Math.max(half,Math.min(500-half,viewY));}
+
+  function applyView(){clampView();const size=500/viewZoom;$('#rose').setAttribute('viewBox',`${viewX-size/2} ${viewY-size/2} ${size} ${size}`);$('#map-world').setAttribute('transform',`rotate(${viewRotation} ${center} ${center})`);$('#map-readout').textContent=`Zoom ${Math.round(viewZoom*100)}% · Giro ${Math.round(viewRotation)}°`;drawAircraft();}
+
+  function setZoom(value){viewZoom=Math.max(1,Math.min(6,value));if(viewZoom===1){viewX=center;viewY=center;}applyView();}
+
+  function fitMission(){viewX=center;viewY=center;viewRotation=0;selectedId=null;setZoom(1);renderTable();}
+
+  function centerAid(){viewX=center;viewY=center;applyView();}
+
+  function maxDistance(){return Math.max(20,...mission.activities.map(a=>a.kind==='P1'?Math.max(20,Number(a.radius)||15,Number(a.end)||0):Math.max(Number(a.start)||0,Number(a.end)||0)))*1.08}
+  function segmentText(a){return (a.kind==='P1'?`P1 · Raio ${fmt(a.radius)} NM · Faixa ${fmt(a.start)}–${fmt(a.end)} NM · ${directionLabel(a)}`:`${a.kind} · RDL ${fmt(a.azimuth)}° · D${fmt(a.direction==='inbound'?a.end:a.start)}→D${fmt(a.direction==='inbound'?a.start:a.end)} · ${directionLabel(a)}`)+` · ${a.alt===''?'—':fmt(a.alt)} ft MSL`}
+  function renderFlightStepPanel(){const a=activeStep(),n=nextStep();$('.step-now').style.setProperty('--passage-color',a?color(a):'#00a8ff');$('#active-step-text').textContent=a?`${String(activeIndex()+1).padStart(2,'0')} · ${a.description} · ${segmentText(a)}`:'Missão concluída / nenhuma passagem ativa';$('#next-step-text').textContent=n?`${String(mission.activities.indexOf(n)+1).padStart(2,'0')} · ${n.description} · ${segmentText(n)}`:'—';$('#active-step-notes').textContent=a?.notes||'—';$('#next-step-notes').textContent=n?.notes||'—';$('#step-complete').disabled=!a;$('#step-prev').disabled=!pendingStep(-1);$('#step-next').disabled=!pendingStep(1);$('#step-undo').disabled=!mission.activities.some(a=>a.done)}
+  function renderTable(){
+    ensureActive();const list=$('#execution-list'),plan=$('#plan-list');list.replaceChildren();plan.replaceChildren();const nxt=nextStep();
+    if(!mission.activities.length){for(const el of [list,plan]){const e=document.createElement('div');e.className='empty';e.textContent='Gere o pacote básico ou adicione uma passagem.';el.append(e)}}
+    mission.activities.forEach((a,index)=>{
+      const card=document.createElement('div');card.className='exec-card';card.dataset.id=a.id;card.style.setProperty('--passage-color',color(a));
+      if(a.done)card.classList.add('is-done');if(a.id===mission.activeId)card.classList.add('is-active');if(nxt?.id===a.id)card.classList.add('is-next');
+      const main=document.createElement('div');main.className='exec-main';const head=document.createElement('div');head.className='exec-head';
+      const number=document.createElement('span');number.className='exec-number';number.textContent=String(index+1).padStart(2,'0');const badge=document.createElement('span');badge.className='state-badge radar-type';badge.textContent=a.kind;head.append(number,badge);
+      const status=document.createElement('span');status.className='state-badge';status.textContent=a.done?'✓ CONCLUÍDA':a.id===mission.activeId?'ATIVA':nxt?.id===a.id?'PRÓXIMA':'';head.append(status);
+      const title=document.createElement('div');title.className='exec-title';title.textContent=a.description;const detail=document.createElement('div');detail.className='exec-detail';detail.textContent=segmentText(a)+(a.notes?` · ${a.notes}`:'');main.append(head,title,detail);
+      const actions=document.createElement('div');actions.className='exec-actions';
+      if(!a.done)actions.append(actionButton(a.id===mission.activeId?'Ativa':'Tornar ativa',()=>setActive(a.id)));
+      if(a.done)actions.append(actionButton('Refazer',()=>restoreActivity(a.id),'primary done-live-action'));if(a.id===mission.activeId)actions.append(actionButton('Concluir',completeActive,'primary'));
+      const dirs=document.createElement('div');dirs.className='direction-choice';const choices=a.type==='arc'?[['cw','↻'],['ccw','↺']]:[['inbound','IN'],['outbound','OUT']];choices.forEach(([value,label])=>{const b=actionButton(label,()=>setActivityDirection(a.id,value));if(a.direction===value)b.classList.add('selected');dirs.append(b)});actions.append(dirs,actionButton('Editar',()=>editActivity(a.id)),actionButton('Excluir',()=>deleteActivity(a.id),'danger done-live-action'));
+      card.append(main,actions);installLongPressDrag(card);card.onclick=e=>{if(!e.target.closest('button'))setActive(a.id)};list.append(card);
+      const p=document.createElement('div');p.className='exec-card';p.style.setProperty('--passage-color',color(a));p.append(main.cloneNode(true));const pa=document.createElement('div');pa.className='exec-actions';pa.append(actionButton('Editar',()=>editActivity(a.id)),actionButton('Excluir',()=>deleteActivity(a.id),'danger'));p.append(pa);plan.append(p);
+    });const label=`${mission.activities.filter(a=>a.done).length}/${mission.activities.length} passagens feitas`;$('#progress').textContent=label;$('#progress-rose').textContent=label;renderFlightStepPanel();
+  }
+  function renderAll(){renderRose();renderTable();applyView()}
+  function drawAircraft(){
+    const layer=$('#aircraft-layer');layer.replaceChildren();if(!lastPosition)return;const st=stationCoords();if(!st)return;const c=lastPosition.coords,bd=bearingDistance(st.lat,st.lon,c.latitude,c.longitude),bearing=trueToMagnetic(bd.bearing);let p,course;
+    if(vertical){p=profilePoint(bd.distance,Number.isFinite(c.altitude)?c.altitude*3.28084:num(mission.metadata.alt));course=0}else{p=point(bearing,bd.distance);course=Number.isFinite(c.heading)&&c.speed>.5?trueToMagnetic(c.heading):bearing}
+    const g=svgEl('g',{transform:`translate(${p.x} ${p.y}) rotate(${course})`}),size=26/viewZoom;
+    g.append(svgEl('image',{x:-size/2,y:-size/2,width:size,height:size,href:`${mapAircraftChoice()}-${vertical?'profile':'map'}.png`,preserveAspectRatio:'xMidYMid meet',transform:vertical?`rotate(${-viewRotation})`:''}));layer.append(g);
+  }
+  function profileLimits(){const alt=Number(mission.metadata.alt)||0,values=mission.activities.map(a=>a.alt).filter(x=>x!==''&&Number.isFinite(Number(x))).map(Number);return {low:Math.min(alt,0,...values)-1000,high:Math.max(alt+1000,...values)+2000}}
+  function profilePoint(distance,alt){const {low,high}=profileLimits();return{x:60+distance/maxDistance()*380,y:420-(alt-low)/(high-low)*350}}
+  function renderRose(){
+    ensureActive();const grid=$('#rose-grid'),lines=$('#rose-lines');grid.replaceChildren();lines.replaceChildren();const nxt=nextStep();
+    if(vertical){
+      const {low,high}=profileLimits(),step=high-low>15000?5000:1000;
+      for(let z=Math.ceil(low/step)*step;z<=high;z+=step){const p=profilePoint(0,z);grid.append(svgEl('line',{x1:60,y1:p.y,x2:440,y2:p.y,class:'axis'}));const t=svgEl('text',{x:3,y:p.y+4,class:'grid-label'});t.textContent=fmt(z)+' ft';grid.append(t)}
+      niceRings(maxDistance()).forEach(d=>{const p=profilePoint(d,low);grid.append(svgEl('line',{x1:p.x,y1:70,x2:p.x,y2:420,class:'axis'}));const t=svgEl('text',{x:p.x,y:438,class:'grid-label','text-anchor':'middle'});t.textContent=fmt(d)+' NM';grid.append(t)});
+      const origin=profilePoint(0,Number(mission.metadata.alt)||0);grid.append(svgEl('circle',{cx:origin.x,cy:origin.y,r:5,fill:'#fff'}));const title=svgEl('text',{x:60,y:46,class:'grid-label'});title.textContent='PERFIL · ALTITUDES MSL · ORIGEM ANTENA';grid.append(title);
+    }else drawGrid();
+    mission.activities.forEach(a=>{
+      const active=a.id===mission.activeId,upcoming=nxt?.id===a.id,opacity=active?1:a.done?.25:upcoming?.88:.5,width=active?7:upcoming?2.5:1,co=color(a),attrs={stroke:co,'stroke-width':width,opacity,fill:'none','stroke-linecap':'round'};
+      if(vertical){if(a.kind!=='P2'&&a.kind!=='ORI')return;if(a.alt==='')return;const s=profilePoint(Number(a.start)||0,Number(a.alt)),e=profilePoint(Number(a.end)||0,Number(a.alt));lines.append(svgEl('line',{x1:s.x,y1:s.y,x2:e.x,y2:e.y,...attrs}));if(active||upcoming){const t=svgEl('text',{x:e.x+3,y:e.y-7,class:'radial-label',fill:co});t.textContent=a.kind+' · '+fmt(a.alt)+' ft';lines.append(t)}}
+      else if(a.kind==='P1'){
+        for(const d of [10,20])lines.append(svgEl('circle',{cx:center,cy:center,r:radius*d/maxDistance(),...attrs,'stroke-width':1.3,'stroke-dasharray':'6 6'}));
+        lines.append(svgEl('circle',{cx:center,cy:center,r:radius*(Number(a.radius)||15)/maxDistance(),...attrs}));
+      }else if(a.azimuth!==''&&a.end!==''){
+        const start=Number(a.start)||0,end=Number(a.end),s=point(Number(a.azimuth),start),e=point(Number(a.azimuth),end);lines.append(svgEl('line',{x1:s.x,y1:s.y,x2:e.x,y2:e.y,...attrs}));
+        for(let d=Math.ceil(Math.min(start,end)/5)*5;d<=Math.max(start,end);d+=5){if(!d)continue;const l=point(Number(a.azimuth),d,-3),r=point(Number(a.azimuth),d,3);lines.append(svgEl('line',{x1:l.x,y1:l.y,x2:r.x,y2:r.y,...attrs,'stroke-width':1}))}
+        if(active||upcoming){const t=svgEl('text',{x:e.x+6,y:e.y-6,class:'radial-label'});t.textContent=a.kind+' · '+fmt(a.azimuth)+'°';lines.append(t)}
+      }
+    });drawAircraft();renderFlightStepPanel();$('#scale-info').textContent=`Escala: ${fmt(maxDistance())} NM${vertical?' · Perfil MSL':''}`;
+  }
+  function centerAircraft(){if(!lastPosition){alert('Ative a posição GNSS para centralizar na aeronave.');return}const st=stationCoords();if(!st)return;const c=lastPosition.coords,bd=bearingDistance(st.lat,st.lon,c.latitude,c.longitude),p=vertical?profilePoint(bd.distance,Number.isFinite(c.altitude)?c.altitude*3.28084:Number(mission.metadata.alt)||0):point(trueToMagnetic(bd.bearing),bd.distance);if(viewZoom<2)viewZoom=2;viewX=p.x;viewY=p.y;applyView()}
+  function resetForm(){editingId=null;$('#activity-form').reset();$('#form-title').textContent='Adicionar passagem';$('#save-activity').textContent='Adicionar passagem';$('#cancel-edit').hidden=true;$('#form-error').textContent='';syncType()}
+  function syncType(){const p1=$('#activity-kind').value==='P1';$('#manual-radius-label').hidden=!p1;$('#manual-radial-label').hidden=p1}
+  function validateActivity(){const kind=$('#activity-kind').value,azimuth=num($('#manual-radial').value),start=num($('#manual-start').value),end=num($('#manual-end').value),radiusNm=num($('#manual-radius').value),alt=num($('#manual-alt').value),description=$('#activity-description').value.trim();if(!description)return{error:'Informe o título da passagem.'};if(!Number.isFinite(alt))return{error:'Informe a altitude MSL.'};if(!Number.isFinite(start)||!Number.isFinite(end)||start<0||end<0||start===end||start>500||end>500)return{error:'Informe distâncias inicial/final diferentes, entre 0 e 500 NM.'};if(kind==='P1'&&(!Number.isFinite(radiusNm)||radiusNm<=0||radiusNm>500))return{error:'Informe um raio válido.'};if(kind!=='P1'&&(!Number.isFinite(azimuth)||azimuth<0||azimuth>=360))return{error:'Informe radial entre 0 e 359,9°.'};return {activity:{id:editingId||'radar-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),kind,type:kind==='P1'?'arc':'radial',azimuth:kind==='P1'?'':azimuth,start,end,radius:kind==='P1'?radiusNm:'',alt,description,notes:$('#activity-notes').value.trim(),direction:kind==='P1'?'cw':'outbound',done:false}}}
+  function editActivity(id){const a=mission.activities.find(a=>a.id===id);if(!a)return;showPage('plan');editingId=id;$('#activity-kind').value=a.kind;for(const [field,key] of [['radial','azimuth'],['start','start'],['end','end'],['radius','radius'],['alt','alt']])$('#manual-'+field).value=a[key]??'';$('#activity-description').value=a.description;$('#activity-notes').value=a.notes||'';syncType();$('#form-title').textContent='Editar passagem';$('#save-activity').textContent='Salvar alterações';$('#cancel-edit').hidden=false;$('#activity-form').scrollIntoView({block:'start'})}
+  function deleteActivity(id){const a=mission.activities.find(a=>a.id===id);if(!a||!confirm(`Excluir “${a.description}”?`))return;mission.activities=mission.activities.filter(a=>a.id!==id);if(editingId===id)resetForm();ensureActive();save();fitMission();renderAll()}
+  function generatePackage(){
+    syncMetadata();save();const m=mission.metadata;
+    if(!m.radar&&!m.name){alert('Informe a identificação ou localidade do Radar.');showPage('mission');return}
+    if(!stationCoords()){alert('Informe as coordenadas válidas da antena.');showPage('mission');return}
+    if(!Number.isFinite(num(m.magVar))||num(m.magVar)<0||num(m.magVar)>90){alert('Informe a declinação magnética manual, incluindo 0 quando aplicável.');showPage('mission');return}
+    if(!['alt','radial','orialt','oridist','p1obstacle','d1','d5','d10','d20','d30'].every(k=>Number.isFinite(num(m[k])))||num(m.radial)<0||num(m.radial)>=360||!['oridist','d1','d5','d10','d20','d30'].every(k=>num(m[k])>0&&num(m[k])<=500)){alert('Preencha as altitudes, radial (0–359,9°), maior obstáculo e as seis distâncias (até 500 NM).');showPage('mission');return}
+    if(mission.activities.length&&!confirm('Gerar o pacote básico substituirá TODAS as passagens existentes, inclusive as CONCLUÍDAS. Continuar?'))return;
+    const mk=(kind,description,o)=>({id:'radar-'+Date.now()+'-'+Math.random().toString(36).slice(2,9),kind,type:kind==='P1'?'arc':'radial',description,start:0,end:0,azimuth:num(m.radial),radius:'',alt:'',notes:'',done:false,direction:kind==='P1'?'cw':'outbound',...o});
+    const modes=m.modes?'Modos e códigos: 0707, 7070, 3500, 3600 e 3700.':'';const transponder=m.xpdr?'Transponder: '+m.xpdr+'.':'';
+    mission.activities=[mk('ORI','Orientação e acuracidade',{end:num(m.oridist),alt:num(m.orialt)}),mk('P1','Cobertura horizontal',{start:10,end:20,radius:15,alt:num(m.p1obstacle)+300,notes:'Manter entre 10 e 20 NM. Maior obstáculo + 300 ft MSL.'}),...[['d1',1000],['d5',5000],['d10',10000],['d20',20000],['d30',30000]].map(([key,height])=>mk('P2','Cobertura vertical · antena + '+fmt(height)+' ft',{end:num(m[key]),alt:num(m.alt)+height,agl:height,notes:[modes,transponder].filter(Boolean).join(' ')}))];completionHistory=[];mission.activeId=mission.activities[0].id;save();fitMission();renderAll();
+  }
+  function airportRows(){const rows=(window.LEGACY_DATA?.aerodromes||[]).map(r=>({icao:r[0],name:r[1],lat:Number(r[2]),lon:Number(r[3])})),manual=readStore('ivplanner-custom-localities-v1',[]),map=new Map(rows.map(a=>[norm(a.icao),a]));if(Array.isArray(manual))manual.forEach(a=>{if(a&&a.lat!==''&&a.lon!==''&&Number.isFinite(Number(a.lat))&&Number.isFinite(Number(a.lon)))map.set(norm(a.icao),a)});return [...map.values()]}
+  function pullAirport(){const q=norm($('#mission-name').value),matches=airportRows().filter(a=>norm(a.icao)===q||norm(a.name)===q);if(matches.length!==1)return;const a=matches[0];for(const axis of ['lat','lon']){const p=decimalToFms(a[axis],axis);for(const part of ['deg','min','hemi'])$('#station-'+axis+'-'+part).value=p[part]}syncMetadata();save();renderAll();if(lastPosition)updateGnssReadout()}
+  function saveRadarAid(){syncMetadata();save();const name=mission.metadata.radar.trim(),st=stationCoords();if(!name||!st){alert('Informe identificação e coordenadas válidas da antena.');return}const raw=readStore('ivplanner-custom-aids-v1',[]);if(!Array.isArray(raw)){alert('Cadastro de auxílios incompatível; dados preservados.');return}const previous=raw.find(a=>a.type==='RADAR'&&norm(a.name||a.designator)===norm(name)),item={...previous,id:previous?.id||'manual-aid-radar-'+Date.now(),type:'RADAR',name,designator:previous?.designator||'',frequencyValue:previous?.frequencyValue||'',frequencyUom:'MHZ',channel:previous?.channel||'',airportIcao:/^[A-Z0-9]{4}$/.test(norm(mission.metadata.name))?norm(mission.metadata.name):'',runway:'',elevationValue:mission.metadata.alt,elevationUom:'FT',lat:st.lat,lon:st.lon,notes:previous?.notes||'Cadastro salvo pela Inspeção Radar.',updatedAt:new Date().toISOString()};try{localStorage.setItem('ivplanner-custom-aids-v1',JSON.stringify([...raw.filter(a=>a.id!==item.id),item]));$('#aid-status').textContent=name+' salvo em Localidades e Auxílios.'}catch{alert('Não foi possível salvar o auxílio.')}}
+
+  $('#rose').addEventListener('wheel',event=>{event.preventDefault();setZoom(viewZoom*(event.deltaY<0?1.18:1/1.18));},{passive:false});$('#rose').addEventListener('dblclick',fitMission);
+  $('#rose').addEventListener('pointerdown',event=>{$('#rose').setPointerCapture(event.pointerId);pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});$('#rose').classList.add('dragging');if(pointers.size===2){const p=[...pointers.values()];lastPinch=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);lastAngle=Math.atan2(p[1].y-p[0].y,p[1].x-p[0].x);}});
+  $('#rose').addEventListener('pointermove',event=>{const previous=pointers.get(event.pointerId);if(!previous)return;pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});if(pointers.size===1){const rect=$('#rose').getBoundingClientRect(),scale=500/(viewZoom*rect.width);viewX-=(event.clientX-previous.x)*scale;viewY-=(event.clientY-previous.y)*scale;applyView();}else if(pointers.size===2){const p=[...pointers.values()],distance=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),angle=Math.atan2(p[1].y-p[0].y,p[1].x-p[0].x);if(lastPinch)viewZoom=Math.max(1,Math.min(6,viewZoom*distance/lastPinch));if(lastAngle!==null){let delta=(angle-lastAngle)*180/Math.PI;if(delta>180)delta-=360;if(delta<-180)delta+=360;viewRotation=(viewRotation+delta+360)%360}lastPinch=distance;lastAngle=angle;applyView();}});
+  function release(event){pointers.delete(event.pointerId);lastPinch=null;lastAngle=null;if(!pointers.size)$('#rose').classList.remove('dragging');}$('#rose').addEventListener('pointerup',release);$('#rose').addEventListener('pointercancel',release);
+
+  // Impede zoom gestual da interface no iOS; mantém os gestos próprios do mapa.
+  ['gesturestart','gesturechange','gestureend'].forEach(type=>{
+    document.addEventListener(type,event=>{
+      if(!event.target.closest || !event.target.closest('#rose')) event.preventDefault();
+    },{passive:false});
+  });
+
+
+  document.querySelectorAll('.page-nav button').forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+  document.querySelectorAll('#page-mission input,#page-mission select,#page-mission textarea').forEach(e=>{if(e.type==='file')return;e.addEventListener('input',()=>{syncMetadata();save();if(lastPosition)updateGnssReadout();renderAll()})});
+  ['lat','lon'].forEach(axis=>['deg','min','hemi'].forEach(part=>$('#station-'+axis+'-'+part).addEventListener('change',()=>{normalizeStationCoordInputs();syncMetadata();save();renderAll()})));
+  $('#mission-name').addEventListener('change',pullAirport);
+  airportRows().forEach(a=>{const o=document.createElement('option');o.value=a.icao;o.label=a.name;$('#airport-options').append(o)});
+  $('#save-radar-aid').onclick=saveRadarAid;$('#save-mission').onclick=saveMissionToLibrary;$('#export-mission').onclick=exportMission;
+  $('#import-btn').onclick=()=>$('#import-file').click();$('#import-file').onchange=e=>{if(e.target.files[0])importMission(e.target.files[0]);e.target.value=''};
+  $('#new-mission').onclick=()=>{if(!confirm('Criar nova missão? A atual continuará na lista somente se tiver sido salva.'))return;mission=fresh();save();load();resetForm();vertical=false;$('#map-profile').textContent='PERFIL';$('#map-profile').setAttribute('aria-pressed','false');fitMission();renderAll();renderSavedMissions()};$('#mission-ok').onclick=()=>{syncMetadata();save();showPage('plan')};
+  $('#generate-package').onclick=generatePackage;$('#activity-kind').onchange=syncType;$('#cancel-edit').onclick=resetForm;
+  $('#activity-form').onsubmit=e=>{e.preventDefault();const result=validateActivity();if(result.error){$('#form-error').textContent=result.error;return}const i=mission.activities.findIndex(a=>a.id===editingId);if(i<0)mission.activities.push(result.activity);else mission.activities[i]={...mission.activities[i],...result.activity,done:mission.activities[i].done,direction:mission.activities[i].direction};ensureActive();save();resetForm();fitMission();renderAll()};
+  $('#gnss-toggle').onclick=toggleGnss;$('#step-complete').onclick=completeActive;$('#step-prev').onclick=()=>moveActive(-1);$('#step-next').onclick=()=>moveActive(1);$('#step-undo').onclick=undoComplete;
+  $('#center-aircraft').onclick=centerAircraft;$('#center-aid').onclick=()=>{if(vertical){const p=profilePoint(0,Number(mission.metadata.alt)||0);viewX=p.x;viewY=p.y;applyView()}else centerAid()};
+  $('#zoom-in').onclick=()=>{setZoom(viewZoom*1.35);drawAircraft()};$('#zoom-out').onclick=()=>{setZoom(viewZoom/1.35);drawAircraft()};
+  $('#map-profile').onclick=()=>{vertical=!vertical;$('#map-profile').textContent=vertical?'MAPA':'PERFIL';$('#map-profile').setAttribute('aria-pressed',String(vertical));fitMission();renderAll()};
+  load();renderSavedMissions();resetForm();renderAll();showPage('mission');
+
+})();
+</script>
+</body>
+</html>
