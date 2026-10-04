@@ -1259,7 +1259,7 @@
       const editButton=actionButton('Editar',()=>editActivity(a.id));
       const deleteButton=actionButton('Excluir',()=>deleteActivity(a.id),'danger');
       if(a.done)deleteButton.classList.add('done-live-action');
-      actions.append(editButton,deleteButton);
+      actions.append(editButton,actionButton('Clonar',()=>cloneActivity(a.id),'done-live-action'),deleteButton);
 
       card.append(main,actions);
       if(!groupMode)installLongPressDrag(card);
@@ -1461,6 +1461,11 @@
     const a=mission.activities.find(item=>item.id===id);if(!a)return;editingId=id;$('#activity-type').value=a.type;setType();$('#activity-description').value=a.description;$('#activity-notes').value=a.notes||'';$('#plan-tx1').checked=a.tx==='TX1';$('#plan-tx2').checked=a.tx==='TX2';setPlanDirection(a.direction||(a.type==='arc'?'cw':'inbound'));syncPlanDirectionUI();
     if(a.type==='radial'){$('#radial-az').value=a.azimuth;$('#radial-start').value=a.start;$('#radial-end').value=a.end;}else{$('#arc-start').value=a.arcStart;$('#arc-end').value=a.arcEnd;$('#arc-radius').value=a.radius;}
     $('#form-title').textContent='Editar passagem';$('#save-activity').textContent='Salvar alterações';$('#cancel-edit').hidden=false;$('#activity-form').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function cloneActivity(id){
+    const index=mission.activities.findIndex(a=>a.id===id);if(index<0)return;
+    const copy=JSON.parse(JSON.stringify(mission.activities[index]));copy.id=`a-${Date.now()}-${Math.random().toString(36).slice(2,9)}`;copy.done=false;
+    mission.activities.splice(index+1,0,copy);ensureActive();save();renderAll();
   }
   function deleteActivity(id){const a=mission.activities.find(item=>item.id===id);if(!a||!confirm(`Excluir “${a.description}”?`))return;mission.activities=mission.activities.filter(item=>item.id!==id);groupSelection.delete(id);normalizeGroups();if(editingId===id)resetForm();if(selectedId===id)selectedId=null;if(mission.activeId===id)mission.activeId=null;ensureActive();save();fitMission();renderAll();}
   function clampView(){const half=center/viewZoom;viewX=Math.max(half,Math.min(500-half,viewX));viewY=Math.max(half,Math.min(500-half,viewY));}

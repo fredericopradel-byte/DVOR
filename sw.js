@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v91-radar-dvor-20261004';
+const CACHE = 'iv-planner-v92-radar-pdf-clone-20261004';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
