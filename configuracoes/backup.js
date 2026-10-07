@@ -1,6 +1,11 @@
 (()=>{'use strict';
 const FORMAT='ivplanner-backup',VERSION=1,MAX_BYTES=20*1024*1024;
 const GROUPS={
+ 'ivplanner-procedure-missions-ndb-v1':{type:'list',id:'id',label:'missões NDB'},
+ 'ivplanner-procedure-missions-procedimentos-v1':{type:'list',id:'id',label:'missões Procedimentos'},
+ 'ivplanner-custom-procedures-v1':{type:'list',id:'id',label:'procedimentos cadastrados'},
+ 'ivplanner-procedure-editor-ndb-v1':{type:'record',label:'rascunho NDB'},
+ 'ivplanner-procedure-editor-procedimentos-v1':{type:'record',label:'rascunho Procedimentos'},
  'iv-planner-saved-missions-v1':{type:'list',id:'savedMissionId',label:'missões DVOR/VOR'},
  'ivplanner-papi-missions-v1':{type:'list',id:'savedMissionId',label:'missões PAPI'},
  'ivplanner-ils-missions-v1':{type:'list',id:'savedMissionId',label:'missões ILS'},
@@ -20,8 +25,10 @@ const GROUPS={
 const $=id=>document.getElementById(id),status=$('backup-status'),preview=$('backup-preview');
 let pending=null;
 function validRecord(x){return x!==null&&typeof x==='object'&&!Array.isArray(x)}
+function validDrawing(x){return validRecord(x)&&x.format==='ivplanner-procedure-drawing'&&x.version===1&&Array.isArray(x.points)&&Array.isArray(x.segments)}
 function identity(item,spec){const raw=item[spec.id];return typeof raw==='string'&&raw.trim()?raw.trim().toUpperCase():JSON.stringify(item)}
 function validateValue(key,value){const spec=GROUPS[key];if(!spec)throw Error('O arquivo contém uma categoria desconhecida.');if(spec.type==='record'){if(!validRecord(value))throw Error(`Dados inválidos em ${spec.label}.`);
+ if(key.startsWith('ivplanner-procedure-editor-')&&!validDrawing(value))throw Error('Rascunho de procedimento inválido.');
  if(key==='geiv-dvor-manual-offline-v1'&&(!validRecord(value.metadata)||!Array.isArray(value.activities)))throw Error('Rascunho DVOR/VOR inválido.');
  if(key==='ivplanner-papi-current-v1'&&(!validRecord(value.metadata)||!Array.isArray(value.passes)))throw Error('Rascunho PAPI inválido.');
  if(key==='ivplanner-ils-current-v1'&&(!validRecord(value.metadata)||!Array.isArray(value.activities)))throw Error('Rascunho ILS inválido.');
@@ -30,7 +37,7 @@ function validateValue(key,value){const spec=GROUPS[key];if(!spec)throw Error('O
  if(key==='ivplanner-visual-preferences-v1'&&!['legacy','hawker'].includes(value.aircraft))throw Error('Preferência de aeronave inválida.');
  return}
  if(!Array.isArray(value)||value.some(x=>!validRecord(x)))throw Error(`Lista inválida em ${spec.label}.`);
- const seen=new Set();for(const item of value){if(key.includes('missions')&&(!validRecord(item.metadata)||!Array.isArray(key.startsWith('ivplanner-papi')?item.passes:item.activities)))throw Error(`Missão inválida em ${spec.label}.`);if(key==='ivplanner-custom-localities-v1'&&typeof item.icao!=='string')throw Error('Localidade sem ICAO.');if(key==='ivplanner-custom-aids-v1'&&typeof item.id!=='string')throw Error('Auxílio sem identificação.');const id=identity(item,spec);if(seen.has(id))throw Error(`Identificação duplicada em ${spec.label}.`);seen.add(id)}
+ const seen=new Set();for(const item of value){const procedure=key.startsWith('ivplanner-procedure-missions-')||key==='ivplanner-custom-procedures-v1';if(procedure&&(!validDrawing(item.document)||typeof item.id!=='string'||!item.id.trim()))throw Error(`Procedimento inválido em ${spec.label}.`);if(!procedure&&key.includes('missions')&&(!validRecord(item.metadata)||!Array.isArray(key.startsWith('ivplanner-papi')?item.passes:item.activities)))throw Error(`Missão inválida em ${spec.label}.`);if(key==='ivplanner-custom-localities-v1'&&typeof item.icao!=='string')throw Error('Localidade sem ICAO.');if(key==='ivplanner-custom-aids-v1'&&typeof item.id!=='string')throw Error('Auxílio sem identificação.');const id=identity(item,spec);if(seen.has(id))throw Error(`Identificação duplicada em ${spec.label}.`);seen.add(id)}
 }
 function snapshot(){const data={};for(const key of Object.keys(GROUPS)){const raw=localStorage.getItem(key);if(raw!==null){let value;try{value=JSON.parse(raw)}catch{throw Error(`Não foi possível ler ${GROUPS[key].label} neste aparelho.`)}validateValue(key,value);data[key]=value}}return data}
 function archive(data){return{format:FORMAT,version:VERSION,createdAt:new Date().toISOString(),data}}
