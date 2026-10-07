@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v92-radar-pdf-clone-20261004';
+const CACHE = 'iv-planner-v93-procedure-editor-20261007';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -52,6 +52,7 @@ const APP_SHELL = [
   './inspecao/report-pdf.js',
   './inspecao/ils.html',
   './inspecao/radar.html',
+  './inspecao/desenhar.html',
   './inspecao/par.html',
 
   './localidades/',
