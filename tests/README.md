@@ -85,3 +85,33 @@ credenciais no checkout. Não requer segredos configurados, build ou deploy.
 A execução local descrita acima continua independente do GitHub Actions.
 Validar o YAML não comprova o funcionamento do job: conferir a execução e os
 logs na aba Checks da Pull Request, incluindo o resultado dos quatro testes.
+
+
+## Interface de Procedimentos e NDB
+
+`test_procedure_ui.py` acrescenta três testes à descoberta automática (sete
+no total), usando o mesmo servidor somente de leitura e contextos temporários:
+
+- As quatro abas de cada módulo, barra única com ícones e seleção, ausência
+  dos campos equipe/aeronave, preservação da GS e ausência de overflow ou
+  sobreposição do último controle ao chegar ao fim da página. Viewports:
+  390 × 844, 844 × 390, 820 × 1180 e 1180 × 820.
+- Recuos de safe area por `Emulation.setSafeAreaInsetsOverride` no Chromium
+  (44 px nas laterais e 34 px embaixo); isto não substitui Safari/iOS real.
+- Dados antigos fictícios com equipe/aeronave: editar, salvar, iniciar uma
+  missão vazia, reabrir e recarregar; verificar que os valores antigos e o
+  rascunho do outro módulo permanecem intactos.
+- Desenhar ponto, reta e curva, desfazer/refazer, zoom/enquadramento, gesto
+  com dois toques, seleção/arraste, navegação de ida e volta, exportação,
+  importação e reabertura. Os fluxos verificam exceções JavaScript.
+
+Executar somente estas regressões:
+
+```sh
+IV_TEST_CHROMIUM=/usr/bin/chromium python -B -m unittest discover -s tests -p test_procedure_ui.py -v
+```
+
+O workflow existente usa descoberta automática e também executa estes testes.
+As verificações novas não exercitam cadastros aeronáuticos, backup/restauração
+ou atualização de uma instalação PWA antiga; esses mecanismos não foram
+alterados. O teste offline original continua cobrindo as duas rotas do editor.
