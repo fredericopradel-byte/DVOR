@@ -154,3 +154,38 @@ esperado e não substitui as verificações explícitas de preservação.
 A base Natural Earth não inclui ruas, rios, relevo ou limites estaduais. Os
 produtos meteorológicos permanecem externos. Validar ainda Safari/iOS real,
 teclado, PWA em dispositivo e desempenho/memória em hardware operacional.
+
+## Segurança da Missão e acessos neutros — PR 1
+
+`test_mission_safety.py` acrescenta oito regressões à descoberta automática
+(24 testes no total):
+
+- Cancelamento de Nova missão, recuperação persistente após recarga, dados
+  históricos de equipe/aeronave e independência entre NDB e Procedimentos.
+- Reabertura que preserva alterações não salvas sem sobrescrever a missão
+  original; documentos já guardados não produzem cópias idênticas de recuperação.
+- Importação e abertura pelo catálogo protegidas mesmo com missão sem pontos.
+- Falha de gravação na biblioteca ou no rascunho impede substituição; rascunho
+  ilegível permanece intacto.
+- Salvamento captura referências geográficas ainda não aplicadas e restaura a
+  biblioteca anterior se a gravação do rascunho falhar.
+- Exclusão exige duas confirmações identificando o registro, preserva o
+  rascunho aberto e os campos pendentes; ações sem seleção ficam desabilitadas.
+- Exportação e restauração do backup geral em outro contexto temporário,
+  incluindo a reabertura de uma recuperação restaurada.
+- Cartões com estilos e dimensões iguais, URLs preservadas e hierarquia de
+  Salvar/Nova missão em viewports de iPhone/iPad, retrato e paisagem.
+
+As recuperações usam as bibliotecas de missões já incluídas no backup geral,
+sem nova chave nem alteração do formato de desenho. Permanecem na lista até
+exclusão explícita; não há limpeza automática. O worker central mantém suas
+estratégias e passa a usar o cache v96 para distribuir as páginas atualizadas.
+O teste de atualização bem-sucedida foi ajustado para essa versão; o fixture
+v94 e o cenário de atualização incompleta continuam preservados.
+
+```sh
+IV_TEST_CHROMIUM=/usr/bin/chromium python -B -m unittest discover -s tests -p test_mission_safety.py -v
+```
+
+Todos os registros são fictícios e os perfis são temporários. Estas regressões
+Chromium não validam Safari/iOS real, GNSS ou critérios aeronáuticos.
