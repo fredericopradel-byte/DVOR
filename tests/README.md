@@ -89,7 +89,7 @@ logs na aba Checks da Pull Request, incluindo o resultado dos quatro testes.
 
 ## Interface de Procedimentos e NDB
 
-`test_procedure_ui.py` acrescenta três testes à descoberta automática (sete
+`test_procedure_ui.py` inclui quatro testes na descoberta automática (oito
 no total), usando o mesmo servidor somente de leitura e contextos temporários:
 
 - As quatro abas de cada módulo, barra única com ícones e seleção, ausência
@@ -104,6 +104,12 @@ no total), usando o mesmo servidor somente de leitura e contextos temporários:
 - Desenhar ponto, reta e curva, desfazer/refazer, zoom/enquadramento, gesto
   com dois toques, seleção/arraste, navegação de ida e volta, exportação,
   importação e reabertura. Os fluxos verificam exceções JavaScript.
+
+A quarta regressão compara os estilos efetivos da cápsula com DVOR e ILS
+(bordas, cor, sombra, altura, padding, gap e blur), verifica a seleção em todas
+as abas e testa datas vazias/preenchidas sem ultrapassar o cartão. Larguras:
+320, 375, 390, 430, 768, 820, 844 e 1180 px. O valor persistido continua ISO
+(`YYYY-MM-DD`). WebKit/Safari real não é coberto por esta execução Chromium.
 
 Executar somente estas regressões:
 
