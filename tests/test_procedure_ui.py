@@ -48,7 +48,7 @@ class ProcedureUITests(unittest.TestCase):
                         self.tab(name)
                         nav = self.page.locator('.section-nav').bounding_box()
                         self.assertGreater(nav['y'], height / 2)
-                        self.assertLessEqual(nav['y'] + nav['height'], height - 14)
+                        self.assertLessEqual(nav['y'] + nav['height'], height - (14 if width >= 700 else 12))
                         self.assertGreaterEqual(nav['x'], 10)
                         self.assertLessEqual(nav['x'] + nav['width'], width - 10)
                         self.assertTrue(self.page.evaluate(
@@ -73,11 +73,61 @@ class ProcedureUITests(unittest.TestCase):
                     nav = self.page.locator('.section-nav').bounding_box()
                     self.assertGreaterEqual(nav['x'], 44)
                     self.assertLessEqual(nav['x'] + nav['width'], width - 44)
-                    self.assertAlmostEqual(nav['y'] + nav['height'], height - 48, delta=1)
+                    self.assertAlmostEqual(nav['y'] + nav['height'], height - (48 if width >= 700 else 46), delta=1)
                     session.send('Emulation.setSafeAreaInsetsOverride', {'insets': {
                         'top': 0, 'left': 0, 'right': 0, 'bottom': 0,
                     }})
                     session.detach()
+        self.assertEqual(self.errors, [])
+
+    def test_capsule_matches_dvor_ils_and_date_stays_inside_card(self):
+        # Compare effective styles, including page-ui.css, rather than old local rules.
+        properties = ['borderRadius', 'borderColor', 'borderWidth', 'backgroundColor',
+                      'boxShadow', 'padding', 'height', 'backdropFilter', 'gap']
+        style_js = """(el, properties) => {
+            const css = getComputedStyle(el);
+            return Object.fromEntries(properties.map(p => [p, css[p]]));
+        }"""
+        for width, height in ((320, 568), (375, 812), (390, 844), (430, 932),
+                              (844, 390), (768, 1024), (820, 1180), (1180, 820)):
+            with self.subTest(viewport=(width, height)):
+                self.page.set_viewport_size({'width': width, 'height': height})
+                reference = None
+                for path in ('inspecao/dvor-vor/index.html', 'inspecao/ils.html'):
+                    self.page.goto(self.base + path)
+                    expect(self.page.locator('.iv-bottom-nav.iv-ready')).to_be_visible()
+                    measured = self.page.locator('.iv-bottom-nav').evaluate(style_js, properties)
+                    if reference is None:
+                        reference = measured
+                    self.assertEqual(measured, reference)
+                for module in ('procedimentos', 'ndb'):
+                    self.open_module(module)
+                    expect(self.page.locator('.iv-bottom-nav.iv-ready')).to_be_visible()
+                    self.assertEqual(self.page.locator('.section-nav').evaluate(
+                        style_js, properties), reference)
+                    self.assertEqual(self.page.locator('.section-nav').bounding_box()['height'], 62)
+                    for name in ('drawing', 'restrictions', 'inspection', 'mission'):
+                        self.tab(name)
+                        expect(self.page.locator('.section-nav [aria-current="page"]')).to_have_attribute('data-page', name)
+                    for value in ('', '2026-10-14'):
+                        date = self.page.locator('#mission-date')
+                        date.fill(value)
+                        self.page.locator('#mission-name').click()
+                        expect(date).to_have_value(value)
+                        date_box = date.bounding_box()
+                        label_box = date.locator('..').bounding_box()
+                        self.assertLessEqual(date_box['width'], label_box['width'] + 1)
+                        self.assertEqual(self.draft(module)['mission']['date'], value)
+                    violations = self.page.locator('#page-mission').evaluate("""el =>
+                        [...el.querySelectorAll('input:not([type=checkbox]),select,textarea')]
+                        .filter(input => {
+                            const a=input.getBoundingClientRect(), b=input.parentElement.getBoundingClientRect();
+                            return a.left < b.left-1 || a.right > b.right+1;
+                        }).map(el=>el.id)
+                    """)
+                    self.assertEqual(violations, [])
+                    self.assert_loaded(self.page.reload())
+                    expect(self.page.locator('#mission-date')).to_have_value('2026-10-14')
         self.assertEqual(self.errors, [])
 
     def test_legacy_values_and_independent_missions(self):
