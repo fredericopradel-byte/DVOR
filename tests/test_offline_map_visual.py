@@ -97,7 +97,7 @@ class OfflineMapVisualTests(unittest.TestCase):
                 self.assertTrue(self.page.locator('.iv-fixed-nav button.active').evaluate("el=>[...el.querySelectorAll('span')].every(e=>e.scrollWidth<=e.clientWidth+1)"),'Selected tab name must not be clipped')
         self.assertEqual(self.errors,[])
 
-    def test_map_offline_without_previsiting_weather(self):
+    def open_weather_without_network(self, interface_online):
         server=ThreadingHTTPServer(('127.0.0.1',0),partial(test_e2e.Handler,directory=str(test_e2e.ROOT)))
         server.requests=[]
         thread=Thread(target=server.serve_forever,daemon=True);thread.start()
@@ -106,17 +106,43 @@ class OfflineMapVisualTests(unittest.TestCase):
         self.open('index.html')
         self.page.wait_for_function('navigator.serviceWorker.controller!==null',timeout=30000)
         self.context.set_offline(True)
+        # CDP transport-offline does not consistently change navigator.onLine
+        # across Chromium versions. Model the OS interface signal separately;
+        # the real transport AND origin server remain unavailable below.
+        self.context.add_init_script("Object.defineProperty(navigator, 'onLine', {get: () => " + ('true' if interface_online else 'false') + "})")
         server.shutdown();server.server_close();thread.join(timeout=5)
         before=len(server.requests)
         response=self.page.goto(self.base+'meteorologia/index.html')
         self.assertTrue(response.from_service_worker)
         self.assert_map()
+        self.assertEqual(self.page.evaluate('navigator.onLine'),interface_online)
+        return server,before
+
+    def test_map_offline_without_previsiting_weather(self):
+        server,before=self.open_weather_without_network(interface_online=False)
         expect(self.page.locator('#connection-status')).to_have_attribute('data-state','offline')
         self.page.locator('#radarBtn').click()
         expect(self.page.locator('#status')).to_contain_text('requer conexão')
         self.page.locator('#satelliteBtn').click()
         expect(self.page.locator('#status')).to_contain_text('requer conexão')
         self.page.reload();self.assert_map()
+        self.assertEqual(len(server.requests),before)
+        self.assertEqual(self.errors,[])
+
+    def test_interface_online_does_not_claim_weather_connectivity(self):
+        server,before=self.open_weather_without_network(interface_online=True)
+        expect(self.page.locator('#connection-status')).to_have_attribute('data-state','unknown')
+        self.page.locator('#icao').fill('SBGL')
+        self.page.locator('#searchBtn').click()
+        expect(self.page.locator('#connection-status')).to_have_attribute('data-state','unavailable')
+        expect(self.page.locator('#status')).to_contain_text('Não foi possível obter dados')
+        self.assertIsNone(self.page.evaluate('localStorage.getItem("iv-weather-last")'))
+        self.page.evaluate("window.dispatchEvent(new Event('offline'))")
+        expect(self.page.locator('#connection-status')).to_have_attribute('data-state','offline')
+        self.page.evaluate("window.dispatchEvent(new Event('online'))")
+        expect(self.page.locator('#connection-status')).to_have_attribute('data-state','unknown')
+        self.page.reload();self.assert_map()
+        expect(self.page.locator('#connection-status')).to_have_attribute('data-state','unknown')
         self.assertEqual(len(server.requests),before)
         self.assertEqual(self.errors,[])
 

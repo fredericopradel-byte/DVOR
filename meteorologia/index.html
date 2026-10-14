@@ -30,7 +30,7 @@
     @media(min-width:760px){.app{padding-left:24px;padding-right:24px}.weather.show{grid-template-columns:310px 1fr}.place{grid-column:1}.reports{grid-column:2;grid-row:1/3}.mapwrap{min-height:470px}}
     .map-note{color:var(--muted);font-size:12px;line-height:1.45;margin:0 2px 10px}
     .leaflet-container{background:#14232b}.country-label{background:transparent;border:0;box-shadow:none;color:#b8ccd3;font-size:10px;font-weight:700;letter-spacing:.04em;text-shadow:0 1px 3px #14232b;pointer-events:none}.country-label::before{display:none}
-    .live[data-state=offline] i,.live[data-state=unavailable] i,.live[data-state=cached] i{background:var(--yellow);box-shadow:0 0 0 4px #f6c94522}
+    .live[data-state=unknown] i,.live[data-state=offline] i,.live[data-state=unavailable] i,.live[data-state=cached] i{background:var(--yellow);box-shadow:0 0 0 4px #f6c94522}
     .heading strong{font-size:1.18rem;font-style:italic}.live{font-size:11px}.search input{min-width:0}
     @media(max-width:430px){header{flex-wrap:wrap}.live{margin-left:56px;order:3}.iv-help-button{margin-left:auto}.search{gap:6px}.search button{padding:0 12px}.locate{flex:0 0 44px}.mapwrap{min-height:340px}.legend{bottom:32px;font-size:10px}.leaflet-control-attribution{max-width:100%;font-size:9px}}
   </style>
@@ -42,7 +42,7 @@
   <header>
     <a class="back" href="../" aria-label="Voltar">‹</a>
     <div class="heading module-brand"><small>IV-PLANNER</small><strong>Meteorologia</strong><p>Mapa local · METAR e TAF</p></div>
-    <div class="live" id="connection-status" role="status"><i></i><span>Consultas online</span></div>
+    <div class="live" id="connection-status" role="status"><i></i><span>Consultas sob demanda</span></div>
   </header>
   <form class="search" id="searchForm">
     <label class="searchbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="icao" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Código ICAO (ex.: SBGL)" aria-label="Código ICAO"></label>
@@ -94,10 +94,12 @@
   else{el('map').classList.add('map-offline');el('map').innerHTML='<div><strong>Mapa indisponível sem conexão.</strong>METAR e TAF salvos continuam acessíveis neste aparelho.</div>'}
   function setConnectionState(state){
     const host=el('connection-status');host.dataset.state=state;
-    host.querySelector('span').textContent=({connected:'Conexão disponível',online:'Consulta atualizada',offline:'Sem conexão',unavailable:'Serviço indisponível',cached:'Consulta salva'})[state];
+    host.querySelector('span').textContent=({unknown:'Consultas sob demanda',online:'Consulta atualizada',offline:'Sem conexão',unavailable:'Serviço indisponível',cached:'Consulta salva'})[state];
   }
-  function updateConnection(){setConnectionState(navigator.onLine?'connected':'offline')}
-  window.addEventListener('online',updateConnection);window.addEventListener('offline',updateConnection);updateConnection();
+  // onLine reports the network interface, not successful access to weather services.
+  window.addEventListener('online',()=>setConnectionState('unknown'));
+  window.addEventListener('offline',()=>setConnectionState('offline'));
+  setConnectionState(navigator.onLine?'unknown':'offline');
   async function initOfflineBasemap(){
     try{
       const response=await fetch('basemap/countries-50m.geojson');

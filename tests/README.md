@@ -125,7 +125,7 @@ alterados. O teste offline original continua cobrindo as duas rotas do editor.
 
 ## Mapa offline e correções visuais gerais
 
-`test_offline_map_visual.py` acrescenta sete testes (15 no total na suíte):
+`test_offline_map_visual.py` acrescenta oito testes (16 no total na suíte):
 
 - SHA-256, 241 países, rings fechados, limites WGS84 e corte no antimeridiano;
 - Cartografia desenhada em Canvas, projeção independente do marcador SBGL,
@@ -133,6 +133,10 @@ alterados. O teste offline original continua cobrindo as duas rotas do editor.
 - Instalação do APP_SHELL real, desligamento da rede e do servidor antes de
   visitar Meteorologia: base/Leaflet/markers funcionais, recarga e distinção
   entre fundo local e imagens meteorológicas online;
+- Transporte offline com interface de rede conectada: o indicador não afirma
+  conectividade, a consulta falha sem gravar dados e o mapa local permanece.
+  O sinal `navigator.onLine` é simulado separadamente do bloqueio real de rede
+  porque a emulação CDP não o altera consistentemente entre versões Chromium;
 - Nomes completos das abas selecionadas no iPhone de 320 px;
 - Dock sem interseção entre cápsula e botão global, fontes de toque de 16 px,
   safe areas, modais locais sem sobreposição e ajuda correta do Mapa Radar;
