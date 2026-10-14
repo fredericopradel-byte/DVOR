@@ -153,5 +153,9 @@
     if(document.readyState==='complete')requestAnimationFrame(restore);
     else window.addEventListener('load',()=>requestAnimationFrame(restore),{once:true});
   }
+  // Hide the dock during local modals without touching their data or lifecycle.
+  let modalOpen=false;
+  function syncModal(){const open=[...document.querySelectorAll('.modal.open,.iv-help-overlay:not([hidden]),dialog[open]')].some(el=>el.getClientRects().length&&getComputedStyle(el).visibility!=='hidden');if(open===modalOpen)return;modalOpen=open;document.body.classList.toggle('iv-modal-open',open);if(open)setOpen(false)}
+  new MutationObserver(syncModal).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','hidden','style','open']});syncModal();
   rememberCurrent();
 })();

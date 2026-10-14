@@ -1,0 +1,12 @@
+{
+  "source": "Natural Earth 4.1.0, admin-0 countries 1:50m",
+  "distribution": "world-atlas 2.0.2",
+  "url": "https://unpkg.com/world-atlas@2.0.2/countries-50m.json",
+  "inputSha256": "04342cdc1e3016bcd7db1630de95684d67b79fe3c8c460321e87aef469502394",
+  "outputSha256": "5cb437aa4dab4f62fed2148088fcbaa06fb65e4831fa13744e309e2c6e1f7780",
+  "bytes": 2090750,
+  "gzipBytes": 740688,
+  "features": 241,
+  "coordinates": "WGS84 longitude, latitude (RFC 7946)",
+  "conversion": "Delta decode TopoJSON arcs, apply quantization transform, reverse negative arcs, stitch rings; coordinates rounded to 5 decimals; split rings at the antimeridian and close pole-encircling spherical rings at the geographic poles for planar Leaflet rendering. No guessed geometry."
+}

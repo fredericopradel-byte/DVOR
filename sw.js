@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v94-procedure-missions-20261007';
+const CACHE = 'iv-planner-v95-offline-weather-visual-20261014';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -62,6 +62,18 @@ const APP_SHELL = [
   './localidades/procedimentos.html',
   './meteorologia/',
   './meteorologia/index.html',
+  './meteorologia/basemap/countries-50m.geojson',
+  './meteorologia/basemap/source.json',
+  './meteorologia/basemap/LICENSE-world-atlas',
+  './meteorologia/basemap/README.md',
+  './meteorologia/vendor/leaflet/leaflet.js',
+  './meteorologia/vendor/leaflet/leaflet.css',
+  './meteorologia/vendor/leaflet/LICENSE',
+  './meteorologia/vendor/leaflet/images/layers.png',
+  './meteorologia/vendor/leaflet/images/layers-2x.png',
+  './meteorologia/vendor/leaflet/images/marker-icon.png',
+  './meteorologia/vendor/leaflet/images/marker-icon-2x.png',
+  './meteorologia/vendor/leaflet/images/marker-shadow.png',
   './configuracoes/',
   './configuracoes/index.html',
   './configuracoes/backup.js',

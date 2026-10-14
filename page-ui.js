@@ -30,12 +30,13 @@ const H={
  mission:['Missão Radar','Informe o sítio, a antena, a orientação e as distâncias das coberturas verticais previstas no planejamento.'],
  plan:['Planejar Radar','Gere o pacote de orientação, P1 e P2 ou acrescente passagens conforme a missão.'],
  execution:['Execução Radar','Ordene por toque longo, acompanhe Atual e Próxima e conclua ou refaça uma passagem.'],
- map:['Mapa Radar','Veja as passagens em planta ou perfil. A posição GNSS é somente apoio visual.']},
+ rose:['Mapa Radar','Veja as passagens em planta ou perfil. A posição GNSS é somente apoio visual.']},
  '/inspecao/papi.html':{
  plan:['Planejamento PAPI','Identifique a missão, selecione cabeceira, lado e conjunto, confira as coordenadas e os valores planejados antes da execução.'],
  execute:['Execução PAPI','Registre os quatro ângulos encontrados. Confirmar cria uma nova passagem sem substituir as anteriores.'],
  map:['Mapa PAPI','Use um dedo para deslocar e dois para aproximar ou girar. A posição GNSS é apenas um apoio visual.'],
  passes:['Passagens PAPI','Confira as medidas, a interpretação e a situação de cada passagem registrada. Cada cartão pode ser excluído separadamente.']},
+ '/localidades/procedimentos.html':['Procedimentos cadastrados','Busque e abra os desenhos cadastrados. Procedimentos e NDB mantêm missões e rascunhos independentes. Exportar preserva o cadastro em JSON.'],
  '/meteorologia/index.html':['Meteorologia','Busque pelo código ICAO para consultar produtos disponíveis online. Sem conexão, a página abre e mantém os recursos locais e a última consulta disponível.'],
  '/localidades/index.html':['Localidades e Auxílios','Escolha aeródromos ou auxílios para consultar os dados instalados e os registros cadastrados neste aparelho.'],
  '/localidades/aerodromos.html':['Aeródromos','Busque por ICAO, nome ou UF. Abra um registro para consultar pistas e cabeceiras ou adicione uma localidade manualmente.'],
@@ -63,7 +64,13 @@ function initUpdates(){
 }
 initUpdates();
 function init(){
- const entry=H[path()];
+ const current=path();
+ if(['/inspecao/dvor-vor/index.html','/inspecao/ils.html','/inspecao/radar.html','/inspecao/papi.html'].includes(current))document.body.classList.add('iv-operational');
+ if(current==='/inspecao/ils.html')document.body.classList.add('iv-ils');
+ if(['/prevoo/legacy.html','/prevoo/hawker.html'].includes(current))document.body.classList.add('iv-preflight');
+ if(['/index.html','/prevoo/index.html','/inspecao/index.html','/localidades/index.html'].includes(current))document.body.classList.add('iv-area-menu');
+ if(current.startsWith('/configuracoes/'))document.body.classList.add('iv-admin');
+ const entry=H[current];
  if(!entry)return;
  const anchor=document.querySelector('.topbar,header .bar,main > header,.hero');
  const button=document.createElement('button');button.type='button';button.className='iv-help-button'+(anchor?'':' iv-help-floating');button.textContent='?';button.setAttribute('aria-label','Ajuda desta página');button.setAttribute('aria-haspopup','dialog');
@@ -79,11 +86,11 @@ function init(){
  nav.classList.add('iv-bottom-nav','iv-fixed-nav');
  if(nav.parentElement.classList.contains('tabs')){const footer=nav.parentElement;document.body.append(nav);footer.hidden=true;document.body.classList.add('iv-legacy-nav')}
  else document.body.append(nav);
- const buttons=[...nav.querySelectorAll('button[data-page]')],factor=buttons.length===5?2.12:1.95;nav.style.setProperty('--iv-active-grow',factor);
+ const buttons=[...nav.querySelectorAll('button[data-page]')];let factor=buttons.length===5?2.12:1.95;nav.style.setProperty('--iv-active-grow',factor);
  const pill=document.createElement('span');pill.className='iv-nav-pill';pill.setAttribute('aria-hidden','true');nav.prepend(pill);
  buttons.forEach(b=>{const label=b.textContent.trim(),preflightIcon=document.body.classList.contains('iv-legacy-nav')?b.querySelector('svg'):null;b.setAttribute('aria-label',label);b.querySelector('i')?.remove();b.textContent='';const svg=preflightIcon||document.createElementNS('http://www.w3.org/2000/svg','svg');if(!preflightIcon){svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');const shape=document.createElementNS('http://www.w3.org/2000/svg','path');shape.setAttribute('d',icons[b.dataset.page]||icons.plan);svg.append(shape)}const span=document.createElement('span');span.className='iv-nav-label';span.textContent=label;b.append(svg,span)});
- function update(){const active=buttons.findIndex(b=>b.classList.contains('active'));if(active<0)return;const css=getComputedStyle(nav),left=parseFloat(css.paddingLeft)||0,right=parseFloat(css.paddingRight)||0,unit=(nav.clientWidth-left-right)/(buttons.length+factor-1);nav.style.setProperty('--iv-pill-x',`${left+active*unit}px`);nav.style.setProperty('--iv-pill-width',`${unit*factor}px`);buttons.forEach((b,i)=>{if(i===active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});nav.classList.add('iv-ready')}
- const observer=new MutationObserver(records=>{if(records.some(r=>r.attributeName==='class'))update()});buttons.forEach(b=>observer.observe(b,{attributes:true,attributeFilter:['class']}));window.addEventListener('resize',update,{passive:true});update();
+ function update(){factor=nav.clientWidth<280?(buttons.length===5?3.4:2.4):(buttons.length===5?2.12:1.95);nav.style.setProperty('--iv-active-grow',factor);const active=buttons.findIndex(b=>b.classList.contains('active'));if(active<0)return;const css=getComputedStyle(nav),left=parseFloat(css.paddingLeft)||0,right=parseFloat(css.paddingRight)||0,unit=(nav.clientWidth-left-right)/(buttons.length+factor-1);nav.style.setProperty('--iv-pill-x',`${left+active*unit}px`);nav.style.setProperty('--iv-pill-width',`${unit*factor}px`);buttons.forEach((b,i)=>{if(i===active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});nav.classList.add('iv-ready')}
+ const observer=new MutationObserver(records=>{if(records.some(r=>r.attributeName==='class'))update()});buttons.forEach(b=>observer.observe(b,{attributes:true,attributeFilter:['class']}));window.addEventListener('resize',update,{passive:true});new ResizeObserver(update).observe(nav);update();
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();

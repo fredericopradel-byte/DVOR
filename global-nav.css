@@ -119,3 +119,8 @@
   .ivg-panel,.ivg-shell.ivg-open .ivg-panel,.ivg-toggle,.ivg-shell.ivg-open .ivg-toggle{transition:none}
 }
 @media print{.ivg-shell{display:none!important}}
+
+/* The global toggle shares the bottom dock, never the editable form area. */
+.ivg-shell{bottom:calc(22px + env(safe-area-inset-bottom));right:max(14px,env(safe-area-inset-right))}
+body.iv-modal-open .ivg-shell{visibility:hidden;pointer-events:none}
+body.iv-modal-open .ivg-toggle,body.iv-modal-open .ivg-panel{visibility:hidden!important;pointer-events:none!important}
