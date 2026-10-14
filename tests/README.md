@@ -69,6 +69,19 @@ real; não há worker substituto ou respostas HTML simuladas.
 
 Chromium automatizado não substitui validação em Safari/iOS, instalação na tela
 inicial nem ensaio em iPhone/iPad reais. A viewport usada é 1024 × 768; esta
-suíte não verifica layout, gestos, GNSS ou uso operacional. Não há CI criada:
-o comando pode ser executado automaticamente por um futuro job, sem build ou
-dependência estrutural no aplicativo.
+suíte não verifica layout, gestos, GNSS ou uso operacional.
+
+## GitHub Actions
+
+O workflow `.github/workflows/tests.yml` executa os quatro testes em Pull
+Requests direcionadas à `main`, com Python 3.12, Playwright e Chromium no
+Ubuntu 24.04. Instala somente `tests/requirements.txt` e o Chromium com suas
+dependências de sistema (`python -m playwright install --with-deps chromium`).
+O comando de execução é o mesmo usado localmente:
+`python -B -m unittest discover -s tests -v`.
+
+O job tem limite de 10 minutos, permissão `contents: read` e não persiste
+credenciais no checkout. Não requer segredos configurados, build ou deploy.
+A execução local descrita acima continua independente do GitHub Actions.
+Validar o YAML não comprova o funcionamento do job: conferir a execução e os
+logs na aba Checks da Pull Request, incluindo o resultado dos quatro testes.
