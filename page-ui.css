@@ -11,7 +11,7 @@ body.iv-help-open{overflow:hidden}
 html{min-height:100lvh;background:radial-gradient(circle at 100% 0,#44494d 0,transparent 30%),linear-gradient(155deg,#151719,#292c2f)!important;background-attachment:scroll!important}
 html body{min-height:100lvh!important;background-attachment:scroll!important}
 /* Desfoque preso à tela: fica abaixo das barras e não recebe eventos de toque. */
-body::after{content:"";position:fixed;z-index:60;pointer-events:none;left:0;right:0;bottom:0;height:calc(76px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,rgba(24,27,29,.66));-webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);-webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 75%);mask-image:linear-gradient(180deg,transparent 0%,#000 75%)}
+body.iv-has-bottom-nav::after{content:"";position:fixed;z-index:60;pointer-events:none;left:0;right:0;bottom:0;height:calc(76px + env(safe-area-inset-bottom));background:linear-gradient(180deg,transparent,rgba(24,27,29,.66));-webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);-webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 75%);mask-image:linear-gradient(180deg,transparent 0%,#000 75%)}
 body.iv-no-bottom-nav main,body.iv-no-bottom-nav .app,body.iv-no-bottom-nav .shell{padding-bottom:max(92px,env(safe-area-inset-bottom))!important}
 .iv-update-notice{position:fixed;z-index:800;top:calc(10px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:min(420px,calc(100% - 28px));display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;border:1px solid #4d5359;border-radius:14px;background:#242a2d;color:#fff;box-shadow:0 12px 30px rgba(0,0,0,.35);font:600 14px/1.3 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.iv-update-notice button{flex:none;min-height:40px;padding:7px 11px;border:1px solid #0aa4ef;border-radius:9px;background:#078dd1;color:#fff;font:inherit;font-weight:700}
 body.iv-has-bottom-nav .ivg-shell{z-index:850}
@@ -31,9 +31,45 @@ body.iv-legacy-nav{padding-bottom:calc(92px + env(safe-area-inset-bottom))!impor
 .iv-bottom-nav .iv-nav-label{display:block;max-width:0;overflow:hidden;opacity:0;transition:max-width .16s ease,opacity .14s ease}
 .iv-bottom-nav button.active .iv-nav-label{max-width:115px;opacity:1;transition:max-width .16s ease .22s,opacity .14s ease .24s}
 .iv-bottom-nav button:focus-visible{outline:2px solid #0aa4ef!important;outline-offset:-3px}
-@media(min-width:700px){.iv-fixed-nav{bottom:14px!important}}
+@media(min-width:700px){.iv-fixed-nav{bottom:calc(14px + env(safe-area-inset-bottom))!important}}
 @media(max-width:360px){.iv-bottom-nav button{font-size:.61rem!important}.iv-bottom-nav button svg{flex-basis:19px;width:19px;height:19px}}
 @media(prefers-reduced-motion:reduce){.iv-bottom-nav.iv-ready .iv-nav-pill,.iv-bottom-nav button,.iv-bottom-nav .iv-nav-label,.iv-bottom-nav button.active .iv-nav-label{transition:none!important}}
 
 /* Barra flutuante de Legacy e Hawker: neutraliza a margem horizontal da aba antiga. */
 body.iv-legacy-nav .iv-bottom-nav .tab svg{margin:0!important}
+
+/* Shared touch layout, with separate operational, menu and administrative variants. */
+:root{--iv-card-radius:20px;--iv-field-radius:13px;--iv-title-size:clamp(1.9rem,7vw,2.7rem)}
+.module-brand small{display:block;color:#0aa4ef;font-size:.68rem;font-weight:800;letter-spacing:.16em}
+.module-brand strong{display:block;font-size:1.18rem;font-style:italic;letter-spacing:-.03em}
+body:not(.iv-procedure) main,body:not(.iv-procedure) .app,body:not(.iv-procedure) .shell{padding-left:max(18px,env(safe-area-inset-left))!important;padding-right:max(18px,env(safe-area-inset-right))!important}
+body:not(.iv-procedure) .sticky-head,body.iv-admin>header{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+body.iv-operational .topbar,body.iv-preflight .topbar{margin-bottom:18px!important;gap:14px!important}
+body.iv-operational input:not([type=checkbox]):not([type=radio]),body.iv-operational select,body.iv-operational textarea{min-width:0!important;max-width:100%;font-size:16px!important}
+body.iv-operational .panel{border-radius:var(--iv-card-radius)!important}
+body.iv-operational input:not([type=checkbox]):not([type=radio]),body.iv-operational select,body.iv-operational textarea{border-radius:var(--iv-field-radius)!important}
+body.iv-operational label{min-width:0}
+body.iv-operational input[type=date]{display:block!important;min-width:0!important;min-inline-size:0!important;width:100%!important;inline-size:100%!important;max-width:100%!important;max-inline-size:100%!important;box-sizing:border-box!important;-webkit-appearance:none;appearance:none}
+body.iv-operational input[type=date]::-webkit-date-and-time-value{min-width:0;text-align:left}
+body.iv-operational input[type=date]::-webkit-datetime-edit{min-width:0;padding:0}
+body.iv-area-menu .header h1{font-size:var(--iv-title-size);line-height:1.15;margin-bottom:8px}
+body.iv-area-menu .topbar{margin-bottom:26px;gap:14px}
+body.iv-area-menu .card{border-radius:var(--iv-card-radius)}
+body.iv-procedure #page-mission .panel{border-radius:var(--iv-card-radius)}
+body.iv-procedure #page-mission input,body.iv-procedure #page-mission select,body.iv-procedure #page-mission textarea{border-radius:var(--iv-field-radius)}
+body.iv-procedure #page-mission h1{font-size:1.35rem}
+body.iv-procedure #page-mission .form-grid>label:first-child:has(#mission-name){grid-column:1/-1}
+body.iv-admin .package-card,body.iv-admin .backup{border-radius:var(--iv-card-radius)}
+body.iv-admin .kv,body.iv-admin .backup-status,body.iv-admin .package-status{overflow-wrap:anywhere;min-width:0}
+/* Reserve a dock beside the capsule instead of covering form controls above it. */
+body .iv-fixed-nav{left:max(14px,env(safe-area-inset-left))!important;right:calc(66px + env(safe-area-inset-right))!important;width:auto!important;max-width:620px!important;margin:0 auto!important;transform:none!important}
+body.iv-modal-open::after{content:none!important}
+body.iv-modal-open .iv-fixed-nav{visibility:hidden!important;pointer-events:none!important}
+body .modal{z-index:900}
+@media(max-width:570px){body.iv-ils .ils-grid{grid-template-columns:minmax(0,1fr)}body.iv-ils .ils-grid>label,body.iv-ils .ils-grid>.aixm-assist{grid-column:1/-1}body.iv-operational .panel{padding:12px!important}body.iv-operational .panel label{line-height:1.3}}
+@media(max-height:500px) and (orientation:landscape){body.iv-preflight .header h1{font-size:1.7rem}body.iv-preflight .header{margin-bottom:14px}body.iv-preflight .topbar{margin-bottom:12px!important}}
+
+body.iv-operational .panel label{font-size:13px;font-weight:650;text-transform:none;letter-spacing:normal}
+body.iv-local-catalog .topbar{position:sticky;top:0;z-index:10;padding:12px 0;background:rgba(23,25,27,.96);margin-bottom:20px}
+body.iv-local-catalog h1{font-size:var(--iv-title-size);line-height:1.15}
+body.iv-admin .package-card dd,body.iv-admin .details dd,body.iv-admin .package-meta{overflow-wrap:anywhere}

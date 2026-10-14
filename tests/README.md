@@ -121,3 +121,32 @@ O workflow existente usa descoberta automática e também executa estes testes.
 As verificações novas não exercitam cadastros aeronáuticos, backup/restauração
 ou atualização de uma instalação PWA antiga; esses mecanismos não foram
 alterados. O teste offline original continua cobrindo as duas rotas do editor.
+
+
+## Mapa offline e correções visuais gerais
+
+`test_offline_map_visual.py` acrescenta sete testes (15 no total na suíte):
+
+- SHA-256, 241 países, rings fechados, limites WGS84 e corte no antimeridiano;
+- Cartografia desenhada em Canvas, projeção independente do marcador SBGL,
+  arraste/zoom e reabertura da última consulta sem regravar seu formato;
+- Instalação do APP_SHELL real, desligamento da rede e do servidor antes de
+  visitar Meteorologia: base/Leaflet/markers funcionais, recarga e distinção
+  entre fundo local e imagens meteorológicas online;
+- Nomes completos das abas selecionadas no iPhone de 320 px;
+- Dock sem interseção entre cápsula e botão global, fontes de toque de 16 px,
+  safe areas, modais locais sem sobreposição e ajuda correta do Mapa Radar;
+- Atualização de v94 para o worker atual preservando missão NDB fictícia,
+  IndexedDB e cache de pacote fictício; depois, mapa funcional offline;
+- Falha intencional 503 de um recurso novo: o worker candidato não ativa,
+  a versão anterior e os dados permanecem disponíveis.
+
+O fixture contém bytes do worker real anterior, identificado em
+`fixtures/README.md`; as páginas e assets servidos são os do checkout atual.
+Não reconstrói todas as versões históricas de HTML. Não há testes com dados
+pessoais. O cenário 503 pode cancelar requisições ao servidor local; isso é
+esperado e não substitui as verificações explícitas de preservação.
+
+A base Natural Earth não inclui ruas, rios, relevo ou limites estaduais. Os
+produtos meteorológicos permanecem externos. Validar ainda Safari/iOS real,
+teclado, PWA em dispositivo e desempenho/memória em hardware operacional.
