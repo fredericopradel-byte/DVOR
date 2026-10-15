@@ -266,3 +266,57 @@ IV_TEST_CHROMIUM=/usr/bin/chromium python -B -m unittest discover -s tests -p te
 ```
 
 Chromium, viewports e safe areas emulados não substituem Safari/iOS real.
+
+## Perfil vertical vinculado — PR 4
+
+`test_vertical_profile.py` acrescenta onze testes (54 no total):
+
+- Alternância horizontal/vertical sem modificar geometria ou câmera;
+  sequência parcial identificada e ramificações nunca escolhidas automaticamente.
+- Pontos e pernas na ordem explícita, inclusive retorno ao mesmo ponto;
+  distâncias locais acumuladas e comprimento dos arcos, em NM.
+- Altitudes publicadas e planejadas manuais distintas, sem preencher valores
+  ausentes nem ligar a trajetória através de um ponto sem altitude planejada.
+- Caixas com hachuras diagonais para mínima, máxima, exata e janela;
+  validação atômica de intervalos e edição das restrições das pernas.
+- Os mesmos dados na aba Restrições e no perfil. A altitude planejada nova
+  não altera as altitudes calculadas na aba Inspeção.
+- Edição vertical preserva cadeados da geometria, sequência, fontes originais
+  de pernas divididas e a indicação de revisão pendente; desfazer/refazer.
+- Edições ainda não aplicadas exigem confirmação antes de descarte ao trocar
+  de elemento, vista ou aba. Repetir o toque na vista ativa mantém os campos.
+- Leitura de desenhos v1/v2, exportação/importação v3, recarga e independência
+  dos rascunhos NDB e Procedimentos.
+- Backup/restauração do rascunho e missão v3 em outro contexto, com missões
+  históricas v1/v2 na mesma biblioteca; dados inválidos permanecem preservados.
+- Instalação do worker real, edição e recarga offline do perfil.
+- Rolagem horizontal por toque CDP, safe areas e controles de pelo menos
+  44 px em viewports iPhone/iPad, retrato e paisagem, sem overflow da página.
+
+A representação é esquemática, inspirada no perfil IAC, e não constitui uma
+carta. A escala vertical acompanha os valores informados; o espaçamento
+horizontal prioriza a leitura e **não está em escala**. As distâncias locais
+de cada perna e as acumuladas são mostradas numericamente. Não há avaliação
+de cumprimento de restrições, gradientes, descidas ou interpolação automática.
+Os cálculos operacionais preexistentes permanecem na aba Inspeção.
+
+O campo `plannedAltitude` pertence às mesmas restrições dos pontos e é
+independente de `inspectionAltitude`. Altitudes publicadas, limites e tipos
+reutilizam `altitude`, `upperAltitude` e `qualifier`. Os cadeados continuam
+protegendo a geometria horizontal; eles não impedem editar altitudes.
+
+O editor lê desenhos v1, v2 e v3 e passa a gravar v3, evitando que versões
+anteriores aceitem o arquivo e descartem a altitude planejada silenciosamente.
+As chaves existentes são preservadas. O backup geral mantém formato v1 e
+aceita as três versões de desenho em rascunhos, missões e catálogo. Atualizar
+o aplicativo em todos os dispositivos antes de compartilhar desenhos v3.
+
+O único novo recurso é `inspecao/vertical-profile.js`, incluído no APP_SHELL
+do worker central (cache v99). Não há novas dependências ou serviços externos.
+
+```sh
+IV_TEST_CHROMIUM=/usr/bin/chromium python -B -m unittest discover -s tests -p test_vertical_profile.py -v
+```
+
+Os testes usam valores fictícios e perfis temporários. Validar ainda Safari/iOS,
+PWA instalado e dispositivos reais; a emulação Chromium não os substitui.
