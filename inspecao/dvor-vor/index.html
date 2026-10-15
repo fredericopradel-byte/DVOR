@@ -593,15 +593,44 @@
     ctx.beginPath();ctx.roundRect(x,yy,w,h,r);ctx.fillStyle=fill;ctx.fill();
     if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.stroke();}
   }
-  function wrap(text,x,yy,maxWidth,size=23,color=C.ink,weight=400,leading=32) {
-    font(size,weight);ctx.fillStyle=color;
-    let row='', at=yy;
-    for(const word of human(text).split(/\s+/)){
-      const candidate=row?`${row} ${word}`:word;
-      if(row && ctx.measureText(candidate).width>maxWidth){ctx.fillText(row,x,at);at+=leading;row=word;}else row=candidate;
+  // Medição em pixels com a mesma fonte do desenho, inclusive palavras sem espaços.
+  function textLines(value,width,size=23,weight=400){
+    font(size,weight);const lines=[];
+    for(const paragraph of human(value).split(/\r?\n/)){
+      let row='';
+      for(let word of paragraph.split(/\s+/).filter(Boolean)){
+        if(row&&ctx.measureText(row+' '+word).width>width){lines.push(row);row='';}
+        while(ctx.measureText(word).width>width){
+          let n=1;while(n<word.length&&ctx.measureText(word.slice(0,n+1)).width<=width)n++;
+          lines.push(word.slice(0,n));word=word.slice(n);
+        }
+        row=row?row+' '+word:word;
+      }
+      lines.push(row);
     }
-    if(row){ctx.fillText(row,x,at);at+=leading;}
-    return at;
+    return lines;
+  }
+  function wrap(text,x,yy,maxWidth,size=23,color=C.ink,weight=400,leading=32){
+    const lines=textLines(text,maxWidth,size,weight);
+    lines.forEach((v,i)=>line(v,x,yy+i*leading,size,color,weight));return yy+lines.length*leading;
+  }
+  function contentRows(value,size=23,color=C.ink,weight=400,leading=32,width=RIGHT-M-48){
+    return textLines(value,width,size,weight).map(text=>({text,size,color,weight,leading}));
+  }
+  async function flowCard(rows,drawHeader,fill=C.pale,accent=null){
+    let offset=0;
+    while(offset<rows.length){
+      const remaining=rows.slice(offset).reduce((n,r)=>n+r.leading,0);
+      await room(Math.min(66+remaining+12,BOTTOM-206));
+      let count=0,height=66;
+      while(offset+count<rows.length&&y+height+rows[offset+count].leading+12<=BOTTOM){height+=rows[offset+count].leading;count++;}
+      const top=y;box(M,top,RIGHT-M,height+4,fill,14,C.line);
+      if(accent){ctx.fillStyle=accent;ctx.fillRect(M,top,9,height+4);}
+      drawHeader(top,offset>0,height+4);
+      let at=top+66;
+      for(const row of rows.slice(offset,offset+count)){if(row.swatch)box(M+23,at-17,19,19,row.swatch,3,C.line);line(row.text,M+23+(row.inset||0),at,row.size,row.color,row.weight);at+=row.leading;}
+      y=top+height+16;offset+=count;
+    }
   }
   function newPage(){
     canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;
@@ -622,12 +651,17 @@
   }
   async function room(height){if(y+height>BOTTOM){await endPage();newPage();}}
   function section(label){box(M,y,RIGHT-M,47,C.ink,10);line(label.toUpperCase(),M+18,y+33,22,'#fff',700);y+=65;}
-  function metadata(items){
-    const filtered=items.filter(([key,value])=>value!==''&&value!==null&&value!==undefined);
+  async function metadata(items){
+    const filtered=items.filter(([key,value])=>value!==''&&value!==null&&value!==undefined),w=(RIGHT-M-14)/2;
     for(let i=0;i<filtered.length;i+=2){
-      const row=filtered.slice(i,i+2), w=(RIGHT-M-14)/2;
-      row.forEach(([key,val],j)=>{const x=M+j*(w+14);box(x,y,w,68,C.pale,10);line(key.toUpperCase(),x+14,y+23,16,C.muted,700);const value=human(val);font(24,650);let shown=value;while(shown.length>4&&ctx.measureText(shown).width>w-28)shown=shown.slice(0,-2)+'…';line(shown,x+14,y+53,24,C.ink,650);});
-      y+=78;
+      const row=filtered.slice(i,i+2).map(([key,value])=>({labels:textLines(key.toUpperCase(),w-28,16,700),values:textLines(value,w-28,24,700)}));
+      const header=Math.max(...row.map(c=>c.labels.length))*22+15,total=Math.max(...row.map(c=>c.values.length));let offset=0;
+      while(offset<total){
+        await room(Math.min(header+(total-offset)*32+16,BOTTOM-206));
+        const count=Math.min(total-offset,Math.max(1,Math.floor((BOTTOM-y-header-16)/32))),h=header+count*32+16;
+        row.forEach((c,j)=>{const x=M+j*(w+14);box(x,y,w,h,C.pale,10);c.labels.forEach((v,k)=>line(v,x+14,y+23+k*22,16,C.muted,700));c.values.slice(offset,offset+count).forEach((v,k)=>line(v,x+14,y+header+24+k*32,24,C.ink,700));});
+        y+=h+10;offset+=count;
+      }
     }
     y+=12;
   }
@@ -666,53 +700,41 @@
     y+=598;
   }
   async function flightCards(cards){
-    await room(80);section('Passagens na ordem atual');
+    await room(cards.length?240:130);section('Passagens na ordem atual');
     if(!cards.length){line('Nenhuma passagem planejada.',M,y+30,26,C.muted);y+=55;return;}
     for(let i=0;i<cards.length;i++){
       const card=cards[i],accent=card.tx==='TX2'?C.red:C.blue;
-      font(22);const words=human(card.description).split(/\s+/);const details=human(card.detail);
-      const estimated=125+Math.ceil(words.join(' ').length/60)*30+Math.ceil(details.length/80)*29+(card.group?27:0);
-      await room(Math.min(400,estimated));
-      const top=y;box(M,y,RIGHT-M,Math.min(400,estimated)-8,card.done?'#e7ebec':C.pale,14,C.line);
-      ctx.fillStyle=accent;ctx.fillRect(M,top,9,Math.min(400,estimated)-8);
-      if(card.group){ctx.fillStyle=card.groupColor||C.amber;ctx.fillRect(RIGHT-9,top,9,Math.min(400,estimated)-8);}
+      const rows=[...contentRows(card.description,25,card.done?'#4d585c':C.ink,700,33),...contentRows(card.detail,21,C.muted,400,29)];
+      if(card.group)rows.push(...contentRows(`GRUPO  •  ${card.group}`,18,card.groupColor||C.amber,700,27));
+      await flowCard(rows,(top,continued,height)=>{
+        if(continued)line('CONTINUAÇÃO',RIGHT-360,top+34,16,C.muted,700);
       line(`${String(i+1).padStart(2,'0')}   ${card.tx}   ${card.type||''}`,M+23,y+34,23,accent,750);
       line(card.done?'CONCLUÍDA':card.current?'ATUAL':'A FAZER',RIGHT-195,y+34,19,card.done?C.green:C.muted,750);
-      y=wrap(card.description,M+23,y+70,RIGHT-M-48,25,card.done?'#4d585c':C.ink,700,33)+6;
-      y=wrap(details,M+23,y,RIGHT-M-48,21,C.muted,400,29);
-      if(card.group){line(`GRUPO  •  ${card.group}`,M+23,y+6,18,card.groupColor||C.amber,700);y+=27;}
-      y=Math.max(top+Math.min(400,estimated),y+13);
+      },card.done?'#e7ebec':C.pale,accent);
     }
   }
   async function papiPass(pass,index){
-    await room(1250);
+    const nums=(pass.boxNumbers||[]).map((n,i)=>`Caixa ${n}: ${human(pass.values?.[i])}°`).join('    •    ');
+    const results=pass.results||{},clr=pass.clearance||{};
+    const rows=contentRows(nums,22);
+    for(const [label,key,sat] of [['Inferior','lower','lowerSat'],['Central','center','centerSat'],['Superior','upper','upperSat'],['Rampa','ramp','rampSat']]){
+      rows.push(...contentRows(`${label}   ${human(results[key])}°   ${results[sat]?'SAT':'DEF'}`,22,results[sat]?C.green:C.red,700,32));
+    }
+    rows.push(...contentRows(clr.pending?'Clearance pendente':`Clearance ${human(clr.angle)}°`,23,C.amber,700));
+    if(clr.source)rows.push(...contentRows(clr.source,20,C.muted,400,28));
+    if(pass.sectors?.length){
+      rows.push(...contentRows('INDICAÇÕES POR SETOR ANGULAR',18,C.muted,700,28));
+      const colors=['#681f2a','#87323d','#66535a','#9b8d91','#e7e9ea'];
+      pass.sectors.forEach((sector,i)=>{const parts=contentRows(sector,19,C.ink,400,27,RIGHT-M-78);parts.forEach((r,j)=>{r.inset=30;if(j===0)r.swatch=colors[i]||C.pale;});rows.push(...parts);});
+    }
+    if(pass.note)rows.push(...contentRows(`Observação: ${pass.note}`,20,C.ink,400,28));
+    const passHeight=65+578+66+rows.reduce((n,row)=>n+row.leading,0)+16;
+    await room(Math.min(passHeight,BOTTOM-206));
     section(`Passagem ${pass.number||index+1}  •  ${date(pass.createdAt)}`);
     box(M,y,RIGHT-M,560,C.map,14);
     const img=await svgImage(pass.svg),imageWidth=Math.min(RIGHT-M-40,536*365/220);
-    ctx.drawImage(img,M+(RIGHT-M-imageWidth)/2,y+12,imageWidth,536);
-    y+=578;
-    box(M,y,RIGHT-M,92,C.pale,12);
-    const nums=(pass.boxNumbers||[]).map((n,i)=>`Caixa ${n}: ${human(pass.values?.[i])}°`).join('    •    ');
-    wrap(nums,M+16,y+36,RIGHT-M-32,22,C.ink,650,30);y+=112;
-    const results=pass.results||{};
-    for(const [label,key,sat] of [['Inferior','lower','lowerSat'],['Central','center','centerSat'],['Superior','upper','upperSat'],['Rampa','ramp','rampSat']]){
-      const idx=['lower','center','upper','ramp'].indexOf(key),x=M+(idx%2)*((RIGHT-M)/2),yy=y+Math.floor(idx/2)*73;
-      box(x,yy,(RIGHT-M)/2-9,62,C.pale,10);line(`${label}   ${human(results[key])}°`,x+14,yy+39,22,C.ink,650);line(results[sat]?'SAT':'DEF',x+(RIGHT-M)/2-90,yy+39,20,results[sat]?C.green:C.red,750);
-    }
-    y+=160;
-    const clr=pass.clearance||{};
-    y=wrap(clr.pending?'Clearance pendente':`Clearance ${human(clr.angle)}°`,M,y+10,RIGHT-M,23,C.amber,750,30)+4;
-    y=wrap(clr.source||'',M,y,RIGHT-M,20,C.muted,400,28);
-    if(pass.sectors?.length){
-      line('INDICAÇÕES POR SETOR ANGULAR',M,y+19,18,C.muted,700);y+=51;
-      const sectorColors=['#681f2a','#87323d','#66535a','#9b8d91','#e7e9ea'];
-      for(const [index,sector] of pass.sectors.entries()){
-        box(M,y-17,19,19,sectorColors[index]||C.pale,3,C.line);
-        y=wrap(sector,M+30,y,RIGHT-M-40,19,C.ink,400,27);
-      }
-    }
-    if(pass.note)y=wrap(`Observação: ${pass.note}`,M,y+7,RIGHT-M,20,C.ink,400,28);
-    y+=20;
+    ctx.drawImage(img,M+(RIGHT-M-imageWidth)/2,y+12,imageWidth,536);y+=578;
+    await flowCard(rows,(top,continued)=>line(`PASSAGEM ${pass.number||index+1}${continued?' • CONTINUAÇÃO':''}`,M+23,top+34,21,C.ink,700));
   }
   function encodePdf(jpegs){
     const objects=[];const ref=(n)=>`${n} 0 R`;
@@ -740,7 +762,10 @@
   function save(blob,name){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`IV-PLANNER-${name}.pdf`;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
   async function exportReport(data){
     title=`${data.kind}  •  ${human(data.name)}`;stamp=new Date().toLocaleString('pt-BR');pages=[];newPage();
-    section('Identificação da missão e do auxílio');metadata(data.meta);
+    section('Identificação da missão e do auxílio');
+    const meta=(data.meta||[]).slice();
+    if(data.name&&!meta.some(([,value])=>String(value)===String(data.name)))meta.unshift(['Missão',data.name]);
+    await metadata(meta);
     if(data.kind==='PAPI'){
       await room(55);section(`Resultados  •  ${data.passes.length} passagem(ns)`);
       if(!data.passes.length){line('Nenhuma passagem registrada.',M,y+30,26,C.muted);y+=65;}

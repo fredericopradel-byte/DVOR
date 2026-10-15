@@ -420,3 +420,27 @@ IV_TEST_CHROMIUM=/usr/bin/chromium python -B -m unittest discover -s tests -p te
 
 CDP, viewports e geolocalização simulada no Chromium não substituem Safari/iOS,
 PWA instalado, interfaces de permissão nem GNSS em iPhone/iPad reais.
+
+### PR 7 — Relatórios PDF
+
+A auditoria de geradores e os limites estão em
+[`docs/PDF-AUDIT-PR7.md`](../docs/PDF-AUDIT-PR7.md).
+`test_report_pdf.py` adiciona oito testes (82 no total) com downloads reais,
+leitura A4 por PyMuPDF, margens, colisões de glifos, fundo dos títulos,
+preservação dos valores e da entrada, formulários Legacy/Hawker e restauração
+da câmera Radar. Inclui PAPI, ILS, DVOR/VOR, Radar, cópias legadas e textos
+maiores que uma página. A geração offline é exercitada nas seis rotas
+operacionais após instalar o worker pela entrada do aplicativo.
+
+A dependência `PyMuPDF` em `tests/requirements.txt` serve somente aos testes;
+o aplicativo continua sem nova biblioteca. Para salvar os exemplos fictícios
+e as imagens de todas as páginas:
+
+```sh
+IV_TEST_CHROMIUM=/usr/bin/chromium IV_TEST_PDF_DIR=work/pdf-review python -B -m unittest discover -s tests -p test_report_pdf.py -v
+```
+
+Não usar os exemplos como planejamento operacional. Compartilhamento/impressão
+e download no Safari/iOS real permanecem pendentes. O worker só recebe a versão
+de cache v102; cálculos, unidades, formatos de missão e dados persistidos não
+foram alterados.
