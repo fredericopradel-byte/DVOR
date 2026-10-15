@@ -39,6 +39,8 @@
       return {
         version: data.version || '',
         effectiveDate: data.effectiveDate || '',
+        aerodromes: Array.isArray(data.aerodromes) ? data.aerodromes : [],
+        procedures: Array.isArray(data.procedures) ? data.procedures : [],
         navaids: vor.navaids,
         aids,
         aidsByAirport: indexes.aidsByAirport,
