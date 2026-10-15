@@ -70,6 +70,27 @@ body .modal{z-index:900}
 @media(max-height:500px) and (orientation:landscape){body.iv-preflight .header h1{font-size:1.7rem}body.iv-preflight .header{margin-bottom:14px}body.iv-preflight .topbar{margin-bottom:12px!important}}
 
 body.iv-operational .panel label{font-size:13px;font-weight:650;text-transform:none;letter-spacing:normal}
+
+/* Controles de mapa: alvos de toque e alinhamento, sem alterar os desenhos. */
+.rose-page .rose-panel{min-height:0}
+.rose-page .rose-stage{flex:0 0 auto;min-height:0;height:auto}
+.rose-stage #rose{height:auto;aspect-ratio:1/1}
+.rose-stage .map-corner-controls{display:flex;grid-template-columns:none;gap:4px;top:10px;left:10px}
+.rose-stage .map-corner-controls button,.rose-stage .map-corner-controls .map-view-toggle{box-sizing:border-box;flex:0 0 44px;width:44px;height:44px;min-width:44px;min-height:44px;margin:0;padding:3px}
+.rose-stage .map-corner-controls #gnss-toggle{margin:0}
+.rose-stage .map-corner-controls button small{font-size:9px;line-height:1.1}
+.rose-page .step-controls{display:flex;gap:6px}
+.rose-page .step-controls button{flex:0 0 44px;min-width:44px;min-height:44px}
+.rose-page .step-controls #step-complete{flex:1}
+.rose-stage .map-readout{top:64px;bottom:auto;right:10px}
+.rose-stage .map-color-toggle{top:64px;bottom:auto;left:10px;transform:none}
+.rose-stage>.gnss-hud{position:static;width:100%;max-width:none;margin-top:8px;overflow-wrap:anywhere}
+.stage .map-controls button{width:44px;height:44px;min-height:44px}
+.canvas-wrap .map-gnss{min-width:44px;min-height:44px}
+.mapwrap .leaflet-control-zoom{border:1px solid rgba(255,255,255,.24);border-radius:11px;overflow:hidden}
+.mapwrap .leaflet-control-zoom a{width:44px;height:44px;line-height:44px;background:rgba(27,31,34,.96);color:#f5f7f9;border-color:#4d5359}
+.mapwrap .leaflet-control-zoom a:hover,.mapwrap .leaflet-control-zoom a:focus{background:#34383c}
+.mapwrap .leaflet-control-zoom a.leaflet-disabled{color:#aeb5bc;background:#25292d}
 body.iv-local-catalog .topbar{position:sticky;top:0;z-index:10;padding:12px 0;background:rgba(23,25,27,.96);margin-bottom:20px}
 body.iv-local-catalog h1{font-size:var(--iv-title-size);line-height:1.15}
 body.iv-admin .package-card dd,body.iv-admin .details dd,body.iv-admin .package-meta{overflow-wrap:anywhere}

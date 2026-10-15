@@ -30,7 +30,7 @@ const H={
  mission:['Missão Radar','Informe o sítio, a antena, a orientação e as distâncias das coberturas verticais previstas no planejamento.'],
  plan:['Planejar Radar','Gere o pacote de orientação, P1 e P2 ou acrescente passagens conforme a missão.'],
  execution:['Execução Radar','Ordene por toque longo, acompanhe Atual e Próxima e conclua ou refaça uma passagem.'],
- rose:['Mapa Radar','Veja as passagens em planta ou perfil. A posição GNSS é somente apoio visual.']},
+ rose:['Mapa Radar','Veja as passagens em planta ou perfil. Use dois dedos para zoom; a rotação está disponível somente em planta. No perfil, os eixos permanecem fixos. A posição GNSS é somente apoio visual.']},
  '/inspecao/papi.html':{
  plan:['Planejamento PAPI','Identifique a missão, selecione cabeceira, lado e conjunto, confira as coordenadas e os valores planejados antes da execução.'],
  execute:['Execução PAPI','Registre os quatro ângulos encontrados. Confirmar cria uma nova passagem sem substituir as anteriores.'],
