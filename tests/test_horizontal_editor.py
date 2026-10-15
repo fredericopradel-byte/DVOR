@@ -98,7 +98,7 @@ class HorizontalEditorTests(unittest.TestCase):
             self.open_editor(module)
             initial = self.draft()
             self.assertTrue(all(not p['locked'] for p in initial['points']))
-            self.assertEqual(initial['version'], 2)
+            self.assertEqual(initial['version'], 3)
             self.assertEqual(initial['flight'], {'start': '', 'end': '', 'segments': []})
             self.select_segment('ab')
             self.button('Bloquear').click()
@@ -346,7 +346,7 @@ class HorizontalEditorTests(unittest.TestCase):
             page.get_by_role('button', name='Reabrir', exact=True).click()
             expect(page.locator('#mission-name')).to_have_value('MISSÃO ANTIGA V1')
             migrated = page.evaluate('(key)=>JSON.parse(localStorage.getItem(key))', key)
-            self.assertEqual(migrated['version'], 2)
+            self.assertEqual(migrated['version'], 3)
             self.assertEqual([(p['id'], p['x'], p['y']) for p in migrated['points']],
                              [(p['id'], p['x'], p['y']) for p in historical['points']])
         self.assertEqual(self.errors, [])
