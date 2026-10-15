@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v99-vertical-profile-20261015';
+const CACHE = 'iv-planner-v100-mission-databases-20261015';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -54,6 +54,7 @@ const APP_SHELL = [
   './inspecao/radar.html',
   './inspecao/desenhar.html',
   './inspecao/vertical-profile.js',
+  './inspecao/mission-databases.js',
   './inspecao/par.html',
 
   './localidades/',

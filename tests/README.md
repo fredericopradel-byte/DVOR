@@ -320,3 +320,60 @@ IV_TEST_CHROMIUM=/usr/bin/chromium python -B -m unittest discover -s tests -p te
 
 Os testes usam valores fictícios e perfis temporários. Validar ainda Safari/iOS,
 PWA instalado e dispositivos reais; a emulação Chromium não os substitui.
+
+## Bases aeronáuticas na Missão — PR 5
+
+`test_mission_databases.py` acrescenta doze testes (66 no total). As bases de
+teste são inteiramente fictícias, servidas pelo worker real a partir de um
+pacote em Cache Storage e IndexedDB temporários. Arquivos incorporados e
+pacotes reais não são alterados.
+
+- Fontes ROTAER, ADC, AIXM e cadastros manuais apresentadas separadamente;
+  seleção de localidade, ICAO e cabeceira com confirmação das mudanças.
+- Rumo magnético publicado da ADC tem precedência; rumos legados sem fonte
+  verificada não são apresentados como publicados nem estimados pelo designador.
+- Metadados de procedimentos AIXM preenchem identificação e tipo IAC/SID,
+  sem inventar pernas, restrições, carta, revisão ou vínculo com cabeceira
+  deduzido do nome. STAR aparece somente para consulta.
+- NDB: frequência kHz/MHz, elevação M/FT, elevação zero, coordenadas zero
+  válidas e rejeição de pares incompletos. Unidade desconhecida ou valor ausente
+  não substitui o campo manual existente.
+- Coordenadas de ARP, cabeceira e auxílio são referências distintas. A aplicação
+  como origem é explícita e respeita cadeados; não gira o desenho nem preenche
+  declinação automaticamente. Edições pendentes de referência são preservadas.
+- Falha de gravação mantém documento e rascunho anteriores; cadastros corrompidos
+  não são apagados nem regravados pela consulta.
+- O catálogo de desenhos locais mantém a separação dos módulos e usa a
+  confirmação e recuperação existentes ao abrir um desenho.
+- AIXM indisponível mantém ROTAER, cadastros locais e edição manual funcionais;
+  nova tentativa encontra o pacote depois de disponibilizado.
+- Resposta atrasada não atualiza uma busca alterada nem preenche a missão.
+- Busca e preenchimento offline, recarga, fontes/cache preservados, missão
+  salva e backup/restauração em outro contexto temporário.
+- Controles em viewports iPhone/iPad, retrato/paisagem, safe areas e seleção
+  por toque CDP, sem overflow horizontal da página.
+
+A consulta reutiliza `IVAixm.load()` e seus adaptadores. O cliente passa a
+expor também os aeródromos e metadados de procedimentos já presentes no índice
+instalado; não baixa nem interpreta o XML integral. Nenhuma base foi atualizada.
+O AIXM permanece opcional: seus registros só estão disponíveis quando o pacote
+está instalado e acessível. Datas dos registros e da base não comprovam vigência
+operacional nem correspondem automaticamente à revisão da carta.
+
+O preenchimento usa os campos existentes de missão e referência. Campos não
+fornecidos são mantidos; ao trocar localidade ou auxílio, o usuário deve
+conferir os demais campos que continuaram no planejamento. Não há novos campos
+persistidos, chaves ou versão de desenho: continuam válidos os desenhos v1/v2/v3,
+com gravação v3 e backup geral v1. Informações de fonte aparecem na consulta;
+os valores preenchidos continuam sujeitos à edição manual.
+
+O recurso local `inspecao/mission-databases.js` entra no APP_SHELL do worker
+central (cache v100). Scripts ROTAER, ADC e AIXM reutilizam os caminhos e as
+estratégias de pacote/offline existentes, sem novas dependências externas.
+
+```sh
+IV_TEST_CHROMIUM=/usr/bin/chromium python -B -m unittest discover -s tests -p test_mission_databases.py -v
+```
+
+Pendente: Safari/iOS real, PWA instalado e conferência operacional com as
+publicações aplicáveis. Chromium e dados fictícios não substituem essa validação.
