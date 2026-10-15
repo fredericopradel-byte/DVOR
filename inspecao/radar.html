@@ -1170,7 +1170,7 @@
 
   function clampView(){const half=center/viewZoom;viewX=Math.max(half,Math.min(500-half,viewX));viewY=Math.max(half,Math.min(500-half,viewY));}
 
-  function applyView(){clampView();const size=500/viewZoom;$('#rose').setAttribute('viewBox',`${viewX-size/2} ${viewY-size/2} ${size} ${size}`);$('#map-world').setAttribute('transform',`rotate(${viewRotation} ${center} ${center})`);$('#map-readout').textContent=`Zoom ${Math.round(viewZoom*100)}% · Giro ${Math.round(viewRotation)}°`;drawAircraft();}
+  function applyView(){clampView();const rotation=vertical?0:viewRotation,size=500/viewZoom;$('#rose').setAttribute('viewBox',`${viewX-size/2} ${viewY-size/2} ${size} ${size}`);$('#map-world').setAttribute('transform',`rotate(${rotation} ${center} ${center})`);$('#map-readout').textContent=`Zoom ${Math.round(viewZoom*100)}% · ${vertical?'Perfil vertical':'Giro '+Math.round(viewRotation)+'°'}`;drawAircraft();}
 
   function setZoom(value){viewZoom=Math.max(1,Math.min(6,value));if(viewZoom===1){viewX=center;viewY=center;}applyView();}
 
@@ -1204,7 +1204,7 @@
     const layer=$('#aircraft-layer');layer.replaceChildren();if(!lastPosition)return;const st=stationCoords();if(!st)return;const c=lastPosition.coords,bd=bearingDistance(st.lat,st.lon,c.latitude,c.longitude),bearing=trueToMagnetic(bd.bearing);let p,course;
     if(vertical){p=profilePoint(bd.distance,Number.isFinite(c.altitude)?c.altitude*3.28084:num(mission.metadata.alt));course=0}else{p=point(bearing,bd.distance);course=Number.isFinite(c.heading)&&c.speed>.5?trueToMagnetic(c.heading):bearing}
     const g=svgEl('g',{transform:`translate(${p.x} ${p.y}) rotate(${course})`}),size=26/viewZoom;
-    g.append(svgEl('image',{x:-size/2,y:-size/2,width:size,height:size,href:`${mapAircraftChoice()}-${vertical?'profile':'map'}.png`,preserveAspectRatio:'xMidYMid meet',transform:vertical?`rotate(${-viewRotation})`:''}));layer.append(g);
+    g.append(svgEl('image',{x:-size/2,y:-size/2,width:size,height:size,href:`${mapAircraftChoice()}-${vertical?'profile':'map'}.png`,preserveAspectRatio:'xMidYMid meet',transform:''}));layer.append(g);
   }
   function profileLimits(){const alt=Number(mission.metadata.alt)||0,values=mission.activities.map(a=>a.alt).filter(x=>x!==''&&Number.isFinite(Number(x))).map(Number);return {low:Math.min(alt,0,...values)-1000,high:Math.max(alt+1000,...values)+2000}}
   function profilePoint(distance,alt){const {low,high}=profileLimits();return{x:60+distance/maxDistance()*380,y:420-(alt-low)/(high-low)*350}}
@@ -1262,7 +1262,7 @@
 
   $('#rose').addEventListener('wheel',event=>{event.preventDefault();setZoom(viewZoom*(event.deltaY<0?1.18:1/1.18));},{passive:false});$('#rose').addEventListener('dblclick',fitMission);
   $('#rose').addEventListener('pointerdown',event=>{$('#rose').setPointerCapture(event.pointerId);pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});$('#rose').classList.add('dragging');if(pointers.size===2){const p=[...pointers.values()];lastPinch=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);lastAngle=Math.atan2(p[1].y-p[0].y,p[1].x-p[0].x);}});
-  $('#rose').addEventListener('pointermove',event=>{const previous=pointers.get(event.pointerId);if(!previous)return;pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});if(pointers.size===1){const rect=$('#rose').getBoundingClientRect(),scale=500/(viewZoom*rect.width);viewX-=(event.clientX-previous.x)*scale;viewY-=(event.clientY-previous.y)*scale;applyView();}else if(pointers.size===2){const p=[...pointers.values()],distance=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),angle=Math.atan2(p[1].y-p[0].y,p[1].x-p[0].x);if(lastPinch)viewZoom=Math.max(1,Math.min(6,viewZoom*distance/lastPinch));if(lastAngle!==null){let delta=(angle-lastAngle)*180/Math.PI;if(delta>180)delta-=360;if(delta<-180)delta+=360;viewRotation=(viewRotation+delta+360)%360}lastPinch=distance;lastAngle=angle;applyView();}});
+  $('#rose').addEventListener('pointermove',event=>{const previous=pointers.get(event.pointerId);if(!previous)return;pointers.set(event.pointerId,{x:event.clientX,y:event.clientY});if(pointers.size===1){const rect=$('#rose').getBoundingClientRect(),scale=500/(viewZoom*rect.width);viewX-=(event.clientX-previous.x)*scale;viewY-=(event.clientY-previous.y)*scale;applyView();}else if(pointers.size===2){const p=[...pointers.values()],distance=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),angle=Math.atan2(p[1].y-p[0].y,p[1].x-p[0].x);if(lastPinch)viewZoom=Math.max(1,Math.min(6,viewZoom*distance/lastPinch));if(!vertical&&lastAngle!==null){let delta=(angle-lastAngle)*180/Math.PI;if(delta>180)delta-=360;if(delta<-180)delta+=360;viewRotation=(viewRotation+delta+360)%360}lastPinch=distance;lastAngle=angle;applyView();}});
   function release(event){pointers.delete(event.pointerId);lastPinch=null;lastAngle=null;if(!pointers.size)$('#rose').classList.remove('dragging');}$('#rose').addEventListener('pointerup',release);$('#rose').addEventListener('pointercancel',release);
 
   // Impede zoom gestual da interface no iOS; mantém os gestos próprios do mapa.

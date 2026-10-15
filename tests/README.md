@@ -377,3 +377,46 @@ IV_TEST_CHROMIUM=/usr/bin/chromium python -B -m unittest discover -s tests -p te
 
 Pendente: Safari/iOS real, PWA instalado e conferência operacional com as
 publicações aplicáveis. Chromium e dados fictícios não substituem essa validação.
+
+## Mapas e perfil Radar — PR 6
+
+`test_map_controls.py` acrescenta oito testes (74 no total):
+
+- O perfil Radar mantém a rotação zero em um gesto real de dois dedos CDP,
+  com zoom e pan funcionais, passagens e rascunho preservados.
+- A rotação em planta continua funcionando antes e depois da troca de vista.
+- GNSS simulado por CDP atualiza posição, altitude, velocidade e rumo;
+  aeronave e centralização funcionam no perfil sem girar os eixos.
+- Nove rotas de mapa em cinco viewports, incluindo as cópias antigas PAPI/ILS
+  na raiz, sem alvos menores que 44 px, corte de controles, interseções entre
+  os elementos auditados ou overflow horizontal da página.
+- Safe areas emuladas em retrato e paisagem nas sete rotas operacionais.
+- DVOR/VOR, Procedimentos e NDB mantêm rotação por gesto; o zoom Leaflet
+  continua reposicionando os marcadores de Meteorologia.
+- Roda do mouse, deslocamento e reset por duplo clique no perfil Radar.
+- Radar offline após instalação do worker central pela entrada real do app,
+  recarga e gestos, mantendo as passagens fictícias e os dados persistidos.
+
+Os controles de mapa e de passagens acima dos mapas SVG passam a ter alvos de
+pelo menos 44 px. Zoom/giro e COR/PERFIL ficam na segunda linha superior de
+DVOR/Radar, separados do quadro GNSS logo abaixo do gráfico. O contêiner segue
+o tamanho do desenho, sem espaço vazio empurrando a leitura para o dock.
+As regras são visuais e
+localizadas em `page-ui.css`; não substituem os motores SVG, Canvas ou Leaflet.
+As cores operacionais continuam nos módulos, e a atribuição do mapa é mantida.
+
+O diagnóstico, as rotas, os limites e as pendências das cópias legadas estão em
+[`docs/MAP-AUDIT-PR6.md`](../docs/MAP-AUDIT-PR6.md). Os testes dessas cópias
+cobrem apresentação e controles, sem afirmar equivalência funcional com as
+versões atuais de `inspecao/` nem nova cobertura offline para as rotas legadas.
+
+O worker central muda somente a versão do cache para v101. As regras de
+atualização, os recursos existentes do APP_SHELL e os pacotes são preservados.
+Não há alteração de schema, armazenamento, bases ou cálculos operacionais.
+
+```sh
+IV_TEST_CHROMIUM=/usr/bin/chromium python -B -m unittest discover -s tests -p test_map_controls.py -v
+```
+
+CDP, viewports e geolocalização simulada no Chromium não substituem Safari/iOS,
+PWA instalado, interfaces de permissão nem GNSS em iPhone/iPad reais.
