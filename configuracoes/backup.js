@@ -25,7 +25,7 @@ const GROUPS={
 const $=id=>document.getElementById(id),status=$('backup-status'),preview=$('backup-preview');
 let pending=null;
 function validRecord(x){return x!==null&&typeof x==='object'&&!Array.isArray(x)}
-function validDrawing(x){return validRecord(x)&&x.format==='ivplanner-procedure-drawing'&&x.version===1&&Array.isArray(x.points)&&Array.isArray(x.segments)}
+function validDrawing(x){return validRecord(x)&&x.format==='ivplanner-procedure-drawing'&&[1,2].includes(x.version)&&Array.isArray(x.points)&&Array.isArray(x.segments)}
 function identity(item,spec){const raw=item[spec.id];return typeof raw==='string'&&raw.trim()?raw.trim().toUpperCase():JSON.stringify(item)}
 function validateValue(key,value){const spec=GROUPS[key];if(!spec)throw Error('O arquivo contém uma categoria desconhecida.');if(spec.type==='record'){if(!validRecord(value))throw Error(`Dados inválidos em ${spec.label}.`);
  if(key.startsWith('ivplanner-procedure-editor-')&&!validDrawing(value))throw Error('Rascunho de procedimento inválido.');

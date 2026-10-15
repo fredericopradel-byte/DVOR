@@ -189,3 +189,41 @@ IV_TEST_CHROMIUM=/usr/bin/chromium python -B -m unittest discover -s tests -p te
 
 Todos os registros são fictícios e os perfis são temporários. Estas regressões
 Chromium não validam Safari/iOS real, GNSS ou critérios aeronáuticos.
+
+## Editor horizontal — PR 2
+
+`test_horizontal_editor.py` acrescenta dez testes (34 no total) com documentos
+e dados publicados fictícios:
+
+- Leitura de desenhos v1 antigos, cadeado persistente de perna e extremos
+  compartilhados, bloqueio de exclusão e reposicionamento por referência.
+- Seleção múltipla por toques CDP, bloqueio/desbloqueio conjunto e pan sem
+  deslocar a geometria.
+- Divisão de reta com conectividade, sequência explícita e desfazer/refazer.
+- Divisão de arco com ponto no círculo original, raio e sentido preservados.
+- Inversão de curva preservando geometria e escolha manual de ramificações.
+- Dados originais de pernas divididas preservados; cálculos ficam pendentes
+  até revisão explícita, sem redistribuição automática de tempos ou limites.
+- Edição numérica e aplicação de tempos não movem pontos de pernas bloqueadas.
+- Backup/restauração em outro contexto preserva cadeados, sequência, fontes
+  originais, origem geográfica e revisão pendente.
+- Gesto de dois dedos sobre geometria bloqueada continua mudando somente a vista.
+- Importações com cadeados inválidos, sequência desconectada ou fonte ausente
+  são rejeitadas sem substituir o documento atual.
+
+O editor lê desenhos v1 e v2 e salva os novos documentos como v2, com campos
+validados (`locked`, `flight`, `splitSources` e `reviewRequired`). O backup geral
+continua no formato v1 e aceita documentos de desenho nas duas versões. Isso
+evita que o editor anterior aceite os novos arquivos e descarte os cadeados
+silenciosamente; versões anteriores precisam ser atualizadas para abri-los. A sequência não altera fórmulas
+operacionais nem passa a escolher ramificações nos cálculos existentes. As
+fontes originais de divisões ficam preservadas no documento, mesmo após revisar
+os valores das novas pernas. O backup usa as mesmas categorias de missão e
+rascunho. O worker central recebe somente a versão de cache v97.
+
+```sh
+IV_TEST_CHROMIUM=/usr/bin/chromium python -B -m unittest discover -s tests -p test_horizontal_editor.py -v
+```
+
+Os testes de viewport e safe areas do editor continuam na suíte existente.
+Chromium e toques CDP não substituem validação em Safari/iOS e dispositivos reais.
