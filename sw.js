@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v95-offline-weather-visual-20261014';
+const CACHE = 'iv-planner-v96-mission-safety-20261014';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
