@@ -227,3 +227,42 @@ IV_TEST_CHROMIUM=/usr/bin/chromium python -B -m unittest discover -s tests -p te
 
 Os testes de viewport e safe areas do editor continuam na suíte existente.
 Chromium e toques CDP não substituem validação em Safari/iOS e dispositivos reais.
+
+## Modelos, ancoragem e azimute — PR 3
+
+`test_procedure_models.py` acrescenta nove testes (43 no total):
+
+- Modelos RNP com três ramos e convencional com bloqueio, afastamento e
+  aproximação, além de desenho em branco: geometrias ilustrativas editáveis,
+  sem inferir restrições, fases publicadas ou sequência de voo.
+- Confirmação e recuperação do desenho anterior, preservação dos metadados
+  da missão, falha de gravação e independência dos rascunhos dos dois módulos.
+- Rotação por azimute absoluto da reta escolhida, centro fixo, cancelamento,
+  rigidez das distâncias/curvas, sequência, desfazer/refazer e recarga.
+- Conversão verdadeira/magnética com declinação manual E/W e confirmação
+  renovada quando a referência muda; entradas vazias e fora dos limites.
+- Ancoragem exata do ponto escolhido nas coordenadas informadas, tornando-o
+  origem local sem modificar as medidas relativas, restrições ou sequência.
+- Proteção de cadeados, travas de rumo e referências ainda não aplicadas;
+  rejeição de coordenadas inválidas sem modificar o documento.
+- Backup/restauração das geometrias transformadas em contexto novo.
+- Modelos e rotação offline em viewports de iPhone/iPad, retrato/paisagem,
+  sem overflow horizontal e com controles de pelo menos 44 px.
+- Acionamento da rotação por toque CDP com safe areas e ponto central
+  bloqueado: o centro mantém suas coordenadas locais e geográficas.
+
+As transformações usam o plano local existente. O azimute verdadeiro resulta
+da declinação informada, sem WMM automático nem novo cálculo aeronáutico ou
+rumo geodésico. A ancoragem redefine a origem; os outros pontos são
+reposicionados. Travas de azimute precisam ser desativadas para rotação;
+cadeados impedem mudanças na geometria que protegem. Os dados persistidos
+continuam no schema de desenho v2 e nas mesmas chaves de armazenamento.
+Fontes originais de divisões continuam preservadas e não são transformadas.
+O service worker central recebe somente a versão de cache v98; os novos
+controles são locais à página já incluída no APP_SHELL.
+
+```sh
+IV_TEST_CHROMIUM=/usr/bin/chromium python -B -m unittest discover -s tests -p test_procedure_models.py -v
+```
+
+Chromium, viewports e safe areas emulados não substituem Safari/iOS real.
