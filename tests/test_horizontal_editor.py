@@ -100,7 +100,8 @@ class HorizontalEditorTests(unittest.TestCase):
         self.page.mouse.up()
 
     def sequence(self, last='c', ids=('ab', 'bc')):
-        self.page.locator('#editor-more').click()
+        if self.page.locator('#editor-options').is_hidden() or self.page.locator('#inspector-panel').is_hidden():
+            self.page.locator('#editor-more').click()
         self.page.locator('summary').filter(has_text='Sequência de voo').click()
         self.page.locator('#flight-start').select_option('a')
         self.page.locator('#flight-end').select_option(last)

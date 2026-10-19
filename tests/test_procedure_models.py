@@ -221,9 +221,12 @@ class ProcedureModelTests(unittest.TestCase):
         self.rotation(90, accept=None)
         expect(self.page.locator('#toast')).to_contain_text('travas de azimute')
         self.assertEqual(self.draft(), locked_bearing)
+        self.page.locator('#close-inspector').click()
+        self.page.locator('#selection-peek').click()
         self.page.get_by_label('Travar rumo', exact=True).uncheck()
         self.button('Aplicar medidas').click()
         original = self.draft()
+        self.details('Ancoragem e rotação geométrica')
         for lat, lon in (('', '0'), ('89', '0'), ('-89', '0'), ('0', '181')):
             self.page.locator('#anchor-lat').fill(lat)
             self.page.locator('#anchor-lon').fill(lon)
