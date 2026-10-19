@@ -14,6 +14,7 @@
  const label=overlay.querySelector('#iv-startup-label'),description=overlay.querySelector('#iv-startup-description');
  const inert=[],focus=document.activeElement,controller=new AbortController();
  let closed=false,timer,transition;
+ const presentationStarted=performance.now(),minimumPresentation=2250;
  function state(name,message,detail){
   overlay.dataset.state=name;label.textContent=message;description.textContent=detail;
   retry.hidden=name!=='fault';
@@ -71,6 +72,9 @@
   // Somente leitura: não gravar, normalizar nem apagar dados de planejamento.
   try{localStorage.getItem('ivplanner-global-nav-v1');}catch{throw Error('O armazenamento local está indisponível neste navegador.');}
   clearTimeout(timer);
+  // Três ciclos de 750 ms; verificações concluídas não deixam o watchdog disparar.
+  await new Promise(resolve=>{transition=setTimeout(resolve,Math.max(0,minimumPresentation-(performance.now()-presentationStarted)));});
+  if(closed||controller.signal.aborted)return;
   state('ready','READY','IV-PLANNER pronto para operação');
   try{sessionStorage.setItem(key,'1');}catch{}
   transition=setTimeout(close,motion.matches?0:350);

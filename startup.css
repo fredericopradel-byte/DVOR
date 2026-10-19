@@ -32,3 +32,15 @@
 .apu-screw{position:absolute;width:15px;height:15px;border:2px solid #40484c;border-radius:50%;box-sizing:border-box;background:linear-gradient(#7e878a,#7e878a) center/8px 1px no-repeat}
 .apu-tl{left:12px;top:12px}.apu-tr{right:12px;top:12px}.apu-bl{left:12px;bottom:12px}.apu-br{right:12px;bottom:12px}
 @media(max-height:360px){.apu-brand{font-size:18px}.apu-panel{padding:8px 24px}.apu-heading{margin-bottom:6px}.apu-switch{max-width:62px;padding:4px}.apu-indicator>span{font-size:11px}.apu-message{margin-top:6px;min-height:44px}#iv-startup-label{font-size:18px}#iv-startup-description{font-size:12px}.apu-screw{width:11px;height:11px}.apu-tl,.apu-bl{left:6px}.apu-tr,.apu-br{right:6px}.apu-tl,.apu-tr{top:6px}.apu-bl,.apu-br{bottom:6px}}
+
+/* Dimensões explícitas iguais impedem alongamento dos botões no Safari. */
+#iv-startup{--apu-size:min(130px,calc((100vw - 150px)/3))}
+.apu-brand{display:block;width:clamp(48px,12vh,96px);height:clamp(48px,12vh,96px);object-fit:contain;flex:none;border-radius:14px}
+.apu-switch{width:var(--apu-size);height:var(--apu-size);aspect-ratio:1;flex:none;max-width:none}
+.apu-switch-face{min-height:0;overflow:hidden}
+#iv-startup[data-state=energizing] .apu-white,#iv-startup[data-state=self-test] .apu-white,
+#iv-startup[data-state=energizing] .apu-amber,#iv-startup[data-state=self-test] .apu-amber{animation:apu-cycle .75s linear infinite}
+@keyframes apu-cycle{0%,100%{opacity:.35}30%,70%{opacity:1}}
+@media(max-height:500px){#iv-startup{--apu-size:min(82px,calc((100vw - 210px)/3))}.apu-brand{width:40px;height:40px}}
+@media(max-height:360px){#iv-startup{--apu-size:min(62px,calc((100vw - 180px)/3))}.apu-brand{width:32px;height:32px}}
+@media(prefers-reduced-motion:reduce){#iv-startup .apu-lamp{animation:none}}
