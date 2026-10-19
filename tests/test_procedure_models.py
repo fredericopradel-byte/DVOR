@@ -26,6 +26,8 @@ class ProcedureModelTests(unittest.TestCase):
     sequence = horizontal.HorizontalEditorTests.sequence
 
     def details(self, text):
+        if self.page.locator('#editor-options').is_hidden() or self.page.locator('#inspector-panel').is_hidden():
+            self.page.locator('#editor-more').click()
         summary = self.page.locator('summary').filter(has_text=text)
         if not summary.evaluate('el=>el.parentElement.open'):
             summary.click()

@@ -80,7 +80,7 @@ dependências de sistema (`python -m playwright install --with-deps chromium`).
 O comando de execução é o mesmo usado localmente:
 `python -B -m unittest discover -s tests -v`.
 
-O job tem limite de 10 minutos, permissão `contents: read` e não persiste
+O job tem limite de 20 minutos, permissão `contents: read` e não persiste
 credenciais no checkout. Não requer segredos configurados, build ou deploy.
 A execução local descrita acima continua independente do GitHub Actions.
 Validar o YAML não comprova o funcionamento do job: conferir a execução e os
@@ -469,3 +469,38 @@ consulta não instalada e READY usando os recursos locais. Exercita separadament
 `navigator.onLine` verdadeiro e falso, pois o Chromium do CI pode conservar esse
 sinal verdadeiro durante a emulação offline. A aplicação e seus critérios de
 falha não são alterados; o teste não depende desse sinal para comprovar a rede.
+
+## Editor contextual — primeira etapa
+
+`test_contextual_editor.py` acrescenta sete regressões funcionais, com dados
+fictícios e perfis temporários. Cobrem seleção simples sem alterar geometria ou
+histórico, alternância de seleção múltipla por toques CDP, cadeados mistos e
+compartilhados, desfazer/refazer do bloqueio, recarga, independência dos módulos,
+edição pendente preservada ao tocar o fundo, painéis retráteis, menus secundários,
+alternância para o perfil vertical e layout sem rolagem/colisão com o dock.
+
+O layout é medido em 320 × 568, 390 × 844, 844 × 390, 820 × 1180 e 1180 × 820,
+com e sem safe areas emuladas. Verifica áreas de toque de pelo menos 44 × 44 px
+na barra. A seleção também é exercitada quando um ponto coincide com a escala
+gráfica; a escala não pode interceptar o evento do ponto.
+
+```sh
+IV_TEST_CHROMIUM=/usr/bin/chromium python -B -m unittest discover -s tests -p test_contextual_editor.py -v
+```
+
+Os testes anteriores mantêm suas verificações e passam a abrir os menus de
+criação, operações e opções pela interface. O cadeado contextual substitui os
+botões separados de bloquear/desbloquear. Não há novo schema ou chave de
+armazenamento; desenhos antigos continuam com os valores padrão existentes.
+O worker central usa v108 para distribuir o editor atualizado, mantendo as
+estratégias e a lista de recursos essenciais existentes.
+
+Esta etapa não implementa pressão prolongada, movimentação/rotação conjunta,
+lixeira por gesto, seleção por retângulo ou quantização da geometria. Os
+arrastes e a rotação da vista existentes permanecem; sua substituição exige a
+etapa seguinte autorizada pelo responsável. A suíte Chromium não valida Safari
+ou gestos em iPhone/iPad reais. Conferir nesses dispositivos o PWA offline,
+notch, barra do navegador, teclado e uso dos painéis em ambas as orientações.
+
+O limite do job de CI passa a 20 minutos para acomodar a suíte de 102 testes e
+as matrizes de dispositivos. Isso não altera verificações nem critérios de aprovação.

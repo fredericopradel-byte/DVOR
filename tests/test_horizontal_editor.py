@@ -50,9 +50,21 @@ class HorizontalEditorTests(unittest.TestCase):
                                   'ivplanner-procedure-editor-' + self.module + '-v1')
 
     def button(self, name):
+        # Lock commands now share the single contextual toolbar control.
+        if name in ('Bloquear', 'Desbloquear', 'Bloquear selecionados', 'Desbloquear selecionados'):
+            return self.page.locator('#selection-lock')
+        operations = self.page.locator('#properties summary').filter(has_text='Operações do elemento')
+        if name in ('Excluir', 'Inserir ponto no meio', 'Inverter sentido de voo', 'Continuar',
+                    'Continuar reta', 'Continuar curva', 'Desconectar fim', 'Desconectar início'):
+            if operations.count() and not operations.evaluate('el=>el.parentElement.open'):
+                operations.click()
+        if name.startswith('Reordenar a partir de') and (self.page.locator('#editor-options').is_hidden() or self.page.locator('#inspector-panel').is_hidden()):
+            self.page.locator('#editor-more').click()
         return self.page.get_by_role('button', name=name, exact=True)
 
     def point_position(self, ident):
+        if self.page.locator('#inspector-panel').is_visible():
+            self.page.locator('#close-inspector').click()
         self.page.locator('#drawing').scroll_into_view_if_needed()
         return self.page.locator('g[data-point="' + ident + '"] circle').first.evaluate('''el=>{
             const r=el.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};
@@ -71,6 +83,8 @@ class HorizontalEditorTests(unittest.TestCase):
             self.page.mouse.click(p['x'], p['y'])
 
     def select_segment(self, ident):
+        if self.page.locator('#inspector-panel').is_visible():
+            self.page.locator('#close-inspector').click()
         self.page.locator('#drawing').scroll_into_view_if_needed()
         p = self.page.locator('g[data-segment="' + ident + '"] path').first.evaluate('''el=>{
             const p=el.getPointAtLength(el.getTotalLength()*.3),m=el.getScreenCTM();
@@ -86,6 +100,7 @@ class HorizontalEditorTests(unittest.TestCase):
         self.page.mouse.up()
 
     def sequence(self, last='c', ids=('ab', 'bc')):
+        self.page.locator('#editor-more').click()
         self.page.locator('summary').filter(has_text='Sequência de voo').click()
         self.page.locator('#flight-start').select_option('a')
         self.page.locator('#flight-end').select_option(last)
@@ -132,6 +147,7 @@ class HorizontalEditorTests(unittest.TestCase):
     def test_multiple_touch_selection_bulk_lock_and_navigation(self):
         self.page.set_viewport_size({'width': 390, 'height': 844})
         self.open_editor()
+        self.page.locator('#add-element').click()
         self.page.locator('[data-tool=curve]').click()
         self.page.locator('#multi-select').click()
         expect(self.page.locator('[data-tool=select]')).to_have_attribute('aria-pressed', 'true')

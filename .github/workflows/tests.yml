@@ -11,7 +11,7 @@ jobs:
   tests:
     name: Python / Playwright / Chromium
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
