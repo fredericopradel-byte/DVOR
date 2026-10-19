@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v102-report-layout-20261015';
+const CACHE = 'iv-planner-v104-apu-self-test-20261019';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -15,6 +15,10 @@ const APP_SHELL = [
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png',
+  './icon-maskable-512.png',
+  './apple-touch-icon.png',
+  './startup.js',
+  './startup.css',
   './global-nav.css',
   './global-nav.js',
   './page-ui.css',

@@ -1,0 +1,53 @@
+{
+  "origin": "Originais fornecidos pelo responsável no ZIP de 19/10/2026",
+  "sha256": {
+    "approved-apu.gif": "7bb874a6bd205a64df2b38ff72ecd04d139f7c4da66810000276a9178740296f",
+    "approved-icon.png": "caaf4f66b7a15d91b3b558baca18a21c2c84e4667543c7f1cf2c7376b0806803"
+  },
+  "icon": {
+    "size": [
+      1448,
+      1086
+    ],
+    "squareCrop": [
+      181,
+      0,
+      1267,
+      1086
+    ]
+  },
+  "animation": {
+    "size": [
+      720,
+      570
+    ],
+    "frames": 24,
+    "durationMs": 8100,
+    "frameDurationsMs": [
+      200,
+      300,
+      200,
+      200,
+      300,
+      300,
+      400,
+      800,
+      200,
+      300,
+      200,
+      200,
+      300,
+      300,
+      400,
+      800,
+      200,
+      300,
+      200,
+      200,
+      300,
+      300,
+      400,
+      800
+    ]
+  }
+}

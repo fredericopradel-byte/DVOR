@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>IV-PLANNER</title>
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180">
   <link rel="icon" type="image/png" href="icon-512.png">
   <style>
     :root{color-scheme:dark;--ink:#17191b;--panel:#24272a;--silver:#d9dde1;--brand-blue:#078dd1;--blue2:#0aa4ef;--line:#4d5359;--muted:#aeb5bc;--shadow:0 16px 35px rgba(0,0,0,.24)}
@@ -22,11 +22,33 @@
     html{background:#17191b}
     .db-update-overlay[hidden]{display:none}.db-update-overlay{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:max(20px,env(safe-area-inset-top)) 20px max(20px,env(safe-area-inset-bottom));background:rgba(7,9,11,.53);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}.db-update-dialog{width:min(420px,100%);max-height:100%;overflow:auto;border:1px solid #596168;border-radius:20px;background:#24282b;padding:22px;box-shadow:0 24px 55px rgba(0,0,0,.48)}.db-update-dialog h2{font-size:1.3rem;margin:0 0 10px}.db-update-dialog p{font-size:1rem;line-height:1.45;color:#d2d7db;margin:0 0 14px}.db-update-dialog ul{padding-left:22px;margin:0 0 20px;line-height:1.5}.db-update-dialog li{overflow-wrap:anywhere}.db-update-actions{display:flex;gap:10px;justify-content:flex-end}.db-update-actions button{min-width:100px;min-height:48px;border:1px solid #168fc9;border-radius:12px;background:#078dd1;color:white;font:inherit;font-size:1rem;font-weight:700}.db-update-actions button.secondary{border-color:#596168;background:#363b3f}.db-update-actions button:disabled{opacity:.55}.db-update-progress{height:10px;border-radius:8px;overflow:hidden;background:#15181a;margin:14px 0 9px}.db-update-progress span{display:block;height:100%;background:#0aa4ef;width:0;transition:width .2s}.db-update-dialog .db-update-status{min-height:1.5em;font-size:.9rem;margin-bottom:18px;color:#bfcbd2}
   </style>
+  <link rel="stylesheet" href="startup.css">
+  <script src="startup.js" defer></script>
   <script src="./global-nav.js?v=20261014-visual" defer></script>
   <link rel="stylesheet" href="page-ui.css?v=20261014-visual">
   <script src="page-ui.js?v=20261014-visual" defer></script>
 </head>
-<body><main>
+<body>
+<div id="iv-startup" hidden role="dialog" aria-modal="true" aria-labelledby="iv-startup-label">
+  <div class="iv-startup-content">
+    <p class="apu-brand">IV-PLANNER</p>
+    <section class="apu-panel" aria-label="Painel de inicialização">
+      <i class="apu-screw apu-tl" aria-hidden="true"></i><i class="apu-screw apu-tr" aria-hidden="true"></i><i class="apu-screw apu-bl" aria-hidden="true"></i><i class="apu-screw apu-br" aria-hidden="true"></i>
+      <p class="apu-heading">APU CONTROL</p>
+      <div class="apu-indicators" aria-hidden="true">
+        <div class="apu-indicator"><span>ON / OFF</span><div class="apu-switch"><div class="apu-switch-face"><i class="apu-lamp apu-white"></i></div></div></div>
+        <div class="apu-indicator"><span>STATUS</span><div class="apu-switch"><div class="apu-switch-face"><i class="apu-lamp apu-amber"></i><i class="apu-lamp apu-green"></i></div></div></div>
+        <div class="apu-indicator apu-fire"><span>FIRE EXT</span><div class="apu-switch"><div class="apu-switch-face"><i class="apu-lamp apu-red"></i></div></div></div>
+      </div>
+      <div class="apu-message" role="status" aria-live="polite" aria-atomic="true">
+        <h2 id="iv-startup-label">ENERGIZANDO</h2>
+        <p id="iv-startup-description">Acionamento do sistema</p>
+      </div>
+    </section>
+    <div class="apu-actions"><button class="iv-startup-skip" type="button">Abrir menu</button><button class="iv-startup-retry" type="button" hidden>Tentar novamente</button></div>
+  </div>
+</div>
+<main>
   <h1 class="brand"><span class="mark" aria-hidden="true"><svg viewBox="0 0 80 80" aria-hidden="true"><defs><clipPath id="geiv-roundel"><circle cx="40" cy="40" r="35"/></clipPath></defs><circle cx="40" cy="40" r="35" fill="#07588d" stroke="#fff" stroke-width="3"/><g clip-path="url(#geiv-roundel)" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><circle cx="40" cy="40" r="18"/><path d="M40 4v22M40 54v22M4 40h22M54 40h22M15.3 15.3l15.8 15.8M48.9 48.9l15.8 15.8M64.7 15.3L48.9 31.1M31.1 48.9L15.3 64.7"/></g><path d="M5 40 38 29 69 10 50 34 47 40 50 46l19 24-31-19z" fill="#fff" stroke="#fff" stroke-width="1" stroke-linejoin="round"/><path d="m51 31 13-15-9 16m-4 17 13 15-9-16" fill="none" stroke="#07588d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="wordmark">IV-PLANNER</span></h1>
   <section class="intro"><h2>Ferramentas de voo</h2><p>Selecione uma área operacional.</p></section>
   <nav aria-label="Menu principal">

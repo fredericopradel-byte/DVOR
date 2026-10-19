@@ -96,11 +96,18 @@ class PlannerTests(unittest.TestCase):
         expect(self.page.locator(".ivg-toggle")).to_be_visible()
         expect(self.page.locator(".ivg-link[aria-current='page']")).to_have_count(1)
         self.assertTrue(self.page.title().strip())
+        startup = self.page.locator('#iv-startup')
+        if startup.is_visible():
+            startup.locator('.iv-startup-skip').click()
         # Janela explícita para callbacks de inicialização; não afirma ausência futura de erros.
         self.page.wait_for_timeout(300)
         self.assertEqual(self.errors, [], "Exceções JavaScript")
 
     def dismiss_database_prompt(self):
+        startup = self.page.locator('#iv-startup')
+        if startup.is_visible():
+            startup.locator('.iv-startup-skip').click()
+            self.page.wait_for_timeout(200)
         # Interação normal: recusa a instalação de bases no perfil fictício.
         prompt = self.page.locator("#db-update-overlay")
         if prompt.is_visible():
