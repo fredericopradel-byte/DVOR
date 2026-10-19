@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v104-apu-self-test-20261019';
+const CACHE = 'iv-planner-v105-apu-directory-start-20261019';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;

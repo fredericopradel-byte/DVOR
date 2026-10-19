@@ -181,8 +181,8 @@ class OfflineMapVisualTests(unittest.TestCase):
         server.legacy=False;server.fail_new=fail
         state=self.page.evaluate("""async()=>{
             const reg=await navigator.serviceWorker.getRegistration();
-            await reg.update();const worker=reg.installing;
-            if(!worker)return 'no-installing';
+            await reg.update();const worker=reg.installing||reg.waiting||reg.active;
+            if(!worker)return 'no-worker';
             return await new Promise(resolve=>{
                 function check(){if(['activated','redundant'].includes(worker.state))resolve(worker.state)}
                 worker.addEventListener('statechange',check);check();
@@ -195,7 +195,7 @@ class OfflineMapVisualTests(unittest.TestCase):
         }"""),'fixture')
         self.assertEqual(self.page.evaluate("async()=>{const c=await caches.open('ivdata-package-test-fixture');return (await c.match(new URL('/DVOR/fixture.txt',location.origin).href)).text()}"),'fictitious package')
         keys=self.page.evaluate('caches.keys()')
-        self.assertIn('iv-planner-v94-procedure-missions-20261007' if fail else 'iv-planner-v104-apu-self-test-20261019',keys)
+        self.assertIn('iv-planner-v94-procedure-missions-20261007' if fail else 'iv-planner-v105-apu-directory-start-20261019',keys)
         if fail:
             # An incomplete candidate must not remove the old, activated shell.
             self.assertGreater(self.page.evaluate("async()=>{const c=await caches.open('iv-planner-v94-procedure-missions-20261007');return (await c.keys()).length}"),20)

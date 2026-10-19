@@ -62,6 +62,14 @@ class StartupTests(unittest.TestCase):
         self.page.locator('a.card[href="inspecao/"]').click();self.page.go_back()
         self.assertTrue(self.page.locator('#iv-startup').is_hidden())
 
+    def test_installed_start_url_directory_reaches_ready(self):
+        self.page.goto(self.base)
+        self.settled()
+        self.assertEqual(self.page.evaluate('startupStates'),['energizing','self-test','ready'])
+        self.assertEqual(self.page.locator('.iv-help-button').count(),1)
+        self.assertFalse(self.page.locator('main').evaluate('e=>e.inert'))
+        self.assertFalse(self.errors)
+
     def test_amber_tracks_pending_resources_and_red_never_lights_normally(self):
         self.page.add_init_script("(()=>{const original=fetch;window.fetch=async (...a)=>{if(String(a[0]).endsWith('page-ui.css'))await new Promise(r=>setTimeout(r,350));return original(...a)}})()")
         self.open();self.page.wait_for_function('document.querySelector("#iv-startup").dataset.state==="self-test"')
@@ -144,11 +152,11 @@ class StartupTests(unittest.TestCase):
 
     def test_reduced_motion_safe_areas_and_diagonal_lights(self):
         self.page.emulate_media(reduced_motion='reduce')
+        self.page.add_init_script("(()=>{const original=fetch;const gate=new Promise(r=>window.releaseStartupVisualCheck=r);window.fetch=async (...a)=>{if(String(a[0]).endsWith('page-ui.css'))await gate;return original(...a)}})()")
         for width,height in [(320,568),(390,844),(844,390),(568,320),(820,1180),(1180,820)]:
             self.page.goto(self.base+'inspecao/index.html')
             self.page.evaluate('sessionStorage.removeItem("ivplanner-startup-verified-v2")')
             self.page.set_viewport_size({'width':width,'height':height})
-            self.page.add_init_script("(()=>{const original=fetch;window.fetch=async (...a)=>{if(String(a[0]).endsWith('page-ui.css'))await new Promise(r=>setTimeout(r,250));return original(...a)}})()")
             self.page.goto(self.base+'index.html',referer='https://example.invalid/')
             self.page.add_style_tag(content='#iv-startup{padding:'+('0 44px 21px' if width>height else '44px 16px 34px')+'}')
             for selector in ['.apu-panel','.apu-actions']:
@@ -157,6 +165,7 @@ class StartupTests(unittest.TestCase):
                 self.assertLessEqual(b['x']+b['width'],width+1);self.assertLessEqual(b['y']+b['height'],height+1)
             for lamp in self.page.locator('.apu-lamp').all():
                 self.assertIn('repeating-linear-gradient',lamp.evaluate('e=>getComputedStyle(e).backgroundImage'))
+            self.page.evaluate('releaseStartupVisualCheck()')
             self.settled();self.assertIn('ready',self.page.evaluate('startupStates'))
 
     def test_database_offer_waits_for_self_test_and_normal_actions_remain(self):
