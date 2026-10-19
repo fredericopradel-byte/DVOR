@@ -70,6 +70,22 @@ class StartupTests(unittest.TestCase):
         self.assertFalse(self.page.locator('main').evaluate('e=>e.inert'))
         self.assertFalse(self.errors)
 
+    def test_three_cycles_branding_and_square_switches(self):
+        self.open()
+        self.page.wait_for_function('document.querySelector("#iv-startup").dataset.state==="self-test"')
+        self.assertEqual(self.page.locator('.apu-heading').inner_text(),'IV-PLANNER')
+        self.assertEqual(self.page.locator('.apu-brand').get_attribute('src'),'icon-192.png')
+        self.assertEqual(self.page.locator('.apu-indicator>span').count(),0)
+        self.assertEqual(self.page.locator('.apu-white').evaluate('e=>getComputedStyle(e).animationDuration'),'0.75s')
+        for width,height in [(320,568),(390,844),(844,390),(820,1180),(1440,900)]:
+            self.page.set_viewport_size({'width':width,'height':height})
+            for button in self.page.locator('.apu-switch').all():
+                b=button.bounding_box()
+                self.assertAlmostEqual(b['width'],b['height'],delta=1)
+        self.settled()
+        self.assertGreaterEqual(self.page.evaluate('performance.now()'),2250)
+        self.assertIn('ready',self.page.evaluate('startupStates'))
+
     def test_amber_tracks_pending_resources_and_red_never_lights_normally(self):
         self.page.add_init_script("(()=>{const original=fetch;window.fetch=async (...a)=>{if(String(a[0]).endsWith('page-ui.css'))await new Promise(r=>setTimeout(r,350));return original(...a)}})()")
         self.open();self.page.wait_for_function('document.querySelector("#iv-startup").dataset.state==="self-test"')
