@@ -13,7 +13,10 @@
  const skip=overlay.querySelector('.iv-startup-skip'),retry=overlay.querySelector('.iv-startup-retry');
  const label=overlay.querySelector('#iv-startup-label'),description=overlay.querySelector('#iv-startup-description');
  const inert=[],focus=document.activeElement,controller=new AbortController();
- let closed=false,timer,transition;
+ let closed=false,timer,transition,warning="",presentationComplete=false;
+ function result(){if(warning)state("caution","CAUTION",warning);else state("ready","READY","IV-PLANNER pronto para operação");}
+ function warn(event){if(closed||controller.signal.aborted)return;warning=event.detail?.message||"Atualização disponível";if(presentationComplete)result();}
+ document.addEventListener("iv-startup-warning",warn);
  const presentationStarted=performance.now(),minimumPresentation=2250;
  function state(name,message,detail){
   overlay.dataset.state=name;label.textContent=message;description.textContent=detail;
@@ -24,6 +27,7 @@
   if(closed)return;closed=true;clearTimeout(timer);clearTimeout(transition);controller.abort();
   overlay.hidden=true;root.removeAttribute('data-iv-startup');
   for(const [node,wasInert] of inert)node.inert=wasInert;
+  document.removeEventListener('iv-startup-warning',warn);
   document.removeEventListener('keydown',keyboard,true);window.removeEventListener('pagehide',close);
   if(overlay.contains(document.activeElement)){if(focus&&focus!==document.body&&focus.isConnected)focus.focus();else document.activeElement.blur();}
   document.dispatchEvent(new Event('iv-startup-finished'));
@@ -75,7 +79,7 @@
   // Três ciclos de 750 ms; verificações concluídas não deixam o watchdog disparar.
   await new Promise(resolve=>{transition=setTimeout(resolve,Math.max(0,minimumPresentation-(performance.now()-presentationStarted)));});
   if(closed||controller.signal.aborted)return;
-  state('ready','READY','IV-PLANNER pronto para operação');
+  presentationComplete=true;result();
   try{sessionStorage.setItem(key,'1');}catch{}
   transition=setTimeout(close,motion.matches?0:350);
  }
