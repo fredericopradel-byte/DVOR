@@ -3,6 +3,9 @@ import hashlib
 import json
 from pathlib import Path
 import unittest
+from functools import partial
+from http.server import ThreadingHTTPServer
+from threading import Thread
 
 from PIL import Image
 import test_e2e
@@ -95,14 +98,36 @@ class StartupTests(unittest.TestCase):
         self.assertFalse(self.page.locator('main').evaluate('e=>e.inert'))
 
     def test_offline_and_unavailable_optional_services_are_not_critical(self):
-        self.open();self.settled();self.page.evaluate('async()=>{await navigator.serviceWorker.ready}')
-        self.page.evaluate('sessionStorage.removeItem("ivplanner-startup-verified-v2")')
+        # Isolar a origem para desligá-la sem afetar os outros testes da classe.
+        server=ThreadingHTTPServer(('127.0.0.1',0),partial(test_e2e.Handler,directory=str(ROOT)))
+        server.requests=[]
+        thread=Thread(target=server.serve_forever,daemon=True);thread.start()
+        self.addCleanup(server.server_close);self.addCleanup(server.shutdown)
+        self.base=f'http://127.0.0.1:{server.server_port}/DVOR/'
+        self.open();self.settled()
+        self.page.evaluate('async()=>{await navigator.serviceWorker.ready}')
+        self.page.wait_for_function('navigator.serviceWorker.controller!==null')
         self.context.set_offline(True)
-        self.page.goto(self.base+'index.html?offline=1',referer='https://example.invalid/')
-        self.settled();self.assertEqual(self.page.evaluate('navigator.onLine'),False)
-        self.assertIn('ready',self.page.evaluate('startupStates'));self.assertNotIn('fault',self.page.evaluate('startupStates'))
-        for icon in ['icon-192.png','icon-512.png','icon-maskable-512.png','apple-touch-icon.png']:
-            self.assertTrue(self.page.evaluate('async p=>(await fetch(p)).ok',icon))
+        # O transporte CDP e o sinal de interface do SO são independentes:
+        # Chromium 151 pode manter onLine=true com o transporte já bloqueado.
+        self.page.add_init_script("Object.defineProperty(navigator,'onLine',{get:()=>new URL(location.href).searchParams.get('interface')==='online'})")
+        server.shutdown();server.server_close();thread.join(timeout=5)
+        before=len(server.requests)
+        for reported_online in [False,True]:
+            with self.subTest(reported_online=reported_online):
+                self.page.evaluate('sessionStorage.removeItem("ivplanner-startup-verified-v2")')
+                signal='online' if reported_online else 'offline'
+                response=self.page.goto(self.base+f'index.html?interface={signal}',referer='https://example.invalid/')
+                self.assertTrue(response.from_service_worker)
+                self.settled()
+                self.assertEqual(self.page.evaluate('navigator.onLine'),reported_online)
+                # Uma URL não instalada não pode ser alcançada com a origem desligada.
+                self.assertFalse(self.page.evaluate("async()=>{try{await fetch('./offline-probe-not-cached.txt',{cache:'no-store'});return true}catch{return false}}"))
+                self.assertIn('ready',self.page.evaluate('startupStates'))
+                self.assertNotIn('fault',self.page.evaluate('startupStates'))
+                for icon in ['icon-192.png','icon-512.png','icon-maskable-512.png','apple-touch-icon.png']:
+                    self.assertTrue(self.page.evaluate('async p=>(await fetch(p)).ok',icon))
+                self.assertEqual(len(server.requests),before)
         self.assertFalse(self.errors)
 
     def test_storage_failure_is_diagnosed_and_javascript_disabled_has_menu(self):

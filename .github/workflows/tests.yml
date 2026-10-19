@@ -29,5 +29,5 @@ jobs:
       - name: Install Chromium and system dependencies
         run: python -m playwright install --with-deps chromium
 
-      - name: Run the four functional tests
+      - name: Run the functional test suite
         run: python -B -m unittest discover -s tests -v
