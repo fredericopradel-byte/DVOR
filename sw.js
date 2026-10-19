@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v106-apu-panel-cycles-20261019';
+const CACHE = 'iv-planner-v107-apu-light-states-20261019';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;

@@ -14,9 +14,9 @@
 .apu-fire .apu-switch-face{background:#651017;border-color:#a32932}
 .apu-lamp{display:block;width:80%;height:34%;--light:#565f64;background:repeating-linear-gradient(125deg,var(--light) 0 5px,transparent 5px 9px);border-radius:2px;transition:filter .12s,background .12s}
 .apu-white{height:32%}.apu-amber{--light:#60421e}.apu-green{--light:#18452c}.apu-red{--light:#68272d;height:56%}
-#iv-startup[data-state=energizing] .apu-white,#iv-startup[data-state=self-test] .apu-white,#iv-startup[data-state=ready] .apu-white,#iv-startup[data-state=fault] .apu-white{--light:#f6faff;filter:drop-shadow(0 0 3px #d9edff77)}
-#iv-startup[data-state=energizing] .apu-amber,#iv-startup[data-state=self-test] .apu-amber{--light:#ffc267;filter:drop-shadow(0 0 3px #ffa73277)}
-#iv-startup[data-state=ready] .apu-green{--light:#43df70;filter:drop-shadow(0 0 3px #43df7077)}
+#iv-startup[data-state=energizing] .apu-white,#iv-startup[data-state=self-test] .apu-white,#iv-startup[data-state=ready] .apu-white,#iv-startup[data-state=caution] .apu-white,#iv-startup[data-state=fault] .apu-white{--light:#f6faff;filter:drop-shadow(0 0 3px #d9edff77)}
+#iv-startup[data-state=caution] .apu-amber{--light:#ffc267;filter:drop-shadow(0 0 3px #ffa73277)}
+#iv-startup[data-state=energizing] .apu-green,#iv-startup[data-state=self-test] .apu-green,#iv-startup[data-state=ready] .apu-green{--light:#43df70;filter:drop-shadow(0 0 3px #43df7077)}
 #iv-startup[data-state=fault] .apu-red{--light:#ff666d;filter:drop-shadow(0 0 3px #ff454577)}
 .apu-message{text-align:center;margin-top:18px;min-height:66px}
 #iv-startup-label{font-size:clamp(20px,4vw,28px);margin:0 0 6px}
@@ -38,9 +38,10 @@
 .apu-brand{display:block;width:clamp(48px,12vh,96px);height:clamp(48px,12vh,96px);object-fit:contain;flex:none;border-radius:14px}
 .apu-switch{width:var(--apu-size);height:var(--apu-size);aspect-ratio:1;flex:none;max-width:none}
 .apu-switch-face{min-height:0;overflow:hidden}
-#iv-startup[data-state=energizing] .apu-white,#iv-startup[data-state=self-test] .apu-white,
-#iv-startup[data-state=energizing] .apu-amber,#iv-startup[data-state=self-test] .apu-amber{animation:apu-cycle .75s linear infinite}
+#iv-startup[data-state=energizing] .apu-green,#iv-startup[data-state=self-test] .apu-green{animation:apu-cycle .75s linear infinite}
 @keyframes apu-cycle{0%,100%{opacity:.35}30%,70%{opacity:1}}
 @media(max-height:500px){#iv-startup{--apu-size:min(82px,calc((100vw - 210px)/3))}.apu-brand{width:40px;height:40px}}
 @media(max-height:360px){#iv-startup{--apu-size:min(62px,calc((100vw - 180px)/3))}.apu-brand{width:32px;height:32px}}
 @media(prefers-reduced-motion:reduce){#iv-startup .apu-lamp{animation:none}}
+
+#iv-startup[data-state=caution] #iv-startup-label{color:#ffc267}

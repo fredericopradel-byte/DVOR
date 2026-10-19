@@ -150,15 +150,17 @@
         const version = record?.installedVersion || pkg.bundledVersion || null;
         return version !== pkg.version || Boolean(record?.activeCache && !cachedPackages.has(record.activeCache));
       });
-      if (updates.length) open(updates);
+      if (updates.length) {
+        document.dispatchEvent(new CustomEvent('iv-startup-warning',{detail:{message:'Atualização de bases disponível. O aplicativo pode continuar.'}}));
+        if(document.documentElement.hasAttribute('data-iv-startup')){
+          document.addEventListener('iv-startup-finished',()=>open(updates),{once:true});
+        }else open(updates);
+      }
     } catch (_) {
       // Sem rede ou armazenamento, o menu continua utilizável.
     }
   }
 
-  window.addEventListener('load', () => {
-    if(document.documentElement.hasAttribute('data-iv-startup')){
-      document.addEventListener('iv-startup-finished',check,{once:true});
-    }else check();
-  }, { once: true });
+  // Consulta opcional em paralelo: nunca condiciona READY nem a abertura offline.
+  window.addEventListener('load',check,{once:true});
 })();

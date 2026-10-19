@@ -76,7 +76,7 @@ class StartupTests(unittest.TestCase):
         self.assertEqual(self.page.locator('.apu-heading').inner_text(),'IV-PLANNER')
         self.assertEqual(self.page.locator('.apu-brand').get_attribute('src'),'icon-192.png')
         self.assertEqual(self.page.locator('.apu-indicator>span').count(),0)
-        self.assertEqual(self.page.locator('.apu-white').evaluate('e=>getComputedStyle(e).animationDuration'),'0.75s')
+        self.assertEqual(self.page.locator('.apu-green').evaluate('e=>getComputedStyle(e).animationDuration'),'0.75s')
         for width,height in [(320,568),(390,844),(844,390),(820,1180),(1440,900)]:
             self.page.set_viewport_size({'width':width,'height':height})
             for button in self.page.locator('.apu-switch').all():
@@ -86,14 +86,28 @@ class StartupTests(unittest.TestCase):
         self.assertGreaterEqual(self.page.evaluate('performance.now()'),2250)
         self.assertIn('ready',self.page.evaluate('startupStates'))
 
-    def test_amber_tracks_pending_resources_and_red_never_lights_normally(self):
+    def test_green_cycles_with_white_fixed_and_amber_red_off(self):
         self.page.add_init_script("(()=>{const original=fetch;window.fetch=async (...a)=>{if(String(a[0]).endsWith('page-ui.css'))await new Promise(r=>setTimeout(r,350));return original(...a)}})()")
         self.open();self.page.wait_for_function('document.querySelector("#iv-startup").dataset.state==="self-test"')
-        self.assertEqual(self.page.locator('.apu-amber').evaluate('e=>getComputedStyle(e).getPropertyValue("--light").trim()'),'#ffc267')
-        self.assertEqual(self.page.locator('.apu-green').evaluate('e=>getComputedStyle(e).getPropertyValue("--light").trim()'),'#18452c')
+        self.assertEqual(self.page.locator('.apu-amber').evaluate('e=>getComputedStyle(e).getPropertyValue("--light").trim()'),'#60421e')
+        self.assertEqual(self.page.locator('.apu-green').evaluate('e=>getComputedStyle(e).getPropertyValue("--light").trim()'),'#43df70')
         self.assertEqual(self.page.locator('.apu-red').evaluate('e=>getComputedStyle(e).getPropertyValue("--light").trim()'),'#68272d')
         self.settled();self.assertIn('ready',self.page.evaluate('startupStates'))
         self.assertNotIn('fault',self.page.evaluate('startupStates'))
+
+    def test_warning_appears_only_after_green_cycles_and_lamps_are_exclusive(self):
+        self.open()
+        self.page.evaluate("document.dispatchEvent(new CustomEvent('iv-startup-warning',{detail:{message:'Atualização disponível'}}))")
+        self.assertEqual(self.page.locator('#iv-startup').get_attribute('data-state'),'self-test')
+        self.assertEqual(self.page.locator('.apu-white').evaluate('e=>getComputedStyle(e).animationName'),'none')
+        self.assertEqual(self.page.locator('.apu-amber').evaluate('e=>getComputedStyle(e).getPropertyValue("--light").trim()'),'#60421e')
+        self.page.wait_for_function('document.querySelector("#iv-startup").dataset.state==="caution"')
+        self.assertEqual(self.page.locator('.apu-green').evaluate('e=>getComputedStyle(e).getPropertyValue("--light").trim()'),'#18452c')
+        self.assertEqual(self.page.locator('.apu-amber').evaluate('e=>getComputedStyle(e).getPropertyValue("--light").trim()'),'#ffc267')
+        self.assertEqual(self.page.locator('.apu-amber').evaluate('e=>getComputedStyle(e).animationName'),'none')
+        self.assertEqual(self.page.locator('.apu-red').evaluate('e=>getComputedStyle(e).getPropertyValue("--light").trim()'),'#68272d')
+        self.settled()
+        self.assertNotIn('ready',self.page.evaluate('startupStates'))
 
     def test_missing_essential_resource_fault_and_retry_recover_without_data_loss(self):
         self.context.route('**/page-ui.js*',lambda route:route.abort())
@@ -189,4 +203,5 @@ class StartupTests(unittest.TestCase):
         self.page.add_init_script("(()=>{const original=fetch;window.fetch=async (...a)=>{if(String(a[0]).endsWith('page-ui.css'))await new Promise(r=>setTimeout(r,250));return original(...a)}})()")
         self.open();self.assertTrue(self.page.locator('#db-update-overlay').is_hidden())
         self.settled();self.page.wait_for_function('!document.querySelector("#db-update-overlay").hidden')
+        self.assertIn('caution',self.page.evaluate('startupStates'))
         self.page.locator('#db-update-no').click();self.assertFalse(self.page.locator('main').evaluate('e=>e.inert'))
