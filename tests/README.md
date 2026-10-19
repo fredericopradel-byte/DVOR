@@ -460,3 +460,12 @@ serviços meteorológicos. A marca de sucesso fica apenas em sessionStorage;
 missões/configurações não são alteradas. O worker central recebe a revisão v104.
 A validação em Safari/iOS real continua pendente. Pillow serve somente à
 preparação/testes dos ícones, sem dependência no aplicativo.
+
+#### Independência do indicador de rede no Chromium
+
+O teste offline da inicialização desliga uma origem HTTP isolada e bloqueia o
+transporte do navegador. Comprova navegação pelo service worker, falha de uma
+consulta não instalada e READY usando os recursos locais. Exercita separadamente
+`navigator.onLine` verdadeiro e falso, pois o Chromium do CI pode conservar esse
+sinal verdadeiro durante a emulação offline. A aplicação e seus critérios de
+falha não são alterados; o teste não depende desse sinal para comprovar a rede.
