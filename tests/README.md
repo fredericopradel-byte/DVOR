@@ -444,3 +444,19 @@ Não usar os exemplos como planejamento operacional. Compartilhamento/impressão
 e download no Safari/iOS real permanecem pendentes. O worker só recebe a versão
 de cache v102; cálculos, unidades, formatos de missão e dados persistidos não
 foram alterados.
+
+### PR 8 — Ícone e painel APU com verificações reais
+
+[`docs/BRANDING-PR8.md`](../docs/BRANDING-PR8.md) documenta os originais aprovados,
+os ícones, os estados e o escopo das verificações. `test_branding_startup.py`
+contém dez testes (92 no total): dois de recursos e oito de inicialização real.
+Inclui recurso essencial indisponível, recuperação via Tentar novamente sem
+perder rascunho, timeout sem falso READY, armazenamento indisponível, ausência
+de internet com recursos instalados, movimento reduzido, seis viewports,
+diagonais separadas e coordenação com a oferta de bases.
+
+O painel HTML/CSS substitui a reprodução temporizada do GIF e não depende de
+serviços meteorológicos. A marca de sucesso fica apenas em sessionStorage;
+missões/configurações não são alteradas. O worker central recebe a revisão v104.
+A validação em Safari/iOS real continua pendente. Pillow serve somente à
+preparação/testes dos ícones, sem dependência no aplicativo.

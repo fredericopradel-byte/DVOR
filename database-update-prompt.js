@@ -156,5 +156,9 @@
     }
   }
 
-  window.addEventListener('load', check, { once: true });
+  window.addEventListener('load', () => {
+    if(document.documentElement.hasAttribute('data-iv-startup')){
+      document.addEventListener('iv-startup-finished',check,{once:true});
+    }else check();
+  }, { once: true });
 })();
