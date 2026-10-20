@@ -2,6 +2,7 @@
 import unittest
 from pathlib import Path
 import xml.etree.ElementTree as ET
+from playwright.sync_api import expect
 import test_e2e
 
 
@@ -63,11 +64,25 @@ class MenuVisualTests(unittest.TestCase):
         self.page.evaluate('async()=>{await navigator.serviceWorker.ready}')
         self.page.wait_for_function('navigator.serviceWorker.controller!==null')
         self.context.set_offline(True)
-        self.page.reload()
-        self.assertTrue(self.page.locator('.mark img').evaluate('e=>e.complete&&e.naturalWidth>0'))
-        self.page.locator('a.card[href="inspecao/"]').click()
-        self.assertEqual(self.page.locator('[data-silhouette]').count(),7)
-        self.assertTrue(self.page.evaluate("async()=>{const r=await fetch('../assets/branding/menu-mark.svg');return r.ok&&(await r.text()).includes('data:image/png;base64,')}"))
-        self.page.locator('a.card[href="papi.html"]').click()
-        self.assertIn('papi.html',self.page.url)
+        # CDP blocks transport independently of navigator.onLine. A cached
+        # catalog may still offer optional databases when the OS reports online.
+        self.page.add_init_script("Object.defineProperty(navigator,'onLine',{get:()=>new URL(location.href).searchParams.get('offline-interface')==='online'})")
+        for signal in ['offline','online']:
+            with self.subTest(interface=signal):
+                response=self.page.goto(self.base+'index.html?offline-interface='+signal)
+                self.assertTrue(response.from_service_worker)
+                self.assert_loaded(response)
+                self.assertEqual(self.page.evaluate('navigator.onLine'),signal=='online')
+                if signal=='online':
+                    expect(self.page.locator('#db-update-overlay')).to_be_visible()
+                self.dismiss_database_prompt()
+                expect(self.page.locator('#db-update-overlay')).to_be_hidden()
+                self.assertFalse(self.page.locator('main').evaluate('e=>e.inert'))
+                self.assertFalse(self.page.evaluate("async()=>{try{await fetch('./menu-probe-not-cached.txt',{cache:'no-store'});return true}catch{return false}}"))
+                self.assertTrue(self.page.locator('.mark img').evaluate('e=>e.complete&&e.naturalWidth>0'))
+                self.page.locator('a.card[href="inspecao/"]').click()
+                self.assertEqual(self.page.locator('[data-silhouette]').count(),7)
+                self.assertTrue(self.page.evaluate("async()=>{const r=await fetch('../assets/branding/menu-mark.svg');return r.ok&&(await r.text()).includes('data:image/png;base64,')}"))
+                self.page.locator('a.card[href="papi.html"]').click()
+                self.assertIn('papi.html',self.page.url)
         self.assertFalse(self.errors)
