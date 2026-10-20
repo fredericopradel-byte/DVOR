@@ -540,5 +540,5 @@ em iPhone/iPad continuam exigindo validação nos dispositivos.
 
 - `test_menu_visual.py`: paleta cinza/azul nos menus, limites e separação dos
   conteúdos em iPhone/iPad (retrato/paisagem), sete silhuetas locais, links sem
-  JavaScript e marca/navegação offline. A marca incorpora os pixels do ícone
-  aprovado e isola sua luz azul por filtro SVG, sem modificar o original.
+  JavaScript e marca/navegação offline. A marca usa a imagem original de
+  1448 × 1086 px e isola sua luz azul por filtro SVG, sem modificar o original.
