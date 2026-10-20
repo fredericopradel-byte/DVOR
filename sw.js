@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v108-contextual-editor-20261019';
+const CACHE = 'iv-planner-v109-editor-precision-20261020';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -58,6 +58,7 @@ const APP_SHELL = [
   './inspecao/radar.html',
   './inspecao/desenhar.html',
   './inspecao/vertical-profile.js',
+  './inspecao/drawing-precision.js',
   './inspecao/mission-databases.js',
   './inspecao/par.html',
 
