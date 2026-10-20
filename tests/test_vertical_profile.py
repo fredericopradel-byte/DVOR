@@ -214,6 +214,7 @@ class VerticalProfileTests(unittest.TestCase):
         self.assert_loaded(self.page.reload())
         self.assertEqual(self.draft(), edited)
         self.tab('drawing')
+        self.page.locator('#editor-more').click()
         self.page.locator('summary').filter(has_text='Rascunho e arquivos').click()
         with self.page.expect_download() as download:
             self.page.locator('#export').click()
