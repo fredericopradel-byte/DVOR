@@ -100,6 +100,8 @@ Há arquivos PAPI, ILS e `report-pdf.js` tanto na raiz quanto em `inspecao/`. N�
 ## 6. Interface e experiência do usuário
 
 - Preservar a identidade visual do IV-PLANNER e os padrões consolidados nas páginas de inspeção.
+- Padrão obrigatório para os cartões de acesso às páginas, em todo o aplicativo e em páginas novas: cartão cinza, ícone azul alojado em quadrado escuro de **54 × 54 px**, fundo **#1c1f21**, borda de **1 px rgba(255,255,255,.12)**, cantos de **16 px** e seta azul à direita. Usar o menu inicial como referência.
+- Reutilizar o componente existente: `body.iv-page-menu`, link `a.card`, recipiente `.icon`, conteúdo `.copy` e seta `.arrow`; os estilos compartilhados ficam em `page-ui.css`. Símbolos SVG ficam centralizados em **38 × 38 px**, preservando a proporção do viewBox. Imagens de aeronaves preservam proporção dentro do quadrado. Não criar variações locais do tamanho, fundo ou formato desse recipiente. Essa regra aplica-se aos cartões de navegação entre páginas; controles operacionais, mapas e barras de abas mantêm seus componentes próprios.
 - Manter a interface adequada para iPhone e iPad, respeitando safe areas, barras flutuantes, navegação e orientação da tela.
 - Evitar zoom global indesejado e manter campos e controles adequados para interação por toque.
 - Preservar os gestos de mapas: um dedo para arrastar; dois dedos para zoom ou rotação, conforme o módulo.

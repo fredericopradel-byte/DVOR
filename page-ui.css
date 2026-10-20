@@ -101,6 +101,8 @@ body.iv-admin .package-card dd,body.iv-admin .details dd,body.iv-admin .package-
 .iv-page-menu a.card:focus-visible{outline:2px solid #0aa4ef;outline-offset:3px}
 .iv-page-menu a.card .copy{min-width:0}
 .iv-page-menu a.card .copy span{overflow-wrap:anywhere}
-.iv-page-menu .icon:has([data-silhouette]){width:64px;height:54px;border:0;background:transparent;border-radius:0}
-.iv-page-menu .icon svg[data-silhouette]{display:block;width:64px;height:48px}
+/* Canonical home-menu icon tile, reused by every page-access menu. */
+.iv-page-menu a.card .icon{display:grid;place-items:center;flex:0 0 54px;width:54px;height:54px;box-sizing:border-box;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:#1c1f21}
+.iv-page-menu a.card .icon svg{display:block;width:38px;height:38px}
+.iv-page-menu a.card .icon img{max-width:46px;max-height:38px;object-fit:contain}
 @media(max-width:380px){.iv-page-menu a.card{gap:10px;padding:12px}.iv-page-menu a.card .status{font-size:.55rem}}
