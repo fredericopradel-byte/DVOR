@@ -502,5 +502,38 @@ etapa seguinte autorizada pelo responsável. A suíte Chromium não valida Safar
 ou gestos em iPhone/iPad reais. Conferir nesses dispositivos o PWA offline,
 notch, barra do navegador, teclado e uso dos painéis em ambas as orientações.
 
-O limite do job de CI passa a 20 minutos para acomodar a suíte de 102 testes e
+O limite do job de CI passa a 20 minutos para acomodar a suíte de 113 testes e
 as matrizes de dispositivos. Isso não altera verificações nem critérios de aprovação.
+
+## Área útil e precisão editável — ajuste do editor
+
+`test_drawing_precision.py` adiciona onze cenários. Verifica valores calculados
+pelas coordenadas persistidas, além dos rótulos: entradas numéricas, criação,
+arraste de ponto por toque CDP, alça de curva por ponteiro, modelos novos,
+rotação absoluta, histórico, cancelamento, recarga, cadeados e encaixes
+incompatíveis sem pontos órfãos. A área gráfica termina a aproximadamente
+12 px do dock nas dimensões de iPhone/iPad, inclusive com safe areas emuladas.
+
+`inspecao/drawing-precision.js` concentra os passos de 1° e 0,1 NM, com empates
+arredondados para longe de zero. Retas criadas/editadas são reconstruídas com
+os parâmetros aplicados; curvas usam raio em 0,1 NM e abertura em 1°. No
+arraste de um ponto conectado, o snap usa a perna selecionada ou a conexão de
+entrada como referência; as outras conexões são recalculadas. Cálculos
+derivados, comprimento de arco, conversões geográficas e declinação mantêm
+precisão interna. O encaixe não desloca silenciosamente pontos existentes
+para satisfazer passos incompatíveis.
+
+Não há migração ao abrir/importar desenhos antigos. Selecionar, renomear e
+bloquear não normalizam coordenadas históricas. A aplicação explícita das
+medidas usa os valores apresentados no painel. Modelos/exemplos novos usam
+os passos; os documentos já salvos permanecem intactos. Aplicar pernas NDB
+normaliza somente o desenho: tempos, restrições e resultados operacionais
+continuam com os valores completos. O novo recurso local integra o APP_SHELL
+no cache v109, sem dependência externa.
+
+```sh
+IV_TEST_CHROMIUM=/usr/bin/chromium PYTHONPATH=tests python -B -m unittest test_drawing_precision -v
+```
+
+Os testes são Chromium. Safari/iOS real, barra dinâmica do navegador e teclado
+em iPhone/iPad continuam exigindo validação nos dispositivos.
