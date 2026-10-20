@@ -1,7 +1,5 @@
 """Menu palette, local silhouettes and navigation in isolated Chromium contexts."""
 import unittest
-from pathlib import Path
-import xml.etree.ElementTree as ET
 from playwright.sync_api import expect
 import test_e2e
 
@@ -15,6 +13,12 @@ class MenuVisualTests(unittest.TestCase):
     def open(self, path):
         self.assert_loaded(self.page.goto(self.base + path))
         self.dismiss_database_prompt()
+
+    def assert_brand_resolution(self, page):
+        # Decode the actual SVG image source; cover retina iPhone/iPad density.
+        size=page.evaluate("""async()=>{const source=document.querySelector('.mark image');const image=new Image();image.src=source.href.baseVal;await image.decode();return [image.naturalWidth,image.naturalHeight]}""")
+        self.assertEqual(size,[1448,1086])
+        self.assertEqual(page.locator('.mark svg').get_attribute('viewBox'),'441 260 566 566')
 
     def test_menu_palette_and_bounds_on_phone_tablet_and_landscape(self):
         for width,height in [(320,568),(390,844),(844,390),(820,1180),(1180,820)]:
@@ -40,7 +44,7 @@ class MenuVisualTests(unittest.TestCase):
         context=self.browser.new_context(java_script_enabled=False,viewport={'width':390,'height':844})
         self.addCleanup(context.close)
         page=context.new_page();page.goto(self.base+'index.html')
-        self.assertTrue(page.locator('.mark img').evaluate('e=>e.complete&&e.naturalWidth>0'))
+        self.assert_brand_resolution(page)
         self.assertEqual(page.locator('.wordmark').inner_text(),'IV-PLANNER')
         page.locator('a.card[href="inspecao/"]').click()
         cards=page.locator('a.card');self.assertEqual(cards.count(),7)
@@ -51,13 +55,6 @@ class MenuVisualTests(unittest.TestCase):
             page.locator('a.card[href="'+route+'"]').click()
             self.assertNotIn('404',page.title())
             self.assertTrue(page.locator('body').inner_text().strip())
-        mark=ET.parse(test_e2e.ROOT/'assets/branding/menu-mark.svg').getroot()
-        ns={'s':'http://www.w3.org/2000/svg'}
-        self.assertIsNotNone(mark.find('.//s:feColorMatrix',ns))
-        import base64
-        original=mark.find('s:image',ns).get('href').split(',',1)[1]
-        self.assertEqual(base64.b64decode(original),(test_e2e.ROOT/'icon-192.png').read_bytes())
-        self.assertIsNone(mark.find('s:rect',ns))
 
     def test_brand_and_inspection_navigation_offline(self):
         self.open('index.html')
@@ -79,10 +76,10 @@ class MenuVisualTests(unittest.TestCase):
                 expect(self.page.locator('#db-update-overlay')).to_be_hidden()
                 self.assertFalse(self.page.locator('main').evaluate('e=>e.inert'))
                 self.assertFalse(self.page.evaluate("async()=>{try{await fetch('./menu-probe-not-cached.txt',{cache:'no-store'});return true}catch{return false}}"))
-                self.assertTrue(self.page.locator('.mark img').evaluate('e=>e.complete&&e.naturalWidth>0'))
+                self.assert_brand_resolution(self.page)
                 self.page.locator('a.card[href="inspecao/"]').click()
                 self.assertEqual(self.page.locator('[data-silhouette]').count(),7)
-                self.assertTrue(self.page.evaluate("async()=>{const r=await fetch('../assets/branding/menu-mark.svg');return r.ok&&(await r.text()).includes('data:image/png;base64,')}"))
+                self.assertTrue(self.page.evaluate("async()=>{const r=await fetch('../assets/branding/approved-icon.png');const b=new Uint8Array(await r.arrayBuffer());return r.ok&&b[0]===137&&b[1]===80&&b[2]===78&&b[3]===71}"))
                 self.page.locator('a.card[href="papi.html"]').click()
                 self.assertIn('papi.html',self.page.url)
         self.assertFalse(self.errors)
