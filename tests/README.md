@@ -543,3 +543,9 @@ em iPhone/iPad continuam exigindo validação nos dispositivos.
   conteúdos em iPhone/iPad (retrato/paisagem), sete silhuetas locais, links sem
   JavaScript e marca/navegação offline. A marca usa a imagem original de
   1448 × 1086 px e isola sua luz azul por filtro SVG, sem modificar o original.
+
+O padrão dos menus reside em `page-menu.css`, após `page-ui.css`. O teste
+`test_menu_tiles_with_legacy_shared_css_cached_offline` instala o worker real,
+bloqueia a rede e recoloca no cache do contexto temporário a regra antiga que
+deixava os ícones transparentes. Verifica que os quadrados novos continuam
+54 × 54 px e escuros, mesmo com o CSS anterior efetivamente aplicado.

@@ -95,3 +95,37 @@ class MenuVisualTests(unittest.TestCase):
                 self.page.locator('a.card[href="papi.html"]').click()
                 self.assertIn('papi.html',self.page.url)
         self.assertFalse(self.errors)
+
+    def test_menu_tiles_with_legacy_shared_css_cached_offline(self):
+        self.open('index.html')
+        self.page.evaluate('async()=>{await navigator.serviceWorker.ready}')
+        self.page.wait_for_function('navigator.serviceWorker.controller!==null')
+        self.context.set_offline(True)
+        # Reproduce an installed PWA keeping the former transparent icon rule.
+        # Only this temporary browser context's application caches are changed.
+        legacy=test_e2e.ROOT.joinpath('page-ui.css').read_text().split('/* Page links share')[0]+'''
+.iv-page-menu .icon:has([data-silhouette]){width:64px;height:54px;border:0;background:transparent;border-radius:0}
+.iv-page-menu .icon svg[data-silhouette]{display:block;width:64px;height:48px}
+'''
+        self.page.evaluate('''async css=>{
+            for(const name of await caches.keys()){
+                if(!name.startsWith('iv-planner-'))continue;
+                const cache=await caches.open(name);
+                for(const request of await cache.keys()){
+                    if(new URL(request.url).pathname.endsWith('/page-ui.css'))
+                        await cache.put(request,new Response(css,{headers:{'Content-Type':'text/css'}}));
+                }
+            }
+        }''',legacy)
+        response=self.page.goto(self.base+'inspecao/index.html')
+        self.assertTrue(response.from_service_worker)
+        self.assert_loaded(response)
+        self.assertTrue(self.page.evaluate('''()=>[...document.styleSheets].some(sheet=>
+            sheet.href?.includes('/page-ui.css')&&[...sheet.cssRules].some(rule=>
+                rule.selectorText==='.iv-page-menu .icon:has([data-silhouette])'))'''))
+        for tile in self.page.locator('a.card .icon').all():
+            self.assertEqual(tile.bounding_box()['width'],54)
+            self.assertEqual(tile.bounding_box()['height'],54)
+            self.assertEqual(tile.evaluate('e=>getComputedStyle(e).backgroundColor'),'rgb(28, 31, 33)')
+            self.assertEqual(tile.locator('svg').bounding_box()['width'],38)
+        self.assertFalse(self.errors)
