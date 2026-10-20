@@ -33,6 +33,18 @@ class MenuVisualTests(unittest.TestCase):
                         self.assertEqual(styles['border'],'rgb(77, 83, 89)')
                         self.assertEqual(styles['icon'],'rgb(10, 164, 239)')
                         self.assertEqual(styles['arrow'],'rgb(10, 164, 239)')
+                        tile=card.locator('.icon')
+                        tile_box=tile.bounding_box()
+                        self.assertEqual(tile_box['width'],54)
+                        self.assertEqual(tile_box['height'],54)
+                        tile_style=tile.evaluate("e=>{const s=getComputedStyle(e);return {background:s.backgroundColor,radius:s.borderRadius,border:s.borderTopWidth,color:s.borderTopColor}}")
+                        self.assertEqual(tile_style,{'background':'rgb(28, 31, 33)','radius':'16px','border':'1px','color':'rgba(255, 255, 255, 0.12)'})
+                        for glyph in tile.locator('svg, img').all():
+                            box=glyph.bounding_box()
+                            self.assertGreaterEqual(box['x'],tile_box['x']+1)
+                            self.assertGreaterEqual(box['y'],tile_box['y']+1)
+                            self.assertLessEqual(box['x']+box['width'],tile_box['x']+53)
+                            self.assertLessEqual(box['y']+box['height'],tile_box['y']+53)
                         b=card.bounding_box();self.assertGreaterEqual(b['height'],44)
                         pieces=[card.locator(s).bounding_box() for s in ['.icon','.copy','.arrow']]
                         for a,b in zip(pieces,pieces[1:]):

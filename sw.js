@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v111-minimal-icons-20261020';
+const CACHE = 'iv-planner-v112-menu-icon-tiles-20261020';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
