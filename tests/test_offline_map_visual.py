@@ -195,7 +195,7 @@ class OfflineMapVisualTests(unittest.TestCase):
         }"""),'fixture')
         self.assertEqual(self.page.evaluate("async()=>{const c=await caches.open('ivdata-package-test-fixture');return (await c.match(new URL('/DVOR/fixture.txt',location.origin).href)).text()}"),'fictitious package')
         keys=self.page.evaluate('caches.keys()')
-        self.assertIn('iv-planner-v94-procedure-missions-20261007' if fail else 'iv-planner-v109-editor-precision-20261020',keys)
+        self.assertIn('iv-planner-v94-procedure-missions-20261007' if fail else 'iv-planner-v110-menu-branding-20261020',keys)
         if fail:
             # An incomplete candidate must not remove the old, activated shell.
             self.assertGreater(self.page.evaluate("async()=>{const c=await caches.open('iv-planner-v94-procedure-missions-20261007');return (await c.keys()).length}"),20)

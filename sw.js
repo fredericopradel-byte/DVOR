@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v109-editor-precision-20261020';
+const CACHE = 'iv-planner-v110-menu-branding-20261020';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -19,6 +19,7 @@ const APP_SHELL = [
   './apple-touch-icon.png',
   './startup.js',
   './startup.css',
+  './assets/branding/menu-mark.svg',
   './global-nav.css',
   './global-nav.js',
   './page-ui.css',
