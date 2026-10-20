@@ -537,3 +537,8 @@ IV_TEST_CHROMIUM=/usr/bin/chromium PYTHONPATH=tests python -B -m unittest test_d
 
 Os testes são Chromium. Safari/iOS real, barra dinâmica do navegador e teclado
 em iPhone/iPad continuam exigindo validação nos dispositivos.
+
+- `test_menu_visual.py`: paleta cinza/azul nos menus, limites e separação dos
+  conteúdos em iPhone/iPad (retrato/paisagem), sete silhuetas locais, links sem
+  JavaScript e marca/navegação offline. A marca incorpora os pixels do ícone
+  aprovado e isola sua luz azul por filtro SVG, sem modificar o original.
