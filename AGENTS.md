@@ -82,6 +82,7 @@ O funcionamento offline é um requisito crítico.
 | `index.html`, `manifest.webmanifest` | Entrada do aplicativo e configuração do PWA. |
 | `global-nav.js`, `global-nav.css` | Navegação compartilhada e memória de contexto. |
 | `page-ui.js`, `page-ui.css` | Interface compartilhada, ajuda e acompanhamento de atualizações. |
+| `page-menu.css` | Padrão compartilhado dos cartões de acesso e quadrados dos ícones nos menus. |
 | `prevoo/` | Planejamento Legacy/Hawker, dados de aeronaves, tabelas de performance e relatórios. |
 | `inspecao/` | PAPI, ILS, Radar, DVOR/VOR e editor de Procedimentos/NDB. PAR encaminha para o módulo em desenvolvimento. |
 | `localidades/` | Consulta e cadastro de aeródromos, pistas, auxílios e procedimentos. |
@@ -101,7 +102,7 @@ Há arquivos PAPI, ILS e `report-pdf.js` tanto na raiz quanto em `inspecao/`. N�
 
 - Preservar a identidade visual do IV-PLANNER e os padrões consolidados nas páginas de inspeção.
 - Padrão obrigatório para os cartões de acesso às páginas, em todo o aplicativo e em páginas novas: cartão cinza, ícone azul alojado em quadrado escuro de **54 × 54 px**, fundo **#1c1f21**, borda de **1 px rgba(255,255,255,.12)**, cantos de **16 px** e seta azul à direita. Usar o menu inicial como referência.
-- Reutilizar o componente existente: `body.iv-page-menu`, link `a.card`, recipiente `.icon`, conteúdo `.copy` e seta `.arrow`; os estilos compartilhados ficam em `page-ui.css`. Símbolos SVG ficam centralizados em **38 × 38 px**, preservando a proporção do viewBox. Imagens de aeronaves preservam proporção dentro do quadrado. Não criar variações locais do tamanho, fundo ou formato desse recipiente. Essa regra aplica-se aos cartões de navegação entre páginas; controles operacionais, mapas e barras de abas mantêm seus componentes próprios.
+- Reutilizar o componente existente: `body.iv-page-menu`, link `a.card`, recipiente `.icon`, conteúdo `.copy` e seta `.arrow`; os estilos compartilhados ficam em `page-menu.css`, carregado após `page-ui.css`. Símbolos SVG ficam centralizados em **38 × 38 px**, preservando a proporção do viewBox. Imagens de aeronaves preservam proporção dentro do quadrado. Não criar variações locais do tamanho, fundo ou formato desse recipiente. Essa regra aplica-se aos cartões de navegação entre páginas; controles operacionais, mapas e barras de abas mantêm seus componentes próprios.
 - Manter a interface adequada para iPhone e iPad, respeitando safe areas, barras flutuantes, navegação e orientação da tela.
 - Evitar zoom global indesejado e manter campos e controles adequados para interação por toque.
 - Preservar os gestos de mapas: um dedo para arrastar; dois dedos para zoom ou rotação, conforme o módulo.

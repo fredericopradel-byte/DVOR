@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v112-menu-icon-tiles-20261020';
+const CACHE = 'iv-planner-v113-menu-style-cache-20261020';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -23,6 +23,7 @@ const APP_SHELL = [
   './global-nav.css',
   './global-nav.js',
   './page-ui.css',
+  './page-menu.css',
   './page-ui.js',
   './database-update-prompt.js',
 
