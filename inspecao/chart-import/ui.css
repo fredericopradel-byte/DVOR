@@ -1,0 +1,35 @@
+#import-chart{min-height:36px;padding:7px 11px;font-size:.8rem;background:#282d31;border:1px solid rgba(255,255,255,.16);border-radius:10px;color:#dce7ed}
+#chart-import-dialog{box-sizing:border-box;width:min(960px,calc(100% - 20px));max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px);padding:14px;border:1px solid #515860;border-radius:16px;background:#1c1f21;color:#e7edf2;overflow:hidden}
+#chart-import-dialog[open]{display:flex;flex-direction:column;gap:10px}
+#chart-import-dialog::backdrop{background:rgba(0,0,0,.76)}
+#chart-import-dialog *{box-sizing:border-box;min-width:0}
+#chart-import-dialog [hidden]{display:none!important}
+#chart-import-dialog h2{font-size:1rem;margin:0}
+#chart-import-dialog p{font-size:.85rem;line-height:1.5;margin:8px 0}
+#chart-import-dialog button,#chart-import-dialog select{font:inherit;font-size:16px;min-height:44px;border:1px solid #535c65;border-radius:9px;padding:8px 10px;background:#2a3035;color:#eef6fc;max-width:100%}
+#chart-import-dialog button:disabled{opacity:.5}
+#chart-import-dialog button:focus-visible,#chart-import-dialog select:focus-visible{outline:2px solid #48d9ff;outline-offset:2px}
+#chart-import-dialog .ci-header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#chart-import-dialog .ci-scroll{overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+#chart-import-dialog .ci-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+#chart-import-dialog .ci-muted{color:#b1bcc5}
+#chart-import-dialog .ci-error{color:#ffb5b5}
+#chart-import-dialog .ci-warning{color:#ffd49a}
+#chart-import-dialog .ci-library{display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-size:.85rem;margin:12px 0}
+#chart-import-dialog .ci-library select{flex:1 1 240px;width:100%}
+#chart-import-dialog dl{display:grid;grid-template-columns:110px minmax(0,1fr);gap:7px;font-size:.85rem}
+#chart-import-dialog dt{color:#b1bcc5}
+#chart-import-dialog dd{margin:0;overflow-wrap:anywhere}
+#chart-import-dialog details{border-top:1px solid #454c52;padding:10px 0;font-size:.85rem}
+#chart-import-dialog summary{cursor:pointer;min-height:32px}
+#chart-import-dialog ul{padding-left:20px;line-height:1.5}
+#chart-import-dialog li{margin:7px 0}
+#chart-import-dialog pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:200px;overflow:auto;font-size:12px}
+#chart-import-dialog .ci-hash{font-size:11px;overflow-wrap:anywhere}
+#chart-import-dialog canvas{display:block;width:100%;height:auto;background:white}
+#chart-import-dialog .ci-preview{overflow:auto;align-self:start;border:1px solid #535c65}
+#chart-import-dialog .ci-mobile-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+#chart-import-dialog .ci-mobile-tabs [aria-pressed=true]{border-color:#48d9ff}
+@media(max-width:759px){#chart-result[data-mobile-view=data] .ci-preview,#chart-result[data-mobile-view=original] .ci-summary{display:none}}
+@media(min-width:760px){#chart-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}#chart-import-dialog .ci-mobile-tabs{display:none}}
+@media(max-width:400px){#chart-import-dialog dl{grid-template-columns:90px minmax(0,1fr)}#chart-import-dialog{padding:10px}}

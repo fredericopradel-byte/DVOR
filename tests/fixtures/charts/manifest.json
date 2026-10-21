@@ -1,0 +1,144 @@
+{
+  "source": "DECEA/AISWEB charts supplied by project owner; historical samples, not a statement of validity",
+  "scope": "Stage 2 extraction only; no expected georeferenced reconstruction yet",
+  "cases": [
+    {
+      "file": "sbbq_ndb-rwy-18_iac_20230518.pdf",
+      "sha256": "691ed5c0c2c1daee91eff1edd66180d8142c105d5162d34b748e9e3aaf404c7e",
+      "icao": null,
+      "kind": null,
+      "procedure": null,
+      "publishedDate": null,
+      "navigation": [],
+      "requirements": [],
+      "structures": [],
+      "rasterOnly": true
+    },
+    {
+      "file": "sbnt_ils-y-rwy-16l_iac_20231228.pdf",
+      "sha256": "237eff7d5f928782fd96b1f8d6c48caaba18ccf4a1dbb3ddcbba40713d433e25",
+      "icao": "SBNT",
+      "kind": "IAC",
+      "procedure": "ILS Y RWY 16L",
+      "publishedDate": "2023-12-28",
+      "navigation": [
+        "ILS"
+      ],
+      "requirements": [
+        "GNSS"
+      ],
+      "structures": [
+        "holding"
+      ],
+      "rasterOnly": false
+    },
+    {
+      "file": "sbnt_ils-w-or-loc-w-rwy-16l_iac_20250515.pdf",
+      "sha256": "4947dc7f88cda21cd42504d386cd46576e7bf68b5f3496f38c9019da2f976c56",
+      "icao": "SBNT",
+      "kind": "IAC",
+      "procedure": "ILS W OR LOC W RWY 16L",
+      "publishedDate": "2025-05-15",
+      "navigation": [
+        "ILS",
+        "LOC"
+      ],
+      "requirements": [
+        "DME"
+      ],
+      "structures": [
+        "dme-arc",
+        "holding"
+      ],
+      "rasterOnly": false
+    },
+    {
+      "file": "sbnt_vor-z-rwy-12_iac_20231005.pdf",
+      "sha256": "a17c44604aa77e8ea2a5084b66b3cf8c657a9ae69f35474c2a7deb96b6856506",
+      "icao": "SBNT",
+      "kind": "IAC",
+      "procedure": "VOR Z RWY 12",
+      "publishedDate": "2023-10-05",
+      "navigation": [
+        "VOR"
+      ],
+      "requirements": [
+        "DME"
+      ],
+      "structures": [
+        "holding"
+      ],
+      "rasterOnly": false
+    },
+    {
+      "file": "sbnt_vor-w-rwy-16l_iac_20250515.pdf",
+      "sha256": "d928373ae14bb73338cc8d2794d385b1651653592e7d693b452007d3b79288f1",
+      "icao": "SBNT",
+      "kind": "IAC",
+      "procedure": "VOR W RWY 16L",
+      "publishedDate": "2025-05-15",
+      "navigation": [
+        "VOR"
+      ],
+      "requirements": [
+        "DME"
+      ],
+      "structures": [
+        "dme-arc",
+        "holding"
+      ],
+      "rasterOnly": false
+    },
+    {
+      "file": "sbnt_vor-y-rwy-12_iac_20240321.pdf",
+      "sha256": "e254e5410798f6511787fae6bd9af45d57645caebba316305a0f48ccdb265cc7",
+      "icao": "SBNT",
+      "kind": "IAC",
+      "procedure": "VOR Y RWY 12",
+      "publishedDate": "2024-03-21",
+      "navigation": [
+        "VOR"
+      ],
+      "requirements": [
+        "DME"
+      ],
+      "structures": [
+        "dme-arc",
+        "holding"
+      ],
+      "rasterOnly": false
+    },
+    {
+      "file": "sbnt_rnp-rwy-16l_iac_20231005-1.pdf",
+      "sha256": "f75eb14b72fcb84b3b8b539bc7107048e19701a263d3ab46d5f08f4928e04869",
+      "icao": "SBNT",
+      "kind": "IAC",
+      "procedure": "RNP RWY 16L",
+      "publishedDate": "2023-10-05",
+      "navigation": [
+        "RNP"
+      ],
+      "requirements": [
+        "RNP APCH"
+      ],
+      "structures": [
+        "holding"
+      ],
+      "rasterOnly": false
+    },
+    {
+      "file": "sbrj_evsob-1d-rwy-20l_sid_20210520.pdf",
+      "sha256": "4176ca57cc8441c2817a8b55a43a288b9929c4fbdf0069aac972b7e8543b84f6",
+      "icao": "SBRJ",
+      "kind": "SID",
+      "procedure": "EVSOB 1D RWY 20L",
+      "publishedDate": "2021-05-20",
+      "navigation": [],
+      "requirements": [
+        "DME"
+      ],
+      "structures": [],
+      "rasterOnly": false
+    }
+  ]
+}
