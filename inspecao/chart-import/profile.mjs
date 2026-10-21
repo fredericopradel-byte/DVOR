@@ -27,7 +27,7 @@ export function thresholdProfile(interpreted, metadata) {
   const zero=stations.filter(s=>s.distanceNM===0&&/^(?:RWY?|THR)\d{2}[LRC]?$/.test(s.name)&&runway(s.name)===rwy);
   if(zero.length!==1)return null;
   const vmc=runs.filter(r=>r.bbox[1]>bottom&&r.bbox[1]<axis.bbox[1]&&/\b(?:PROSSIGA|PROCEED)\s+VMC\b/.test(norm(r.text)));
-  return {kind:'distance-to-threshold',unit:'NM',distanceKind:'published-profile-along-track',runway:rwy,target:zero[0].name,stations,visual:vmc.length?{kind:'published-vmc',bounds:'unresolved',evidenceIds:vmc.flatMap(r=>r.evidenceIds)}:null,evidenceIds:axis.evidenceIds};
+  return {kind:'distance-to-threshold',unit:'NM',distanceKind:'published-profile-along-track',runway:rwy,target:zero[0].name,stations,distanceMarks:row.map(r=>({distanceNM:Number(r.text),resolutionNM:resolution(r.text),evidenceIds:r.evidenceIds})),visual:vmc.length?{kind:'published-vmc',bounds:'unresolved',evidenceIds:vmc.flatMap(r=>r.evidenceIds)}:null,evidenceIds:axis.evidenceIds};
 }
 function betweenLabels(annotation,from,to){
   const p=center(annotation.bbox);return supportedLayout(annotation,from,to)&&from.some(a=>to.some(b=>{const x=center(a.bbox),y=center(b.bbox),dx=y.x-x.x,dy=y.y-x.y,coordinate=Math.abs(dx)>Math.abs(dy)?'x':'y';return p[coordinate]>=Math.min(x[coordinate],y[coordinate])&&p[coordinate]<=Math.max(x[coordinate],y[coordinate]);}));
@@ -48,6 +48,7 @@ export function reconstructThreshold(model, interpreted, database, {truncated=fa
     const anchor=model.points.find(p=>p.name===station.name);if(!anchor?.position||anchor.coordinateState==='ambiguous'||anchor.coordinateSource?.kind==='chart-derived')continue;
     for(const annotation of interpreted.annotations){
       if(!['magnetic','true'].includes(annotation.reference)||(annotation.reference==='magnetic'&&!Number.isFinite(model.reference.variation?.value)))continue;
+      if(annotation.association&&(annotation.association.from!==anchor.id||annotation.association.to!==target.id))continue;
       if(Math.abs(station.distanceNM-annotation.distanceNM)>1e-8||!betweenLabels(annotation,planName(anchor.name),planName(target.name)))continue;
       // A profile station alone does not establish a direct leg: require the
       // explicit plan course/distance and a unique known anchor for that annotation.
@@ -66,7 +67,7 @@ export function reconstructThreshold(model, interpreted, database, {truncated=fa
   // This is a consistency check on shared evidence, not independent certification.
   for(const other of profile.stations.filter(s=>s.distanceNM>station.distanceNM)){
     const point=model.points.find(p=>p.name===other.name);
-    const links=interpreted.annotations.filter(a=>sameCourse(a,annotation)&&Math.abs(a.distanceNM-(other.distanceNM-station.distanceNM))<1e-8&&betweenLabels(a,planName(other.name),planName(anchor.name)));
+    const links=interpreted.annotations.filter(a=>(!a.association||(a.association.from===point?.id&&a.association.to===anchor.id))&&sameCourse(a,annotation)&&Math.abs(a.distanceNM-(other.distanceNM-station.distanceNM))<1e-8&&betweenLabels(a,planName(other.name),planName(anchor.name)));
     if(!point?.position||!links.length)continue;
     if(links.length!==1){model.issues.push(problem('threshold-check-ambiguity','ambiguity','Mais de uma definição para a referência de conferência da cabeceira.',[target.id,point.id]));return;}
     const link=links[0];

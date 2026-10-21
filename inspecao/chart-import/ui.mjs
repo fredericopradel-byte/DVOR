@@ -4,6 +4,8 @@ import * as storage from './storage.mjs';
 import {loadLocalDatabase} from './aeronautical.mjs';
 import {reconstruct, validateModel, MODEL_SCHEMA} from './reconstruct.mjs';
 import {toNativeDocument} from './native.mjs';
+import {createReview} from './review-ui.mjs';
+import {checkedLedger} from './review.mjs';
 
 const trigger = document.getElementById('import-chart');
 const module = new URLSearchParams(location.search).get('modulo') === 'ndb' ? 'ndb' : 'procedimentos';
@@ -41,22 +43,29 @@ const tabs = node('div', result, undefined, {class: 'ci-mobile-tabs', role: 'gro
 const dataTab = node('button', tabs, 'Dados identificados', {type: 'button', 'aria-pressed': 'true'});
 const originalTab = node('button', tabs, 'Carta original', {type: 'button', 'aria-pressed': 'false'});
 const drawingTab = node('button', tabs, 'Prévia do desenho', {type: 'button', 'aria-pressed': 'false'});
+const reviewTab = node('button',tabs,'Resolver pendências',{type:'button','aria-pressed':'false'});
+let reviewer;
 const compareTab = node('button', tabs, 'Comparar', {type: 'button', 'aria-pressed': 'false', class: 'ci-compare-button'});
-function mobileView(view) {result.dataset.mobileView = view;for(const [button,name] of [[dataTab,'data'],[originalTab,'original'],[drawingTab,'drawing'],[compareTab,'compare']])button.setAttribute('aria-pressed',String(view===name));}
-dataTab.onclick = () => mobileView('data');originalTab.onclick = () => mobileView('original');drawingTab.onclick = () => mobileView('drawing');compareTab.onclick = () => mobileView('compare');mobileView('data');
+function mobileView(view) {result.dataset.mobileView = view;for(const [button,name] of [[dataTab,'data'],[originalTab,'original'],[drawingTab,'drawing'],[compareTab,'compare'],[reviewTab,'review']])button.setAttribute('aria-pressed',String(view===name));if(view==='review')reviewer?.open();}
+dataTab.onclick = () => mobileView('data');originalTab.onclick = () => mobileView('original');drawingTab.onclick = () => mobileView('drawing');compareTab.onclick = () => mobileView('compare');reviewTab.onclick=()=>mobileView('review');mobileView('data');
 const summary = node('div', result, undefined, {class: 'ci-summary'});
 const preview = node('div', result, undefined, {class: 'ci-preview'});
 const canvas = node('canvas', preview, undefined, {id: 'chart-original', role: 'img', 'aria-label': 'Página original da carta. Não é um desenho georreferenciado.'});
 const nativePane = node('section', result, undefined, {class:'ci-native', 'aria-label':'Prévia nativa do procedimento'});
+const reviewPane=node('section',result,undefined,{class:'ci-review','aria-label':'Resolução de pendências'});
 const footer = node('footer', dialog, undefined, {class: 'ci-actions'});
 const save = node('button', footer, 'Salvar rascunho', {type: 'button', disabled: ''});
 const exportButton = node('button', footer, 'Exportar rascunho', {type: 'button', disabled: ''});
 const rebuildButton = node('button', footer, 'Atualizar prévia', {type:'button',disabled:''});
 let session = null, file = null, documentHandle = null, generation = 0, busy = false, persisted = true;
+reviewer=createReview({container:reviewPane,node,original:canvas,getSession:()=>session,isBusy:()=>busy,onModel:async model=>{
+  if(busy||!session)return;const token=generation;setBusy(true);
+  try{session.reconstruction=model;persisted=false;showSummary();await persist(token);if(!persisted)throw Error('Resposta mantida em memória, mas não salva. Exporte o rascunho antes de fechar.');}finally{if(token===generation){setBusy(false);reviewer.render();}}
+}});
 
 function message(text, error = false) {status.textContent = text;status.classList.toggle('ci-error', error);}
 function setBusy(value) {
-  busy = value;dialog.setAttribute('aria-busy', String(value));
+  busy = value;reviewPane.inert=value;dialog.setAttribute('aria-busy', String(value));
   for (const button of [pick, restore, reopen, process]) button.disabled = value;
   pages.disabled = value;
   save.disabled = exportButton.disabled = value || !session;rebuildButton.disabled=value||!session?.extraction;
@@ -87,12 +96,12 @@ function showSummary() {
   node('p', summary, 'Vigência não verificada. A data publicada não comprova que esta carta esteja vigente.', {class: 'ci-warning'});
   const pending = node('details', summary);node('summary', pending, 'Pendências · ' + issues.length);
   const list = node('ul', pending);
-  issues.forEach(issue => node('li', list, issue.message));
+  issues.forEach(issue => {const li=node('li',list);const b=node('button',li,issue.message,{type:'button',class:'ci-pending-link'});b.onclick=()=>{mobileView('review');reviewer.open(issue.id);};});
   if(model){
     const origins=node('details',summary);node('summary',origins,'Coordenadas, restrições e verificações');
     for(const p of model.points){
       node('p',origins,p.name+': '+(p.position?p.position.lat+', '+p.position.lon+' · '+p.coordinateSource.kind+' · '+p.coordinateState:'coordenada pendente'));
-      const source=p.coordinateSource;if(source?.kind==='chart-derived')node('p',origins,'Origem: '+source.anchor+' · '+source.distanceNM+' NM · '+source.course+'° '+source.reference+'. Limite calculado de arredondamento: '+source.roundingBound.radiusNM.toFixed(3)+' NM, sem incluir a incerteza da coordenada de referência. '+source.crossChecks.length+' conferência(s) por outras referências. Não representa precisão oficial.');
+      const source=p.coordinateSource;if(source?.kind==='manual-confirmed')node('p',origins,'Origem confirmada: '+source.origin);if(source?.kind==='chart-derived')node('p',origins,'Origem: '+source.anchor+' · '+source.distanceNM+' NM · '+source.course+'° '+source.reference+'. Limite calculado de arredondamento: '+source.roundingBound.radiusNM.toFixed(3)+' NM, sem incluir a incerteza da coordenada de referência. '+source.crossChecks.length+' conferência(s) por outras referências. Não representa precisão oficial.');
     }
     for(const r of model.verticalConstraints)node('p',origins,(r.entity||'Gradiente')+': '+(r.value??r.lower)+' '+r.unit+' · '+(r.qualifier||r.scope));
     node('p',origins,model.checks.filter(c=>c.passed).length+' verificações geométricas aprovadas; '+model.checks.filter(c=>!c.passed).length+' reprovadas. Não são cálculos de clearance.');
@@ -102,12 +111,14 @@ function showSummary() {
   const pre = node('pre', evidence, session.extraction.lines.map(line => line.text).join('\n') || 'Sem camada textual. OCR/interpretação visual ainda não disponível.');
   pre.tabIndex = 0;
   node('p', evidence, 'SHA-256: ' + session.source.sha256, {class: 'ci-hash'});
-  node('p', summary, 'Reconstrução parcial. Conferência, resolução de pendências e aplicação à missão ainda não disponíveis. Nenhum clearance foi alterado.', {class: 'ci-warning'});
+  node('p', summary, 'Reconstrução parcial. Use Resolver pendências para conferir as dúvidas. Aprovação final e aplicação à missão ainda não disponíveis. Nenhum clearance foi alterado.', {class: 'ci-warning'});
   nativePane.replaceChildren();if(model?.points.some(p=>p.coordinateSource?.kind==='chart-derived'))node('p',nativePane,'Cabeceira derivada de valores publicados arredondados; não é coordenada oficial.',{class:'ci-warning'});if(model?.legs.some(l=>l.flightRules==='visual-transition-review'))node('p',nativePane,'VMC*: há trecho visual publicado na final. Limites ainda a conferir; a linha não representa uma final inteiramente instrumental.',{class:'ci-warning'});node('p',nativePane,'Prévia parcial · não validada · representação nativa do editor.',{class:'ci-warning'});
   if(model?.native.points.length)nativePane.append(window.IVProcedurePreview.render(model.native));else node('p',nativePane,'Sem coordenadas suficientes para gerar a prévia. Consulte as pendências.');
+  reviewer.render();
 }
 function restoreModel(model){
   if(model.schema!==MODEL_SCHEMA||model.module!==module||model.source.sha256!==session.source.sha256||model.source.page!==session.page)throw Error('Prévia salva incompatível. Os dados foram preservados.');
+  if(model.reviewWork)checkedLedger(model);
   model.review={validated:false};model.status='partial';
   const checks=validateModel(model);model.checks=checks.results;model.issues.push(...checks.issues);
   const envelope=toNativeDocument(model);model.native=envelope.document;model.nativeMapping=envelope.mapping;model.issues.push(...envelope.issues);model.issues=[...new Map(model.issues.map(i=>[i.id,i])).values()];return model;
@@ -122,6 +133,7 @@ async function persist(token) {
 }
 async function extractPage(preserveModel=false) {
   if (!documentHandle || busy) return;
+  if(!preserveModel&&session?.reconstruction?.reviewWork?.nodes.length){message('Há respostas registradas. Use Resolver pendências ou importe novamente para outra reconstrução. Histórico preservado.',true);return;}
   const token = generation;setBusy(true);message('Extraindo textos e estrutura da página no aparelho…');
   try {
     const prior=preserveModel?session.reconstruction:null,priorExtraction=preserveModel?session.extraction:null,priorRecognition=preserveModel?session.recognition:null;
@@ -141,6 +153,7 @@ async function extractPage(preserveModel=false) {
 }
 async function acceptFile(original, existing = null, selectedPage = 1, restoredModel=null) {
   if (busy) return;
+  if(session?.reconstruction?.reviewWork?.nodes.length&&!persisted){message('Salve ou exporte o rascunho com respostas antes de abrir outro arquivo. Dados preservados em memória.',true);return;}
   const token = ++generation;setBusy(true);message('Verificando arquivo local…');
   let opened;
   try {
@@ -182,6 +195,7 @@ reopen.onclick = async () => {
 process.onclick = () => extractPage();
 pages.onchange = async () => {
   if (!session || busy) return;
+  if(session.reconstruction?.reviewWork?.nodes.length){pages.value=String(session.page);message('Há respostas nesta página. Importe novamente para trabalhar em outra página; este histórico foi preservado.',true);return;}
   const token = generation;setBusy(true);session.page = Number(pages.value);session.extraction = session.recognition = session.reconstruction = null;persisted = false;result.hidden = true;
   try {await persist(token);if (token === generation && persisted) message('Página selecionada e salva. Toque em Extrair página para reconhecê-la.');}
   finally {if (token === generation) setBusy(false);}
@@ -190,6 +204,7 @@ save.onclick = async () => {const token = generation;setBusy(true);try {await pe
 rebuildButton.onclick=async()=>{
   if(busy||!session?.extraction)return;const token=generation;setBusy(true);message('Associando às bases locais e verificando a geometria…');
   try{const database=await loadLocalDatabase();if(token!==generation)return;
+    if(session.reconstruction?.reviewWork?.nodes.length){message('Este rascunho tem respostas registradas. Use Resolver pendências para corrigi-las ou importe novamente para iniciar outra reconstrução. Histórico preservado.',true);return;}
     if(session.reconstruction&&!database.available){message('Base estruturada indisponível. A prévia salva foi preservada.',true);return;}
     const model=reconstruct(session,database);if(session.reconstruction)(session.previousReconstructions??=[]).push(session.reconstruction);session.reconstruction=model;persisted=false;showSummary();await persist(token);
   }catch(error){if(token===generation)message(error.message,true);}finally{if(token===generation)setBusy(false);}
@@ -209,6 +224,6 @@ dialog.addEventListener('cancel', event => {if (!canClose()) event.preventDefaul
 dialog.addEventListener('close', () => {
   generation++;const previous = documentHandle;documentHandle = null;
   if (previous) void previous.destroy();
-  session = null;file = null;result.hidden = pageRow.hidden = true;nativePane.replaceChildren();libraryLabel.hidden = false;toggleLibrary.setAttribute('aria-expanded', 'true');canvas.width = canvas.height = 0;setBusy(false);message('Selecione uma carta ou retome um rascunho.');
+  reviewer.reset();session = null;file = null;result.hidden = pageRow.hidden = true;nativePane.replaceChildren();libraryLabel.hidden = false;toggleLibrary.setAttribute('aria-expanded', 'true');canvas.width = canvas.height = 0;setBusy(false);message('Selecione uma carta ou retome um rascunho.');
   trigger.focus();
 });
