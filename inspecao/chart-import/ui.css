@@ -30,6 +30,11 @@
 #chart-import-dialog .ci-preview{overflow:auto;align-self:start;border:1px solid #535c65}
 #chart-import-dialog .ci-mobile-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
 #chart-import-dialog .ci-mobile-tabs [aria-pressed=true]{border-color:#48d9ff}
-@media(max-width:759px){#chart-result[data-mobile-view=data] .ci-preview,#chart-result[data-mobile-view=original] .ci-summary{display:none}}
-@media(min-width:760px){#chart-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}#chart-import-dialog .ci-mobile-tabs{display:none}}
+#chart-import-dialog .ci-native{display:none;align-self:start}
+#chart-native{display:block;width:100%;height:auto;aspect-ratio:7/5;touch-action:pan-y}
+#chart-result[data-mobile-view=original] .ci-summary,#chart-result[data-mobile-view=drawing] .ci-summary,#chart-result[data-mobile-view=compare] .ci-summary{display:none}
+#chart-result[data-mobile-view=drawing] .ci-preview{display:none}
+#chart-result[data-mobile-view=drawing] .ci-native,#chart-result[data-mobile-view=compare] .ci-native{display:block}
+@media(max-width:759px){#chart-result[data-mobile-view=data] .ci-preview,#chart-import-dialog .ci-compare-button{display:none}}
+@media(min-width:760px){#chart-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}#chart-import-dialog .ci-mobile-tabs{grid-column:1/-1}#chart-result[data-mobile-view=original],#chart-result[data-mobile-view=drawing]{display:block}}
 @media(max-width:400px){#chart-import-dialog dl{grid-template-columns:90px minmax(0,1fr)}#chart-import-dialog{padding:10px}}

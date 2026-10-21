@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v113-chart-import-stage2-20261021';
+const CACHE = 'iv-planner-v114-chart-import-stage3-20261021';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -61,6 +61,11 @@ const APP_SHELL = [
   './inspecao/chart-import/ui.css',
   './inspecao/chart-import/ui.mjs',
   './inspecao/chart-import/model.mjs',
+  './inspecao/chart-import/geodesy.mjs',
+  './inspecao/chart-import/aeronautical.mjs',
+  './inspecao/chart-import/decea.mjs',
+  './inspecao/chart-import/reconstruct.mjs',
+  './inspecao/chart-import/native.mjs',
   './inspecao/chart-import/extract.mjs',
   './inspecao/chart-import/storage.mjs',
   './inspecao/chart-import/vendor/pdfjs/pdf.mjs',

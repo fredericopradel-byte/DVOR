@@ -1,3 +1,4 @@
+import {validateModel, MODEL_SCHEMA} from './reconstruct.mjs';
 const MAX_BYTES = 25 * 1024 * 1024, MAX_PIXELS = 24_000_000, MAX_ITEMS = 25000, MAX_OPS = 100000;
 let pdfLibrary;
 export async function pdfjs() {
@@ -79,7 +80,7 @@ export async function openDocument(file, source) {
           const m = lib.Util.transform(viewport.transform, item.transform), angle = Math.atan2(m[1], m[0]), width = item.width, height = Math.hypot(m[2], m[3]);
           const xs = [m[4], m[4] + Math.cos(angle)*width, m[4] + Math.sin(angle)*height, m[4] + Math.cos(angle)*width + Math.sin(angle)*height];
           const ys = [m[5], m[5] + Math.sin(angle)*width, m[5] - Math.cos(angle)*height, m[5] + Math.sin(angle)*width - Math.cos(angle)*height];
-          return {id: 'page-' + number + '-text-' + index, text: item.str, bbox: [Math.min(...xs), Math.min(...ys), Math.max(...xs)-Math.min(...xs), Math.max(...ys)-Math.min(...ys)], transform: [...item.transform], width: item.width, height: item.height, fontName: item.fontName};
+          return {id: 'page-' + number + '-text-' + index, text: item.str, bbox: [Math.min(...xs), Math.min(...ys), Math.max(...xs)-Math.min(...xs), Math.max(...ys)-Math.min(...ys)], transform: [...item.transform], pageMatrix: [...m], width: item.width, height: item.height, fontName: item.fontName};
         });
         const operators = await page.getOperatorList(), names = new Map(Object.entries(lib.OPS).map(([name, code]) => [code, name]));
         const allowed = new Set(['save','restore','transform','constructPath','stroke','closeStroke','fill','eoFill','fillStroke','eoFillStroke','closeFillStroke','closeEOFillStroke','endPath','clip','eoClip','setLineWidth','setDash']);
@@ -89,7 +90,7 @@ export async function openDocument(file, source) {
           const name = names.get(operators.fnArray[i]) || 'unknown';counts[name] = (counts[name] || 0) + 1;
           if (allowed.has(name)) vectors.push({index: i, operator: name, args: serializable(operators.argsArray[i])});
         }
-        const result = {method: 'pdfjs-4.10.38', page: number, width: viewport.width, height: viewport.height, rotation: viewport.rotation, coordinateSpace: 'page-points-top-left', text, lines: groupLines(text), vectors, operatorCounts: counts, truncated: usable.length > MAX_ITEMS || operators.fnArray.length > MAX_OPS};
+        const result = {method: 'pdfjs-4.10.38', page: number, width: viewport.width, height: viewport.height, rotation: viewport.rotation, pageTransform: [...viewport.transform], coordinateSpace: 'page-points-top-left', text, lines: groupLines(text), vectors, operatorCounts: counts, truncated: usable.length > MAX_ITEMS || operators.fnArray.length > MAX_OPS};
         const scale = Math.min(2, 1500 / Math.max(viewport.width, viewport.height));
         const renderViewport = page.getViewport({scale});canvas.width = Math.ceil(renderViewport.width);canvas.height = Math.ceil(renderViewport.height);
         try {await page.render({canvasContext: canvas.getContext('2d'), viewport: renderViewport}).promise;} finally {page.cleanup();}
@@ -115,16 +116,25 @@ export async function openDocument(file, source) {
 export async function exportArchive(session, file) {
   const bytes = new Uint8Array(await file.arrayBuffer());let binary = '';
   for (let offset=0;offset<bytes.length;offset+=32768) binary += String.fromCharCode(...bytes.subarray(offset,offset+32768));
-  return new Blob([JSON.stringify({format: 'ivplanner-chart-archive', version: 1, module: session.module, page: session.page, source: session.source, fileBase64: btoa(binary)})], {type: 'application/json'});
+  const archive=new Blob([JSON.stringify({format: 'ivplanner-chart-archive', version: 2, module: session.module, page: session.page, source: session.source, reconstruction:session.reconstruction||null, fileBase64: btoa(binary)})], {type: 'application/json'});
+  if(archive.size>36*1024*1024)throw Error('Rascunho acima de 36 MB. O arquivo original e o modelo permanecem no aparelho.');return archive;
 }
 export async function restoreArchive(file, module) {
   if (file.size > 36 * 1024 * 1024) throw Error('Arquivo de rascunho muito grande.');
   const data = JSON.parse(await file.text());
-  if (data.format !== 'ivplanner-chart-archive' || data.version !== 1 || data.module !== module || !Number.isInteger(data.page) || data.page < 1 || typeof data.fileBase64 !== 'string' || typeof data.source?.name !== 'string') throw Error('Rascunho inválido ou pertencente a outro módulo.');
+  if (data.format !== 'ivplanner-chart-archive' || ![1,2].includes(data.version) || data.module !== module || !Number.isInteger(data.page) || data.page < 1 || typeof data.fileBase64 !== 'string' || typeof data.source?.name !== 'string') throw Error('Rascunho inválido ou pertencente a outro módulo.');
   const binary = atob(data.fileBase64), bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
   const original = new File([bytes], data.source.name, {type: data.source.mediaType});
   const source = await identify(original);
   if (source.sha256 !== data.source.sha256) throw Error('Integridade do arquivo original divergente.');
-  // Re-extract rather than trusting executable or forged recognition data from an archive.
-  return {file: original, source, page: data.page};
+  let reconstruction=null;
+  if(data.version===2&&data.reconstruction){
+    const m=data.reconstruction;
+    if(m.schema!==MODEL_SCHEMA||m.module!==module||m.source?.sha256!==source.sha256||m.source.page!==data.page||!Array.isArray(m.issues))throw Error('Modelo de rascunho incompatível com o arquivo original.');
+    validateModel(m);m.review={validated:false};m.status='partial';
+    m.issues.push({id:'archive-review',category:'missing',critical:true,message:'Modelo restaurado de arquivo. As origens declaradas ainda precisam de conferência com as bases locais.'});
+    for(const p of m.points)if(p.position)p.coordinateState='archive-review';reconstruction=m;
+  }
+  // The original is always re-read. Restored geometry is explicitly unverified, never trusted as approval.
+  return {file: original, source, page: data.page,reconstruction};
 }
