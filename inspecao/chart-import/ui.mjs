@@ -90,7 +90,10 @@ function showSummary() {
   issues.forEach(issue => node('li', list, issue.message));
   if(model){
     const origins=node('details',summary);node('summary',origins,'Coordenadas, restrições e verificações');
-    for(const p of model.points)node('p',origins,p.name+': '+(p.position?p.position.lat+', '+p.position.lon+' · '+p.coordinateSource.kind+' · '+p.coordinateState:'coordenada pendente'));
+    for(const p of model.points){
+      node('p',origins,p.name+': '+(p.position?p.position.lat+', '+p.position.lon+' · '+p.coordinateSource.kind+' · '+p.coordinateState:'coordenada pendente'));
+      const source=p.coordinateSource;if(source?.kind==='chart-derived')node('p',origins,'Origem: '+source.anchor+' · '+source.distanceNM+' NM · '+source.course+'° '+source.reference+'. Limite calculado de arredondamento: '+source.roundingBound.radiusNM.toFixed(3)+' NM, sem incluir a incerteza da coordenada de referência. '+source.crossChecks.length+' conferência(s) por outras referências. Não representa precisão oficial.');
+    }
     for(const r of model.verticalConstraints)node('p',origins,(r.entity||'Gradiente')+': '+(r.value??r.lower)+' '+r.unit+' · '+(r.qualifier||r.scope));
     node('p',origins,model.checks.filter(c=>c.passed).length+' verificações geométricas aprovadas; '+model.checks.filter(c=>!c.passed).length+' reprovadas. Não são cálculos de clearance.');
   }
@@ -100,7 +103,7 @@ function showSummary() {
   pre.tabIndex = 0;
   node('p', evidence, 'SHA-256: ' + session.source.sha256, {class: 'ci-hash'});
   node('p', summary, 'Reconstrução parcial. Conferência, resolução de pendências e aplicação à missão ainda não disponíveis. Nenhum clearance foi alterado.', {class: 'ci-warning'});
-  nativePane.replaceChildren();node('p',nativePane,'Prévia parcial · não validada · representação nativa do editor.',{class:'ci-warning'});
+  nativePane.replaceChildren();if(model?.points.some(p=>p.coordinateSource?.kind==='chart-derived'))node('p',nativePane,'Cabeceira derivada de valores publicados arredondados; não é coordenada oficial.',{class:'ci-warning'});if(model?.legs.some(l=>l.flightRules==='visual-transition-review'))node('p',nativePane,'VMC*: há trecho visual publicado na final. Limites ainda a conferir; a linha não representa uma final inteiramente instrumental.',{class:'ci-warning'});node('p',nativePane,'Prévia parcial · não validada · representação nativa do editor.',{class:'ci-warning'});
   if(model?.native.points.length)nativePane.append(window.IVProcedurePreview.render(model.native));else node('p',nativePane,'Sem coordenadas suficientes para gerar a prévia. Consulte as pendências.');
 }
 function restoreModel(model){
