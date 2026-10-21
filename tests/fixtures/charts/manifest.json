@@ -169,6 +169,24 @@
         "holding"
       ],
       "rasterOnly": false
+    },
+    {
+      "file": "sbgm_rnp-y-rwy-35_iac_20260514.pdf",
+      "sha256": "acc1ba0a20871cfdebe9198f840759df5d1b47cd105df1a5046be0ac00ff2ff6",
+      "icao": "SBGM",
+      "kind": "IAC",
+      "procedure": "RNP Y RWY 35",
+      "publishedDate": "2026-05-14",
+      "navigation": [
+        "RNP"
+      ],
+      "requirements": [
+        "RNP APCH"
+      ],
+      "structures": [
+        "holding"
+      ],
+      "rasterOnly": false
     }
   ]
 }

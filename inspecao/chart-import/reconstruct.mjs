@@ -1,6 +1,7 @@
 import {interpret, center, supportedLayout} from './decea.mjs';
 import {resolveEntity} from './aeronautical.mjs';
 import {inverse, destination, position, normalize, angleDifference} from './geodesy.mjs';
+import {reconstructThreshold} from './profile.mjs';
 import {toNativeDocument} from './native.mjs';
 
 export const MODEL_SCHEMA='ivplanner-chart-geometry-v1';
@@ -116,6 +117,7 @@ export function reconstruct(session,database) {
     else if(conflicts.length)issues.push(issue('conflict-'+annotation.id,'inconsistency','Distância publicada incompatível com as coordenadas candidatas. Nenhum fixo foi deslocado.',conflicts.flatMap(m=>[m.a.id,m.b.id]),{annotation,options:conflicts.map(m=>({from:m.a.id,to:m.b.id,measured:m.measured}))}));
     else issues.push(issue('unassociated-'+annotation.id,'missing','Curso/distância reconhecidos sem extremidades determinadas com segurança.',[],{annotation}));
   }
+  reconstructThreshold(model,interpreted,database,{truncated:extraction.truncated});
   if(interpreted.frame){
     const bottom=interpreted.frame.bbox[1]+interpreted.frame.bbox[3],profile=interpreted.runs.filter(r=>r.bbox[1]>bottom&&r.bbox[1]<bottom+extraction.height*.13);
     for(const p of model.points)for(const label of profile.filter(r=>norm(r.text)===p.name)){
@@ -131,7 +133,7 @@ export function reconstruct(session,database) {
   for(const structure of recognition.structures.filter(s=>s.type!=='radial')){model.structures.push({...structure,status:'unresolved'});issues.push(issue('structure-'+structure.type,'missing',structure.type==='dme-arc'?'Arco DME identificado: centro, extremidades, varredura e sentido precisam de associação confirmada. Não foi substituído por reta.':'Espera identificada: parâmetros e sequência ainda não determinados. Não foi substituída por polilinha.',[],{evidenceIds:structure.evidenceIds}));}
   for(const gradient of interpreted.gradients)model.verticalConstraints.push({id:'gradient-'+model.verticalConstraints.length,...gradient,type:'climb-or-descent-gradient',status:'review'});
   // A runway-named waypoint is not automatically the runway threshold (MAPt may differ).
-  if(/\bRW(?:Y)?\s?\d{2}[LRC]?\b/.test(interpreted.plan.map(r=>r.text).join(' ')))issues.push(issue('runway-waypoint','missing','Referência de pista identificada. Não foi equiparada automaticamente a um MAPt ou waypoint sem coordenada publicada.'));
+  if(!model.profileReferences?.some(p=>model.points.some(point=>point.name===p.target&&point.position))&&/\bRW(?:Y)?\s?\d{2}[LRC]?\b/.test(interpreted.plan.map(r=>r.text).join(' ')))issues.push(issue('runway-waypoint','missing','Referência de pista identificada. Não foi equiparada automaticamente a um MAPt ou waypoint sem coordenada publicada.'));
   issues.push(issue('coverage-review','missing','Prévia parcial: símbolos, transições, aproximação perdida e cobertura integral ainda exigem conferência. Nenhuma missão foi alterada.'));
   return finish(model);
 }

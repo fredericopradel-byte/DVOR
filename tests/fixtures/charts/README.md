@@ -1,6 +1,6 @@
 # Historical chart corpus
 
-Ten original DECEA/AISWEB PDFs supplied by the project owner for importer development.
+Eleven original DECEA/AISWEB PDFs supplied by the project owner for importer development.
 Their filenames and SHA-256 digests are recorded in `manifest.json`. They are historical
 samples; neither file dates nor extraction results establish current validity.
 
@@ -18,6 +18,7 @@ Stage 2 assertions compare the **published identification** with the retained PD
 | SBBQ NDB 18 | Raster-only PDF: no fabricated extraction of NDB identity |
 | SBJP NDB Y 16 | Raster-only PDF: explicit OCR requirement |
 | SBLS NDB 13 | Digital NDB, named fixes, published restrictions |
+| SBGM RNP Y 35 | Explicit TO THR profile, missing threshold reconstructed, VMC retained |
 
 The SBBQ page contains 24 images and no extractable text in the supplied file.
 Its visible identification is known to the human reader; the current local extractor
@@ -33,3 +34,6 @@ a conflicting SBLS final connection. They do not certify complete procedures,
 arcs, racetracks, missed approaches or vertical paths. See
 `docs/CHART-IMPORT-STAGE3.md` for the capability matrix and remaining limitations.
 Synthetic multi-page PDFs and PNG/JPEG fixtures are generated in memory.
+
+SBGM profile reconstruction and its rounding limits are documented in
+`docs/CHART-IMPORT-PROFILE.md`. The derived position is not an official coordinate.
