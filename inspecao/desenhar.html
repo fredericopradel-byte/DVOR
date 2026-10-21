@@ -295,9 +295,8 @@ function el(name,attrs={},parent=svg,text){const n=document.createElementNS(NS,n
 function path(points){return points.map((p,i)=>{const s=screen(p);return (i?'L':'M')+s.x.toFixed(2)+','+s.y.toFixed(2)}).join(' ')}
 function queued(){if(frame!==null)return;frame=requestAnimationFrame(()=>{frame=null;render()})}
 function hint(){const item=selection?(selection.type==='point'?pt(selection.id):edge(selection.id)):null,frozen=item&&(selection.type==='point'?pointLocked(item.id):item.locked);let msg=tool==='select'&&multiMode?'Seleção múltipla: toque para incluir ou retirar. Arraste para navegar.':tool==='select'&&frozen?'Elemento bloqueado. Arraste para navegar ou desbloqueie no painel.':tool==='point'?'Toque para inserir um ponto.':tool==='line'||tool==='curve'?pending?'Toque no ponto final. Verde indica encaixe.':'Toque no início e no fim, ou arraste para criar.':selection?'Arraste as alças. Ajuste os valores no painel.':'Toque para selecionar. Arraste o fundo para mover.';if(drag?.rejected)msg='Trecho travado: destrave a medida ou desconecte a extremidade.';if(snap)msg='Encaixar em '+snap.name+' · solte para conectar';$('hint').hidden=tool==='select'&&!frozen&&!multiMode&&!drag?.rejected;$('hint').textContent=msg;$('hint').classList.toggle('join',!!snap)}
-function render(){
- if(drawingView==='vertical')profile.render();
- syncTransformOptions();
+function render(previewOnly=false){
+ if(!previewOnly){if(drawingView==='vertical')profile.render();syncTransformOptions();}
  svg.replaceChildren();el('rect',{width:W,height:H,fill:'#111619'});
  const corners=[world({x:0,y:0}),world({x:W,y:0}),world({x:0,y:H}),world({x:W,y:H})],minX=Math.min(...corners.map(p=>p.x)),maxX=Math.max(...corners.map(p=>p.x)),minY=Math.min(...corners.map(p=>p.y)),maxY=Math.max(...corners.map(p=>p.y));const step=[.1,.2,.5,1,2,5,10,20,50,100].find(n=>n*view.scale>=40)||100;
  const grid=el('g',{stroke:'#d5e7f20c','stroke-width':1});for(let x=Math.ceil(minX/step)*step;x<=maxX;x+=step){const a=screen({x,y:minY}),b=screen({x,y:maxY});el('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y},grid)}for(let y=Math.ceil(minY/step)*step;y<=maxY;y+=step){const a=screen({x:minX,y}),b=screen({x:maxX,y});el('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y},grid)}
@@ -313,7 +312,7 @@ function render(){
  for(const p of doc.points){if(pointLocked(p.id)){const s=screen(p);el('text',{x:s.x-18,y:s.y+20,'font-size':12,'pointer-events':'none','data-locked-point':p.id},svg,'🔒')}}
  for(const e of doc.segments){if(e.locked){const m=e.type==='curve'?curveGeometry(e).mid:{x:(pt(e.from).x+pt(e.to).x)/2,y:(pt(e.from).y+pt(e.to).y)/2},s=screen(m);el('text',{x:s.x+8,y:s.y+20,'font-size':12,'pointer-events':'none','data-locked-segment':e.id},svg,'🔒')}}
  for(const [id,label] of [[doc.flight.start,'INÍCIO'],[doc.flight.end,'FIM']]){const p=pt(id);if(p){const s=screen(p);el('text',{x:s.x+12,y:s.y-12,fill:'#4ee1a0','font-size':10,'font-weight':700,'pointer-events':'none'},svg,label)}}
- const bar=step*view.scale;el('line',{x1:15,y1:H-64,x2:15+bar,y2:H-64,stroke:'#a9bac8','stroke-width':2,'pointer-events':'none'});el('text',{x:15,y:H-71,fill:'#a9bac8','font-size':10,'pointer-events':'none'},svg,fmt(step)+' NM');$('north-arrow').style.transform='rotate('+view.rot+'rad)';$('measure').textContent=doc.points.length+' pontos · '+doc.segments.length+' trechos';hint();
+ const bar=step*view.scale;el('line',{x1:15,y1:H-64,x2:15+bar,y2:H-64,stroke:'#a9bac8','stroke-width':2,'pointer-events':'none'});el('text',{x:15,y:H-71,fill:'#a9bac8','font-size':10,'pointer-events':'none'},svg,fmt(step)+' NM');if(!previewOnly){$('north-arrow').style.transform='rotate('+view.rot+'rad)';$('measure').textContent=doc.points.length+' pontos · '+doc.segments.length+' trechos';hint();}
 }
 function selectionKey(type,id){return JSON.stringify([type,id])}
 function isSelected(type,id){return multiMode?selections.has(selectionKey(type,id)):selection?.type===type&&selection.id===id}
@@ -454,7 +453,7 @@ function moveCurveHandle(item,radius,side){
  }catch{doc=before;return false}
 }
 function mergePoint(id,target){if(pointLocked(id)||pointLocked(target.id))return false;const a=pt(id);if(!movePoint(id,target))return false;if(distance(a,target)>.0001)return false;if(doc.segments.some(e=>(e.from===id&&e.to===target.id)||(e.to===id&&e.from===target.id)))return false;doc.segments.forEach(e=>{if(e.from===id)e.from=target.id;if(e.to===id)e.to=target.id});doc.points=doc.points.filter(p=>p.id!==id);selection={type:'point',id:target.id};return true}
-function fit(){view.rot=0;if(!doc.points.length){view.scale=22;view.tx=W/2;view.ty=H/2;render();return}const values=[...doc.points,...doc.segments.filter(e=>e.type==='curve').flatMap(curvePoints)],minX=Math.min(...values.map(p=>p.x)),maxX=Math.max(...values.map(p=>p.x)),minY=Math.min(...values.map(p=>p.y)),maxY=Math.max(...values.map(p=>p.y));const top=H>280?(W<330?186:140):68,bottom=40;view.scale=Math.max(.15,Math.min(120,Math.min((W-110)/Math.max(4,maxX-minX),Math.max(30,H-top-bottom)/Math.max(4,maxY-minY))));view.tx=W/2-(minX+maxX)/2*view.scale;view.ty=(top+H-bottom)/2+(minY+maxY)/2*view.scale;render()}
+function fit(previewOnly=false){view.rot=0;if(!doc.points.length){view.scale=22;view.tx=W/2;view.ty=H/2;render(previewOnly);return}const values=[...doc.points,...doc.segments.filter(e=>e.type==='curve').flatMap(curvePoints)],minX=Math.min(...values.map(p=>p.x)),maxX=Math.max(...values.map(p=>p.x)),minY=Math.min(...values.map(p=>p.y)),maxY=Math.max(...values.map(p=>p.y));const top=H>280?(W<330?186:140):68,bottom=40;view.scale=Math.max(.15,Math.min(120,Math.min((W-110)/Math.max(4,maxX-minX),Math.max(30,H-top-bottom)/Math.max(4,maxY-minY))));view.tx=W/2-(minX+maxX)/2*view.scale;view.ty=(top+H-bottom)/2+(minY+maxY)/2*view.scale;render(previewOnly)}
 function zoom(factor,s={x:W/2,y:H/2}){const anchor=world(s);view.scale=Math.min(200,Math.max(.15,view.scale*factor));const p=screen(anchor);view.tx+=s.x-p.x;view.ty+=s.y-p.y;render()}
 function geo(p){const o=doc.origin;if(o.lat===''||o.lon==='')return null;const d=Math.hypot(p.x,p.y)/R,b=(Math.atan2(p.x,p.y)/DEG+(o.dir==='W'?-o.mag:o.mag))*DEG,lat=Number(o.lat)*DEG,lon=Number(o.lon)*DEG,l=Math.asin(Math.sin(lat)*Math.cos(d)+Math.cos(lat)*Math.sin(d)*Math.cos(b)),z=lon+Math.atan2(Math.sin(b)*Math.sin(d)*Math.cos(lat),Math.cos(d)-Math.sin(lat)*Math.sin(l));return{lat:l/DEG,lon:((z/DEG+540)%360)-180}}
 function fromGeo(lat,lon){const o=doc.origin,p1=Number(o.lat)*DEG,p2=lat*DEG,dp=p2-p1,dl=(lon-Number(o.lon))*DEG,a=Math.sin(dp/2)**2+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)**2,d=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))*R,b=Math.atan2(Math.sin(dl)*Math.cos(p2),Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl))-(o.dir==='W'?-o.mag:o.mag)*DEG;return{x:Math.sin(b)*d,y:Math.cos(b)*d}}
@@ -616,7 +615,7 @@ $('import').onclick=()=>$('import-file').click();$('import-file').onchange=async
  const f=e.target.files[0];e.target.value='';if(!f)return;if(f.size>3*1024*1024){toast('Arquivo maior que 3 MB.');return}
  try{const data=validate(JSON.parse(await f.text()));data.module=module;if(replacePlanning(data,'Importar e substituir o planejamento atual?'))toast('Desenho importado.')}catch(e){toast(e.message||'Arquivo inválido.')}
 };
-window.addEventListener('keydown',e=>{if(e.target.closest('input,textarea,select'))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();historyMove(e.shiftKey)}else if(e.key==='Escape'&&drawingView==='horizontal'){closeEditorPanel();closeCreationTools();setTool('select');clearSelection();inspector();render()}});
+window.addEventListener('keydown',e=>{if($('chart-import-dialog')?.open||e.target.closest('input,textarea,select'))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();historyMove(e.shiftKey)}else if(e.key==='Escape'&&drawingView==='horizontal'){closeEditorPanel();closeCreationTools();setTool('select');clearSelection();inspector();render()}});
 ['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault(),{passive:false}));
 new ResizeObserver(()=>{const r=svg.getBoundingClientRect();if(r.width<1||r.height<1)return;const oldW=W,oldH=H;W=r.width;H=r.height;svg.setAttribute('viewBox','0 0 '+W+' '+H);view.tx+=(W-oldW)/2;view.ty+=(H-oldH)/2;render()}).observe(svg);
 $('module-title').textContent=module==='ndb'?'NDB':'Procedimentos';
@@ -636,6 +635,13 @@ function setDrawingView(value){
  for(const [id,mode] of [['view-horizontal','horizontal'],['view-vertical','vertical']]){$(id).classList.toggle('active',mode===value);$(id).setAttribute('aria-pressed',String(mode===value))}
  if(value==='vertical')profile.render();else requestAnimationFrame(()=>{sizeDrawing();render()});return true;
 }
+// Read-only snapshot uses the native renderer, without replacing/persisting the mission.
+window.IVProcedurePreview=Object.freeze({render(candidate){
+ if(candidate.module!==module)throw Error('Prévia pertence a outro módulo.');
+ const checked=validate(candidate),saved={doc,view,W,H,selection,multiMode,pending,preview,snap,drawingView},children=[...svg.childNodes],viewBox=svg.getAttribute('viewBox');
+ try{doc=checked;view={scale:22,tx:350,ty:250,rot:0};W=700;H=500;selection=null;multiMode=false;pending=preview=snap=null;drawingView='horizontal';svg.setAttribute('viewBox','0 0 700 500');fit(true);const snapshot=svg.cloneNode(true);snapshot.id='chart-native';snapshot.setAttribute('aria-label','Prévia parcial do procedimento, não validada');snapshot.setAttribute('data-readonly','true');return snapshot;}
+ finally{({doc,view,W,H,selection,multiMode,pending,preview,snap,drawingView}=saved);svg.replaceChildren(...children);if(viewBox===null)svg.removeAttribute('viewBox');else svg.setAttribute('viewBox',viewBox);}
+}});
 $('view-horizontal').onclick=()=>setDrawingView('horizontal');$('view-vertical').onclick=()=>setDrawingView('vertical');
 syncFields();syncHistory();inspector();const box=svg.getBoundingClientRect();W=box.width||700;H=box.height||500;svg.setAttribute('viewBox','0 0 '+W+' '+H);fit();if(!storageBlocked)persist();
 initPages();initSectionNav();

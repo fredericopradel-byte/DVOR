@@ -1,0 +1,152 @@
+{
+  "scope": "Partial, manually transcribed published straight-leg relationships. Not complete procedural goldens. Coordinate snapshots identify the retained AIXM records, not an assertion of historical validity.",
+  "cases": [
+    {
+      "file": "sbls_ndb-rwy-13_iac_20250220.pdf",
+      "legs": [
+        [
+          "ULVUK",
+          "KUDGU",
+          120,
+          5.0
+        ],
+        [
+          "KUDGU",
+          "KOVMO",
+          120,
+          5.0
+        ],
+        [
+          "LST",
+          "ESIGO",
+          119,
+          26.1
+        ]
+      ],
+      "blockedLeg": [
+        "KOVMO",
+        "LST",
+        120,
+        3.5
+      ],
+      "coordinateSnapshots": {
+        "KUDGU": {
+          "lat": -19.6418,
+          "lon": -44.054738889
+        },
+        "LST": {
+          "lat": -19.658899722,
+          "lon": -43.896933333
+        }
+      },
+      "altitudes": {
+        "ULVUK": 5000,
+        "KUDGU": 4500,
+        "KOVMO": 3930,
+        "ESIGO": 7000
+      }
+    },
+    {
+      "file": "sbnt_rnp-rwy-16l_iac_20231005-1.pdf",
+      "legs": [
+        [
+          "NT361",
+          "NT364",
+          232,
+          6.0
+        ],
+        [
+          "NT362",
+          "NT364",
+          162,
+          6.0
+        ],
+        [
+          "NT363",
+          "NT364",
+          92,
+          6.0
+        ],
+        [
+          "NT364",
+          "NT366",
+          162,
+          5.0
+        ]
+      ],
+      "convergence": "NT364",
+      "coordinateSnapshots": {
+        "NT364": {
+          "lat": -5.771805556,
+          "lon": -35.357
+        },
+        "NT366": {
+          "lat": -5.836805556,
+          "lon": -35.304305556
+        }
+      }
+    },
+    {
+      "file": "sbnt_ils-y-rwy-16l_iac_20231228.pdf",
+      "legs": [
+        [
+          "NT361",
+          "NT364",
+          232,
+          6.0
+        ],
+        [
+          "NT362",
+          "NT364",
+          162,
+          6.0
+        ],
+        [
+          "NT363",
+          "NT364",
+          92,
+          6.0
+        ],
+        [
+          "NT364",
+          "NT366",
+          162,
+          5.0
+        ]
+      ]
+    },
+    {
+      "file": "sbnt_ils-w-or-loc-w-rwy-16l_iac_20250515.pdf",
+      "legs": [
+        [
+          "OPNAG",
+          "BUXUP",
+          162,
+          2.6
+        ]
+      ]
+    },
+    {
+      "file": "sbnt_vor-y-rwy-12_iac_20240321.pdf",
+      "legs": [
+        [
+          "ETINA",
+          "ISIRI",
+          116,
+          5.0
+        ]
+      ]
+    },
+    {
+      "file": "sbnt_vor-w-rwy-16l_iac_20250515.pdf",
+      "legs": [
+        [
+          "SALBA",
+          "EVNOP",
+          163,
+          3.3
+        ]
+      ]
+    }
+  ]
+}

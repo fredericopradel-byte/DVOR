@@ -1,6 +1,6 @@
 {
   "source": "DECEA/AISWEB charts supplied by project owner; historical samples, not a statement of validity",
-  "scope": "Stage 2 extraction only; no expected georeferenced reconstruction yet",
+  "scope": "Stage 2 extraction; Stage 3 partial geometry expectations are in geometry-goldens.json. No full procedure recognition claim.",
   "cases": [
     {
       "file": "sbbq_ndb-rwy-18_iac_20230518.pdf",
@@ -138,6 +138,36 @@
         "DME"
       ],
       "structures": [],
+      "rasterOnly": false
+    },
+    {
+      "file": "sbjp_ndb-y-rwy-16_iac_20221201.pdf",
+      "sha256": "a1d651703e9a6c7733788c005f41db6c8f7a6fc3c55c668df4103927a2ab4bb2",
+      "icao": null,
+      "kind": null,
+      "procedure": null,
+      "publishedDate": null,
+      "navigation": [],
+      "requirements": [],
+      "structures": [],
+      "rasterOnly": true
+    },
+    {
+      "file": "sbls_ndb-rwy-13_iac_20250220.pdf",
+      "sha256": "c6dec4467fc2e00457962e8e2efe02f79957ac587ed07d2fadacb06192e8fe4c",
+      "icao": "SBLS",
+      "kind": "IAC",
+      "procedure": "NDB RWY 13",
+      "publishedDate": "2025-02-20",
+      "navigation": [
+        "NDB"
+      ],
+      "requirements": [
+        "DME"
+      ],
+      "structures": [
+        "holding"
+      ],
       "rasterOnly": false
     }
   ]
