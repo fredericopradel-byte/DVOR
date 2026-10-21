@@ -1,3 +1,4 @@
+import {checkedLedger} from './review.mjs';
 import {validateModel, MODEL_SCHEMA} from './reconstruct.mjs';
 const MAX_BYTES = 25 * 1024 * 1024, MAX_PIXELS = 24_000_000, MAX_ITEMS = 25000, MAX_OPS = 100000;
 let pdfLibrary;
@@ -131,7 +132,7 @@ export async function restoreArchive(file, module) {
   if(data.version===2&&data.reconstruction){
     const m=data.reconstruction;
     if(m.schema!==MODEL_SCHEMA||m.module!==module||m.source?.sha256!==source.sha256||m.source.page!==data.page||!Array.isArray(m.issues))throw Error('Modelo de rascunho incompatível com o arquivo original.');
-    validateModel(m);m.review={validated:false};m.status='partial';
+    validateModel(m);if(m.reviewWork)checkedLedger(m);m.review={validated:false};m.status='partial';
     m.issues.push({id:'archive-review',category:'missing',critical:true,message:'Modelo restaurado de arquivo. As origens declaradas ainda precisam de conferência com as bases locais.'});
     for(const p of m.points)if(p.position)p.coordinateState='archive-review';reconstruction=m;
   }

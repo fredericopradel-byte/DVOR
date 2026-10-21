@@ -12,7 +12,7 @@ export function toNativeDocument(model) {
   for(const leg of model.legs){
     if(!mapping.points[leg.from]||!mapping.points[leg.to]||model.checks.some(c=>c.entity===leg.id&&!c.passed))continue;
     if(leg.type==='line'){
-      document.segments.push({id:leg.id,type:'line',from:leg.from,to:leg.to,name:'',...(leg.flightRules==='visual-transition-review'?{flightRules:leg.flightRules,visualReference:structuredClone(leg.visualReference)}:{}),locked:false,lockBearing:false,lockLength:false,lockRadius:false});mapping.legs[leg.id]=[leg.id];
+      document.segments.push({id:leg.id,type:'line',from:leg.from,to:leg.to,name:'',...(['visual-transition-review','visual'].includes(leg.flightRules)?{flightRules:leg.flightRules,visualReference:structuredClone(leg.visualReference)}:{}),locked:false,lockBearing:false,lockLength:false,lockRadius:false});mapping.legs[leg.id]=[leg.id];
     }else if(leg.type==='arc'){
       const center=points.get(leg.center),a=points.get(leg.from),b=points.get(leg.to);
       if(!center?.position||!['left','right'].includes(leg.turn)||!Number.isFinite(leg.radiusNM)){issues.push(problem('native-arc-'+leg.id,'Arco incompleto não convertido.',[leg.id]));continue;}

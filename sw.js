@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v115-chart-profile-20261021';
+const CACHE = 'iv-planner-v116-chart-review-20261021';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -66,6 +66,8 @@ const APP_SHELL = [
   './inspecao/chart-import/decea.mjs',
   './inspecao/chart-import/reconstruct.mjs',
   './inspecao/chart-import/profile.mjs',
+  './inspecao/chart-import/review.mjs',
+  './inspecao/chart-import/review-ui.mjs',
   './inspecao/chart-import/native.mjs',
   './inspecao/chart-import/extract.mjs',
   './inspecao/chart-import/storage.mjs',

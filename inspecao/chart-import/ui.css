@@ -38,3 +38,27 @@
 @media(max-width:759px){#chart-result[data-mobile-view=data] .ci-preview,#chart-import-dialog .ci-compare-button{display:none}}
 @media(min-width:760px){#chart-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}#chart-import-dialog .ci-mobile-tabs{grid-column:1/-1}#chart-result[data-mobile-view=original],#chart-result[data-mobile-view=drawing]{display:block}}
 @media(max-width:400px){#chart-import-dialog dl{grid-template-columns:90px minmax(0,1fr)}#chart-import-dialog{padding:10px}}
+
+#chart-import-dialog .ci-mobile-tabs{position:sticky;top:0;z-index:2;background:#1c1f21;padding:8px 0}
+#chart-import-dialog .ci-review{display:none;grid-column:1/-1}
+#chart-result[data-mobile-view=review]{display:block}
+#chart-result[data-mobile-view=review] .ci-summary,#chart-result[data-mobile-view=review] .ci-preview,#chart-result[data-mobile-view=review] .ci-native{display:none}
+#chart-result[data-mobile-view=review] .ci-review{display:block}
+#chart-import-dialog .ci-review label{display:flex;flex-direction:column;gap:5px;font-size:.85rem;margin:9px 0}
+#chart-import-dialog .ci-review select{width:100%;text-overflow:ellipsis}
+#chart-import-dialog .ci-review input{font:inherit;font-size:16px;min-height:44px;width:100%;border:1px solid #535c65;border-radius:9px;padding:8px 10px;background:#2a3035;color:#eef6fc}
+#chart-import-dialog .ci-review h3{font-size:.95rem;scroll-margin-top:125px}
+#chart-import-dialog .ci-review-comparison{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin:12px 0}
+#chart-import-dialog .ci-review figure{margin:0;padding:8px;border:1px solid #535c65;border-radius:9px;overflow:hidden}
+#chart-import-dialog .ci-review figcaption{font-size:.8rem;margin-bottom:8px}
+#chart-issue-drawing{display:block;width:100%;height:240px;background:#111619}
+#chart-import-dialog .ci-review-form{display:flex;flex-direction:column;gap:8px}
+#chart-import-dialog .ci-review-history{max-height:280px;overflow:auto}
+#chart-import-dialog .ci-review-history-row{padding:6px 0;border-bottom:1px solid #454c52}
+#chart-import-dialog .ci-review-history-row button{margin:4px}
+#chart-import-dialog .ci-pending-link{text-align:left;font-size:.85rem;white-space:normal;width:100%}
+@media(min-width:760px){#chart-import-dialog .ci-review-comparison{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+
+#chart-import-dialog .ci-review p,#chart-import-dialog .ci-review button{overflow-wrap:anywhere}
+
+@media(max-width:759px){#chart-import-dialog .ci-mobile-tabs button{flex:1 1 calc(50% - 8px);font-size:14px;padding:8px 6px}}

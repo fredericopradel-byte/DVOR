@@ -61,7 +61,7 @@ export function reconstruct(session,database) {
   if(!database.available)issues.push(issue('database-unavailable','missing','Base estruturada AIXM indisponível. Fixos ausentes não serão estimados.'));
   for(const [i,message] of database.warnings.entries())issues.push(issue('database-warning-'+i,'missing',message));
   if(extraction.truncated)issues.push(issue('truncated-geometry','missing','Extração incompleta: associação automática de pernas suspensa.'));
-  if(!extraction.text.length){issues.push(issue('no-geometry','missing','Sem texto reconhecido: nenhum ponto ou percurso foi inferido da imagem ou do nome do arquivo.'));return finish(model);}
+  if(!extraction.text.length){issues.push(issue('no-geometry','missing','Sem texto reconhecido: nenhum ponto ou percurso foi inferido da imagem ou do nome do arquivo.'));return finishModel(model);}
   const icao=recognition.metadata.icao?.value,officialAirports=database.airports.filter(a=>a.icao===icao&&a.source.kind==='local-database'),fallback=database.airports.filter(a=>a.icao===icao);
   const airports=officialAirports.length?officialAirports:fallback,airport=airports.length===1?airports[0]:null;
   if(!airport)issues.push(issue('airport-context','ambiguity','Localidade de referência ausente ou ambígua; a associação espacial automática foi suspensa.'));
@@ -101,22 +101,7 @@ export function reconstruct(session,database) {
     }
     layout.set(pointId,seen);model.points.push(point);
   }
-  const usable=model.points.filter(p=>p.position);
-  for(const annotation of interpreted.annotations){
-    if(extraction.truncated||!airport||(annotation.reference==='magnetic'&&!interpreted.variation)||annotation.reference==='unknown')continue;
-    const matches=[],conflicts=[];
-    for(const a of usable)for(const b of usable){if(a===b||!supportedLayout(annotation,layout.get(a.id),layout.get(b.id)))continue;
-      const measured=inverse(a.position,b.position),course=annotation.reference==='magnetic'?normalize(measured.trueCourse-interpreted.variation.value):measured.trueCourse;
-      const courseTolerance=.5+(annotation.reference==='magnetic'?interpreted.variation.resolution/2:0)+1e-6;
-      const distanceError=Math.abs(measured.distanceNM-annotation.distanceNM),courseError=angleDifference(course,annotation.course);
-      if(courseError<=courseTolerance&&distanceError<=annotation.distanceResolution/2+1e-6)matches.push({a,b,measured});
-      else if(courseError<=courseTolerance&&distanceError<Math.max(1,annotation.distanceNM*.1))conflicts.push({a,b,measured});
-    }
-    if(matches.length===1){const {a,b,measured}=matches[0],legId='l-'+a.id+'-'+b.id;if(!model.legs.some(l=>l.id===legId))model.legs.push({id:legId,type:'line',from:a.id,to:b.id,published:{...annotation},calculated:measured,source:{kind:'coordinates-and-published-course-distance',evidenceIds:annotation.evidenceIds,layoutUsedFor:'association-only'},status:'candidate'});}
-    else if(matches.length>1)issues.push(issue('association-'+annotation.id,'ambiguity','A anotação publicada pode ligar mais de um par de pontos.',[],{annotation,options:matches.map(m=>({from:m.a.id,to:m.b.id}))}));
-    else if(conflicts.length)issues.push(issue('conflict-'+annotation.id,'inconsistency','Distância publicada incompatível com as coordenadas candidatas. Nenhum fixo foi deslocado.',conflicts.flatMap(m=>[m.a.id,m.b.id]),{annotation,options:conflicts.map(m=>({from:m.a.id,to:m.b.id,measured:m.measured}))}));
-    else issues.push(issue('unassociated-'+annotation.id,'missing','Curso/distância reconhecidos sem extremidades determinadas com segurança.',[],{annotation}));
-  }
+  associateLegs(model,interpreted,layout,{truncated:extraction.truncated,airportKnown:!!airport});
   reconstructThreshold(model,interpreted,database,{truncated:extraction.truncated});
   if(interpreted.frame){
     const bottom=interpreted.frame.bbox[1]+interpreted.frame.bbox[3],profile=interpreted.runs.filter(r=>r.bbox[1]>bottom&&r.bbox[1]<bottom+extraction.height*.13);
@@ -135,13 +120,42 @@ export function reconstruct(session,database) {
   // A runway-named waypoint is not automatically the runway threshold (MAPt may differ).
   if(!model.profileReferences?.some(p=>model.points.some(point=>point.name===p.target&&point.position))&&/\bRW(?:Y)?\s?\d{2}[LRC]?\b/.test(interpreted.plan.map(r=>r.text).join(' ')))issues.push(issue('runway-waypoint','missing','Referência de pista identificada. Não foi equiparada automaticamente a um MAPt ou waypoint sem coordenada publicada.'));
   issues.push(issue('coverage-review','missing','Prévia parcial: símbolos, transições, aproximação perdida e cobertura integral ainda exigem conferência. Nenhuma missão foi alterada.'));
-  return finish(model);
+  return finishModel(model);
 }
-function finish(model){
+export function finishModel(model){
   const validation=validateModel(model);model.checks=validation.results;model.issues.push(...validation.issues);
   model.paths=tracePaths(model.points,model.legs.filter(l=>!validation.issues.some(i=>i.entities.includes(l.id))));
   model.topology={convergences:model.points.filter(p=>model.legs.filter(l=>l.to===p.id).length>1).map(p=>({point:p.id,incoming:model.legs.filter(l=>l.to===p.id).map(l=>l.id)})),divergences:model.points.filter(p=>model.legs.filter(l=>l.from===p.id).length>1).map(p=>({point:p.id,outgoing:model.legs.filter(l=>l.from===p.id).map(l=>l.id)}))};
   if(model.paths.length!==1||model.paths.some(p=>p.cycle))model.issues.push(issue('sequence-review','ambiguity','Sequências múltiplas, incompletas ou cíclicas: nenhum ramo foi escolhido automaticamente.'));
   const envelope=toNativeDocument(model);model.native=envelope.document;model.nativeMapping=envelope.mapping;model.issues.push(...envelope.issues);
   model.issues=[...new Map(model.issues.map(i=>[i.id,i])).values()];return model;
+}
+
+export function associateLegs(model,interpreted,layout,{truncated=false,airportKnown=true,bindings={}}={}){
+  const issues=model.issues;
+  const usable=model.points.filter(p=>p.position);
+  for(const annotation of interpreted.annotations){
+    if(truncated||!airportKnown||(annotation.reference==='magnetic'&&!interpreted.variation)||annotation.reference==='unknown')continue;
+    const binding=bindings[annotation.id];
+    if(binding){
+      const a=model.points.find(p=>p.id===binding.from),b=model.points.find(p=>p.id===binding.to);
+      const legId='l-'+binding.from+'-'+binding.to;
+      if(!a||!b||a===b)throw Error('Extremidades da perna não reconhecidas.');
+      model.legs=model.legs.filter(l=>l.published?.id!==annotation.id&&l.id!==legId);
+      model.legs.push({id:legId,type:'line',from:a.id,to:b.id,published:{...annotation},source:{kind:'manual-confirmed-association',decision:binding.decision,evidenceIds:annotation.evidenceIds},status:'manual-confirmed'});
+      continue;
+    }
+    const matches=[],conflicts=[];
+    for(const a of usable)for(const b of usable){if(a===b||!supportedLayout(annotation,layout.get(a.id),layout.get(b.id)))continue;
+      const measured=inverse(a.position,b.position),course=annotation.reference==='magnetic'?normalize(measured.trueCourse-interpreted.variation.value):measured.trueCourse;
+      const courseTolerance=.5+(annotation.reference==='magnetic'?interpreted.variation.resolution/2:0)+1e-6;
+      const distanceError=Math.abs(measured.distanceNM-annotation.distanceNM),courseError=angleDifference(course,annotation.course);
+      if(courseError<=courseTolerance&&distanceError<=annotation.distanceResolution/2+1e-6)matches.push({a,b,measured});
+      else if(courseError<=courseTolerance&&distanceError<Math.max(1,annotation.distanceNM*.1))conflicts.push({a,b,measured});
+    }
+    if(matches.length===1){const {a,b,measured}=matches[0],legId='l-'+a.id+'-'+b.id;if(!model.legs.some(l=>l.id===legId))model.legs.push({id:legId,type:'line',from:a.id,to:b.id,published:{...annotation},calculated:measured,source:{kind:'coordinates-and-published-course-distance',evidenceIds:annotation.evidenceIds,layoutUsedFor:'association-only'},status:'candidate'});}
+    else if(matches.length>1)issues.push(issue('association-'+annotation.id,'ambiguity','A anotação publicada pode ligar mais de um par de pontos.',[],{annotation,options:matches.map(m=>({from:m.a.id,to:m.b.id}))}));
+    else if(conflicts.length)issues.push(issue('conflict-'+annotation.id,'inconsistency','Distância publicada incompatível com as coordenadas candidatas. Nenhum fixo foi deslocado.',conflicts.flatMap(m=>[m.a.id,m.b.id]),{annotation,options:conflicts.map(m=>({from:m.a.id,to:m.b.id,measured:m.measured}))}));
+    else issues.push(issue('unassociated-'+annotation.id,'missing','Curso/distância reconhecidos sem extremidades determinadas com segurança.',[],{annotation}));
+  }
 }
