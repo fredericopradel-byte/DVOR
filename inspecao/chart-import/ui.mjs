@@ -5,6 +5,7 @@ import {loadLocalDatabase} from './aeronautical.mjs';
 import {reconstruct, validateModel, MODEL_SCHEMA} from './reconstruct.mjs';
 import {toNativeDocument} from './native.mjs';
 import {createReview} from './review-ui.mjs';
+import {createFinalReview} from './final-ui.mjs';
 import {checkedLedger} from './review.mjs';
 
 const trigger = document.getElementById('import-chart');
@@ -44,15 +45,18 @@ const dataTab = node('button', tabs, 'Dados identificados', {type: 'button', 'ar
 const originalTab = node('button', tabs, 'Carta original', {type: 'button', 'aria-pressed': 'false'});
 const drawingTab = node('button', tabs, 'Prévia do desenho', {type: 'button', 'aria-pressed': 'false'});
 const reviewTab = node('button',tabs,'Resolver pendências',{type:'button','aria-pressed':'false'});
-let reviewer;
+let reviewer,finalReviewer;
+const finalTab=node('button',tabs,'Conferência final',{type:'button','aria-pressed':'false'});
 const compareTab = node('button', tabs, 'Comparar', {type: 'button', 'aria-pressed': 'false', class: 'ci-compare-button'});
-function mobileView(view) {result.dataset.mobileView = view;for(const [button,name] of [[dataTab,'data'],[originalTab,'original'],[drawingTab,'drawing'],[compareTab,'compare'],[reviewTab,'review']])button.setAttribute('aria-pressed',String(view===name));if(view==='review')reviewer?.open();}
+function mobileView(view) {result.dataset.mobileView = view;for(const [button,name] of [[dataTab,'data'],[originalTab,'original'],[drawingTab,'drawing'],[compareTab,'compare'],[reviewTab,'review'],[finalTab,'final']])button.setAttribute('aria-pressed',String(view===name));if(view==='review')reviewer?.open();if(view==='final')finalReviewer?.render();}
+finalTab.onclick=()=>mobileView('final');
 dataTab.onclick = () => mobileView('data');originalTab.onclick = () => mobileView('original');drawingTab.onclick = () => mobileView('drawing');compareTab.onclick = () => mobileView('compare');reviewTab.onclick=()=>mobileView('review');mobileView('data');
 const summary = node('div', result, undefined, {class: 'ci-summary'});
 const preview = node('div', result, undefined, {class: 'ci-preview'});
 const canvas = node('canvas', preview, undefined, {id: 'chart-original', role: 'img', 'aria-label': 'Página original da carta. Não é um desenho georreferenciado.'});
 const nativePane = node('section', result, undefined, {class:'ci-native', 'aria-label':'Prévia nativa do procedimento'});
 const reviewPane=node('section',result,undefined,{class:'ci-review','aria-label':'Resolução de pendências'});
+const finalPane=node('section',result,undefined,{class:'ci-final','aria-label':'Conferência final da importação'});
 const footer = node('footer', dialog, undefined, {class: 'ci-actions'});
 const save = node('button', footer, 'Salvar rascunho', {type: 'button', disabled: ''});
 const exportButton = node('button', footer, 'Exportar rascunho', {type: 'button', disabled: ''});
@@ -63,9 +67,11 @@ reviewer=createReview({container:reviewPane,node,original:canvas,getSession:()=>
   try{session.reconstruction=model;persisted=false;showSummary();await persist(token);if(!persisted)throw Error('Resposta mantida em memória, mas não salva. Exporte o rascunho antes de fechar.');}finally{if(token===generation){setBusy(false);reviewer.render();}}
 }});
 
+finalReviewer=createFinalReview({container:finalPane,node,getSession:()=>session,setBusy,persist:async()=>{persisted=false;await persist(generation);if(!persisted)throw Error('Conferência não salva. Exporte o rascunho antes de aplicar.');},message,onApplied:()=>dialog.close()});
+
 function message(text, error = false) {status.textContent = text;status.classList.toggle('ci-error', error);}
 function setBusy(value) {
-  busy = value;reviewPane.inert=value;dialog.setAttribute('aria-busy', String(value));
+  busy = value;reviewPane.inert=finalPane.inert=value;dialog.setAttribute('aria-busy', String(value));
   for (const button of [pick, restore, reopen, process]) button.disabled = value;
   pages.disabled = value;
   save.disabled = exportButton.disabled = value || !session;rebuildButton.disabled=value||!session?.extraction;
@@ -111,10 +117,10 @@ function showSummary() {
   const pre = node('pre', evidence, session.extraction.lines.map(line => line.text).join('\n') || 'Sem camada textual. OCR/interpretação visual ainda não disponível.');
   pre.tabIndex = 0;
   node('p', evidence, 'SHA-256: ' + session.source.sha256, {class: 'ci-hash'});
-  node('p', summary, 'Reconstrução parcial. Use Resolver pendências para conferir as dúvidas. Aprovação final e aplicação à missão ainda não disponíveis. Nenhum clearance foi alterado.', {class: 'ci-warning'});
+  node('p', summary, 'Reconstrução parcial. Use Resolver pendências para conferir as dúvidas. Use Conferência final para aplicar a geometria disponível como rascunho ou aprovar quando não houver pendências críticas. Nenhum clearance foi alterado.', {class: 'ci-warning'});
   nativePane.replaceChildren();if(model?.points.some(p=>p.coordinateSource?.kind==='chart-derived'))node('p',nativePane,'Cabeceira derivada de valores publicados arredondados; não é coordenada oficial.',{class:'ci-warning'});if(model?.legs.some(l=>l.flightRules==='visual-transition-review'))node('p',nativePane,'VMC*: há trecho visual publicado na final. Limites ainda a conferir; a linha não representa uma final inteiramente instrumental.',{class:'ci-warning'});node('p',nativePane,'Prévia parcial · não validada · representação nativa do editor.',{class:'ci-warning'});
   if(model?.native.points.length)nativePane.append(window.IVProcedurePreview.render(model.native));else node('p',nativePane,'Sem coordenadas suficientes para gerar a prévia. Consulte as pendências.');
-  reviewer.render();
+  reviewer.render();if(result.dataset.mobileView==='final')finalReviewer.render();
 }
 function restoreModel(model){
   if(model.schema!==MODEL_SCHEMA||model.module!==module||model.source.sha256!==session.source.sha256||model.source.page!==session.page)throw Error('Prévia salva incompatível. Os dados foram preservados.');
