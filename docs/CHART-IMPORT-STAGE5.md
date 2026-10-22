@@ -230,3 +230,11 @@ foi corrigida para concluir a instalação antes de recarregar, e o teste passou
 na execução de 24 casos. Sintaxe e diff sem erros. A nova execução completa remota
 é acompanhada na PR #29, com 199 casos no conjunto atualizado. A correção
 permanece na mesma branch, sem merge nem implantação.
+
+
+A primeira rodada da correção, no commit `56f6244`, foi interrompida ao atingir
+20 minutos de job. A instalação do Chromium/dependências consumiu 8 min 34 s;
+os logs registram 174 testes aprovados, incluindo os três casos antes falhos,
+e nenhuma falha de teste antes da interrupção. Isso não é uma execução completa
+aprovada. O limite do mesmo job foi ampliado de 20 para 30 minutos para acomodar
+a preparação do runner e a suíte integral, sem remover ou desativar testes.
