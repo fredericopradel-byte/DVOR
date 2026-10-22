@@ -1,3 +1,5 @@
+import {profileData} from './profile-data.mjs';
+import {associateProfileStations,splitProfileLegs} from './profile-association.mjs';
 import {labelType, roleNames, roleSupports, altitudeSupports, altitudeBar} from './semantics.mjs';
 import {interpret, center, supportedLayout} from './decea.mjs';
 import {resolveEntity} from './aeronautical.mjs';
@@ -101,6 +103,9 @@ export function reconstruct(session,database) {
     }
     layout.set(pointId,seen);model.points.push(point);
   }
+  model.publishedProfile=profileData(interpreted,recognition.metadata,extraction);model.issues.push(...model.publishedProfile.issues);
+  associateProfileStations(model,database);
+  for(const p of model.points)if(!layout.has(p.id))layout.set(p.id,interpreted.plan.filter(r=>norm(r.text)===p.name));
   associateLegs(model,interpreted,layout,{truncated:extraction.truncated,airportKnown:!!airport});
   reconstructThreshold(model,interpreted,database,{truncated:extraction.truncated});
   if(interpreted.frame){
@@ -114,6 +119,7 @@ export function reconstruct(session,database) {
       }else if(values.length>1)issues.push(issue('profile-altitude-'+p.id,'ambiguity','Mais de uma altitude no perfil próxima de '+p.name+'.',[p.id]));
     }
   }
+  splitProfileLegs(model);
   for(const r of model.verticalConstraints)if(r.qualifier==='unspecified')issues.push(issue('qualifier-'+r.id,'ambiguity','Qualificador da altitude de '+model.points.find(p=>p.id===r.entity)?.name+' ainda não confirmado.',[r.entity]));
   for(const structure of recognition.structures.filter(s=>s.type!=='radial')){model.structures.push({...structure,status:'unresolved'});issues.push(issue('structure-'+structure.type,'missing',structure.type==='dme-arc'?'Arco DME identificado: centro, extremidades, varredura e sentido precisam de associação confirmada. Não foi substituído por reta.':structure.type==='rf-leg'?'Curva RF identificada: parâmetros e associação ainda não determinados. Não foi equiparada a arco DME nem substituída por reta.':'Espera identificada: parâmetros e sequência ainda não determinados. Não foi substituída por polilinha.',[],{evidenceIds:structure.evidenceIds}));}
   for(const gradient of interpreted.gradients)model.verticalConstraints.push({id:'gradient-'+model.verticalConstraints.length,...gradient,type:'climb-or-descent-gradient',status:'review'});

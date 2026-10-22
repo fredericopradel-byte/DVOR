@@ -1,3 +1,4 @@
+import {distanceDescription,gradientDescription} from './profile-data.mjs';
 import {assess,missionSuggestions,prepareApplication} from './finalize.mjs';
 export function createFinalReview({container,node,getSession,setBusy,persist,onApplied,message}){
  let snapshot=null,applying=false;
@@ -9,6 +10,12 @@ export function createFinalReview({container,node,getSession,setBusy,persist,onA
    node('p',container,report.document.points.length+' pontos · '+report.document.segments.length+' pernas nativas · '+report.resolved+' respostas aplicadas · '+report.critical.length+' pendências críticas.',{id:'chart-final-summary'});
    node('p',container,report.checks.filter(c=>c.passed).length+' verificações geométricas aprovadas / '+report.checks.filter(c=>!c.passed).length+' reprovadas. Não são cálculos de clearance.');
    const restrictions=node('details',container);node('summary',restrictions,'Restrições verticais publicadas · '+m.verticalConstraints.length);
+   if(m.publishedProfile){
+    for(const a of m.publishedProfile.axes)node('p',restrictions,a.raw+' · '+distanceDescription(a.reference));
+    for(const minimum of m.publishedProfile.minima)node('p',restrictions,minimum.type+' '+minimum.value+' ft MSL / OCH '+minimum.ochFT+' ft · '+(minimum.variant||'variante pendente')+' · publicação, não clearance');
+    for(const g of m.publishedProfile.gradients)node('p',restrictions,g.value+'% · '+gradientDescription(g.scope)+' · condições a conferir');
+    if(m.publishedProfile.conditions.length)node('p',restrictions,m.publishedProfile.conditions.length+' trechos publicados de aproximação perdida com sequenciamento ainda não confirmado.');
+   }
    for(const r of m.verticalConstraints)node('p',restrictions,(m.points.find(p=>p.id===r.entity)?.name||r.entity||r.scope||'Gradiente')+': '+(r.lower??r.value??'pendente')+(r.upper!==undefined?' a '+r.upper:'')+' '+r.unit+' · '+(r.qualifier||'qualificador pendente'));
    node('p',restrictions,'Altitudes planejadas e de inspeção permanecem em branco. Fases operacionais não são inferidas. Restrições sem representação nativa ficam na origem da carta e nas pendências.');
    const pending=node('details',container);node('summary',pending,'Pendências e limitações · '+report.issues.length);const list=node('ul',pending);for(const i of report.issues)node('li',list,(i.critical?'Crítica: ':'')+i.message);

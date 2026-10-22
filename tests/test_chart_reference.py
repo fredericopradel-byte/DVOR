@@ -114,6 +114,17 @@ class ChartReferenceTests(unittest.TestCase):
                 by_id = {p['id']: p for p in main['points']}
                 names = {p['name'] for p in main['points']}
                 legs = {(by_id[l['from']]['name'], by_id[l['to']]['name']): l for l in main['legs']}
+                # A retained published parent may now be faithfully subdivided by a
+                # profile-only station. Require actual continuous native model children.
+                for parent in main.get('profileGeometry',{}).get('parents',[]):
+                    children=[l for l in main['legs'] if l.get('source',{}).get('parent')==parent['id']]
+                    cursor=parent['from']; remaining=list(children); total=0
+                    while remaining:
+                        next_leg=next((l for l in remaining if l['from']==cursor),None)
+                        if next_leg is None:break
+                        total+=next_leg['published']['distanceNM'];cursor=next_leg['to'];remaining.remove(next_leg)
+                    if children and not remaining and cursor==parent['to'] and abs(total-parent['published']['distanceNM'])<1e-10:
+                        legs[(by_id[parent['from']]['name'],by_id[parent['to']]['name'])]=parent
                 metrics = []
                 for start, end, course, distance in case['legs']:
                     leg = legs.get((start, end))
