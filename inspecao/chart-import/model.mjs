@@ -17,7 +17,7 @@ export function recognize(extraction) {
   field('icao', chartIds.map(({line, match}) => ({value: match[1], evidenceIds: line.evidenceIds})));
   field('kind', chartIds.map(({line, match}) => ({value: match[2], evidenceIds: line.evidenceIds})));
   if (!metadata.kind) field('kind', matches(/\b(?:CHART\s*\(IAC\)|\(SID\)|STANDARD DEPARTURE)\b|CHART\s*\(IAC\)/).map(line => ({value: /IAC/.test(clean(line.text)) ? 'IAC' : 'SID', evidenceIds: line.evidenceIds})));
-  const titlePattern = /\b(?:IAC\s+|SID\s+)?((?:ILS|LOC|VOR|NDB|RNP|RNAV|[A-Z]{5}\s+\d[A-Z])[A-Z0-9 /()-]*?\bRWY\s*\d{2}[LRC]?)\b/;
+  const titlePattern = /\b(?:IAC\s+|SID\s+)?((?:ILS|LOC|VOR|NDB|RNP|RNAV|[A-Z]{5}\s+\d[A-Z])[A-Z0-9 /()-]*?\bRWY\s*\d{2}[LRC]?(?:\s*\(AR\))?)(?=\s|$)/;
   const titles = matches(titlePattern).map(line => ({value: clean(line.text).match(titlePattern)[1].replace(/\s+/g, ' '), evidenceIds: line.evidenceIds}));
   field('procedure', titles);
   if (metadata.procedure) field('runway', [{value: metadata.procedure.value.match(/RWY\s*(\d{2}[LRC]?)/)?.[1], evidenceIds: metadata.procedure.evidenceIds}]);
@@ -41,11 +41,11 @@ export function recognize(extraction) {
   const navigation = [], requirements = [], structures = [];
   const title = metadata.procedure?.value || '';
   for (const type of ['ILS', 'LOC', 'VOR', 'NDB', 'RNP', 'RNAV']) if (new RegExp('\\b' + type + '\\b').test(title)) navigation.push(type);
-  for (const [label, pattern] of [['GNSS', /GNSS\s+REQ/], ['DME', /DME\s+REQ/], ['RNP APCH', /RNP\s+APCH/], ['RNAV1 / RNP1', /RNAV\s*1.*RNP\s*1/]]) {
+  for (const [label, pattern] of [['GNSS', /GNSS\s+REQ/], ['DME', /DME\s+REQ/], ['RNP APCH', /RNP\s+APCH/], ['RNP AR APCH', /RNP\s+AR\s+APCH/], ['RF', /\bRF\s+REQ\b/], ['AUTORIZAÇÃO ESPECIAL', /AUTORIZACAO\s+ESPECIAL|SPECIAL\s+AUTHORIZATION/], ['RNAV1 / RNP1', /RNAV\s*1.*RNP\s*1/]]) {
     const evidence = matches(pattern);
     if (evidence.length) requirements.push({value: label, evidenceIds: evidence.flatMap(l => l.evidenceIds)});
   }
-  for (const [type, pattern] of [['dme-arc', /(?:ARCO\s+DME|DME\s+ARC)/], ['holding', /\b(?:ESPERA|HOLDING)\b/], ['radial', /\bR\s*\d{3}\s+[A-Z]{2,3}\b|\bRDL\b/]]) {
+  for (const [type, pattern] of [['dme-arc', /(?:ARCO\s+DME|DME\s+ARC)/], ['holding', /\b(?:ESPERA|HOLDING)\b/], ['rf-leg', /\bRF\s+REQ\b|\bRADIUS\s+TO\s+FIX\b/], ['radial', /\bR\s*\d{3}\s+[A-Z]{2,3}\b|\bRDL\b/]]) {
     const evidence = matches(pattern);
     if (evidence.length) structures.push({type, status: 'text-evidence-only', evidenceIds: evidence.flatMap(l => l.evidenceIds)});
   }
