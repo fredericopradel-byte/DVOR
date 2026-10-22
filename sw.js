@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v119-chart-semantics-20261022';
+const CACHE = 'iv-planner-v120-chart-profile-axes-20261022';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -67,6 +67,8 @@ const APP_SHELL = [
   './inspecao/chart-import/semantics.mjs',
   './inspecao/chart-import/reconstruct.mjs',
   './inspecao/chart-import/profile.mjs',
+  './inspecao/chart-import/profile-data.mjs',
+  './inspecao/chart-import/profile-association.mjs',
   './inspecao/chart-import/review.mjs',
   './inspecao/chart-import/finalize.mjs',
   './inspecao/chart-import/final-ui.mjs',

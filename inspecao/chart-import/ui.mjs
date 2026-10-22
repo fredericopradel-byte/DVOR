@@ -1,3 +1,4 @@
+import {distanceDescription,gradientDescription} from './profile-data.mjs';
 import {recognize, newSession} from './model.mjs';
 import {identify, openDocument, exportArchive, restoreArchive} from './extract.mjs';
 import * as storage from './storage.mjs';
@@ -115,6 +116,14 @@ function showSummary() {
       const source=p.coordinateSource;if(source?.kind==='manual-confirmed')node('p',origins,'Origem confirmada: '+source.origin);if(source?.kind==='chart-derived')node('p',origins,'Origem: '+source.anchor+' · '+source.distanceNM+' NM · '+source.course+'° '+source.reference+'. Limite calculado de arredondamento: '+source.roundingBound.radiusNM.toFixed(3)+' NM, sem incluir a incerteza da coordenada de referência. '+source.crossChecks.length+' conferência(s) por outras referências. Não representa precisão oficial.');
     }
     for(const r of model.verticalConstraints)node('p',origins,(r.entity||'Gradiente')+': '+(r.value??r.lower)+' '+r.unit+' · '+(r.qualifier||r.scope));
+    if(model.publishedProfile){
+      const pub=node('details',origins);node('summary',pub,'Perfil publicado · referências e mínimos');
+      for(const a of model.publishedProfile.axes)node('p',pub,a.raw+' · '+distanceDescription(a.reference)+' · '+a.marks.map(m=>m.raw).join(' / '));
+      for(const s of model.publishedProfile.stations)node('p',pub,s.name+': '+s.distances.map(d=>d.raw+' '+d.reference.publishedUnit+' → '+d.reference.name).join(' · '));
+      for(const m of model.publishedProfile.minima)node('p',pub,m.type+' '+m.value+' ft MSL / OCH '+m.ochFT+' ft · '+(m.variant||'variante a conferir')+' · publicado, não clearance');
+      for(const g of model.publishedProfile.gradients)node('p',pub,g.value+'% · '+gradientDescription(g.scope)+' · aplicação/condições a conferir');
+      for(const c of model.publishedProfile.conditions)node('p',pub,c.raw+' · sequenciamento não confirmado');
+    }
     node('p',origins,model.checks.filter(c=>c.passed).length+' verificações geométricas aprovadas; '+model.checks.filter(c=>!c.passed).length+' reprovadas. Não são cálculos de clearance.');
   }
   const evidence = node('details', summary);node('summary', evidence, 'Dados extraídos e origem');

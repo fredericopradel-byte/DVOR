@@ -29,6 +29,28 @@ export function thresholdProfile(interpreted, metadata) {
   const vmc=runs.filter(r=>r.bbox[1]>bottom&&r.bbox[1]<axis.bbox[1]&&/\b(?:PROSSIGA|PROCEED)\s+VMC\b/.test(norm(r.text)));
   return {kind:'distance-to-threshold',unit:'NM',distanceKind:'published-profile-along-track',runway:rwy,target:zero[0].name,stations,distanceMarks:row.map(r=>({distanceNM:Number(r.text),resolutionNM:resolution(r.text),evidenceIds:r.evidenceIds})),visual:vmc.length?{kind:'published-vmc',bounds:'unresolved',evidenceIds:vmc.flatMap(r=>r.evidenceIds)}:null,evidenceIds:axis.evidenceIds};
 }
+// Only an explicitly zero-valued, named threshold column can support this fallback.
+function profileFromAxes(model){
+  const data=model.publishedProfile;if(!data)return null;
+  const axes=data.axes.filter(a=>a.reference.kind==='threshold'&&a.reference.runway===model.source.chart.runway?.value&&a.reference.distanceKind==='published-profile-along-track');
+  if(axes.length!==1)return null;
+  const axis=axes[0],stations=data.stations.flatMap(s=>s.distances.filter(d=>d.axisId===axis.id).map(d=>({name:s.name,distanceNM:d.valueNM,resolutionNM:d.resolutionNM,evidenceIds:[...s.evidenceIds,...d.evidenceIds]})));
+  const zero=stations.filter(s=>s.distanceNM===0&&/^(?:RWY?|THR)\d{2}[LRC]?$/.test(s.name)&&runway(s.name)===axis.reference.runway);
+  if(zero.length!==1)return null;
+  return {kind:'distance-to-threshold',unit:'NM',distanceKind:axis.reference.distanceKind,runway:axis.reference.runway,target:zero[0].name,stations,distanceMarks:axis.marks.map(m=>({distanceNM:m.valueNM,resolutionNM:m.resolutionNM,evidenceIds:m.evidenceIds})),visual:null,evidenceIds:axis.evidenceIds};
+}
+function localizerDefinition(model,interpreted,profile){
+  const data=model.publishedProfile,course=data?.finalCourse,title=model.source.chart.procedure?.value||'';
+  if(!/\b(?:ILS|LOC)\b/.test(title)||/\b(?:AR|RF)\b/.test(title)||model.structures?.some(s=>s.type==='rf-leg')||profile.visual||!course||course.reference!==model.reference.course)return null;
+  const bottom=interpreted.frame.bbox[1]+interpreted.frame.bbox[3],axisTop=Math.min(...data.axes.map(a=>a.bbox[1]));
+  const profileCourses=interpreted.runs.filter(r=>r.bbox[1]>bottom&&r.bbox[1]<axisTop&&/^\d{3}[°º]?$/.test(r.text));
+  const named=data.stations.filter(s=>s.roles.some(r=>['FAF','FAP'].includes(r))&&s.distances.some(d=>d.reference.kind==='threshold'&&d.reference.runway===profile.runway&&d.valueNM>0));
+  const zero=data.stations.filter(s=>s.name===profile.target&&s.distances.some(d=>d.reference.kind==='threshold'&&d.valueNM===0));
+  if(named.length!==1||zero.length!==1)return null;
+  const a=center(named[0].bbox).x,b=center(zero[0].bbox).x,finalCourses=profileCourses.filter(r=>center(r.bbox).x>Math.min(a,b)&&center(r.bbox).x<Math.max(a,b));
+  if(!finalCourses.length||finalCourses.some(r=>Number(r.text.replace(/[°º]/g,''))!==course.value)||interpreted.runs.some(r=>r.bbox[1]>bottom&&r.bbox[1]<axisTop&&/\b(?:VMC|VISUAL|TVD)\b/.test(r.text)))return null;
+  return {anchorName:named[0].name,course:course.value,courseResolution:course.resolution,reference:course.reference,evidenceIds:[...course.evidenceIds,...profileCourses.filter(r=>Number(r.text.replace(/[°º]/g,''))===course.value).flatMap(r=>r.evidenceIds)],origin:'published-localizer-final-and-profile'};
+}
 function betweenLabels(annotation,from,to){
   const p=center(annotation.bbox);return supportedLayout(annotation,from,to)&&from.some(a=>to.some(b=>{const x=center(a.bbox),y=center(b.bbox),dx=y.x-x.x,dy=y.y-x.y,coordinate=Math.abs(dx)>Math.abs(dy)?'x':'y';return p[coordinate]>=Math.min(x[coordinate],y[coordinate])&&p[coordinate]<=Math.max(x[coordinate],y[coordinate]);}));
 }
@@ -38,7 +60,7 @@ function roundingBound(distance,resolutionNM,annotation,variation){
   return {distanceNM:resolutionNM/2,angleDegrees:halfAngle,radiusNM:resolutionNM/2+2*distance*Math.sin(halfAngle*Math.PI/360),kind:'published-rounding-bound',includesAnchorUncertainty:false};
 }
 export function reconstructThreshold(model, interpreted, database, {truncated=false}={}) {
-  const profile=thresholdProfile(interpreted,model.source.chart);if(!profile)return;
+  const profile=thresholdProfile(interpreted,model.source.chart)||profileFromAxes(model);if(!profile)return;
   model.profileReferences=[profile];
   const target=model.points.find(p=>p.name===profile.target);
   if(!target||truncated)return;
@@ -56,6 +78,17 @@ export function reconstructThreshold(model, interpreted, database, {truncated=fa
       const coordinate=destination(anchor.position,course,station.distanceNM),zero=profile.stations.find(s=>s.distanceNM===0);
       const bound=roundingBound(station.distanceNM,station.resolutionNM+zero.resolutionNM,annotation,model.reference.variation);
       candidates.push({anchor,station,annotation,coordinate,bound});
+    }
+  }
+  if(!candidates.length){
+    const definition=localizerDefinition(model,interpreted,profile);
+    if(definition)for(const station of profile.stations.filter(s=>s.distanceNM>0)){
+      const anchor=model.points.find(p=>p.name===station.name);
+      if(station.name!==definition.anchorName||!anchor?.position||!anchor.roles.some(r=>['FAF','FAP'].includes(r))||anchor.coordinateSource?.kind==='chart-derived'||anchor.coordinateState==='ambiguous')continue;
+      if(definition.reference==='magnetic'&&!Number.isFinite(model.reference.variation?.value))continue;
+      const annotation={...definition,id:'profile-final-'+anchor.id,distanceNM:station.distanceNM,distanceResolution:station.resolutionNM,profileEvidenceIds:station.evidenceIds};
+      const coordinate=destination(anchor.position,normalize(annotation.course+(annotation.reference==='magnetic'?model.reference.variation.value:0)),station.distanceNM);
+      candidates.push({anchor,station,annotation,coordinate,bound:roundingBound(station.distanceNM,station.resolutionNM+profile.stations.find(s=>s.distanceNM===0).resolutionNM,annotation,model.reference.variation)});
     }
   }
   if(!candidates.length)return;
@@ -89,12 +122,12 @@ export function reconstructThreshold(model, interpreted, database, {truncated=fa
   if(target.position){const separation=inverse(target.position,coordinate).distanceNM;if(separation>bound.radiusNM+1e-6){model.issues.push(problem('threshold-source-conflict','inconsistency','A coordenada existente da cabeceira diverge da reconstrução publicada; não foi deslocada.',[target.id],{existing:target.position,derived:coordinate,separationNM:separation,roundingBound:bound}));return;}}
   else{
     target.position=coordinate;target.coordinateState='derived-review';target.kind='threshold-reference';
-    target.coordinateSource={kind:'chart-derived',method:'WGS84-direct-from-published-course-and-profile-distance',anchor:anchor.id,anchorPosition:{...anchor.position},anchorSource:structuredClone(anchor.coordinateSource),course:annotation.course,reference:annotation.reference,variation:structuredClone(model.reference.variation),distanceNM:station.distanceNM,roundingBound:bound,crossChecks:checks,evidenceIds:[...station.evidenceIds,...annotation.evidenceIds],originalPosition:{...coordinate}};
+    target.coordinateSource={kind:'chart-derived',method:annotation.origin==='published-localizer-final-and-profile'?'WGS84-direct-from-published-localizer-final-and-profile-distance':'WGS84-direct-from-published-course-and-profile-distance',definition:annotation.origin||'published-plan-course-and-distance',anchor:anchor.id,anchorPosition:{...anchor.position},anchorSource:structuredClone(anchor.coordinateSource),course:annotation.course,reference:annotation.reference,variation:structuredClone(model.reference.variation),distanceNM:station.distanceNM,roundingBound:bound,crossChecks:checks,evidenceIds:[...station.evidenceIds,...annotation.evidenceIds],originalPosition:{...coordinate}};
     model.issues.push(problem('derived-'+target.id,'missing','Cabeceira calculada de curso/distância publicados arredondados. Posição derivada, não coordenada oficial; conferir origens e precisão.',[target.id],{roundingBound:bound}));
   }
   const retained=model.issues.filter(i=>i.id!=='coordinate-'+target.id&&i.id!=='unassociated-'+annotation.id&&i.id!=='association-'+annotation.id&&!checks.some(c=>i.id==='association-'+c.annotation));model.issues.splice(0,model.issues.length,...retained);
   const legId='l-'+anchor.id+'-'+target.id,existing=model.legs.find(l=>l.id===legId);
-  const leg=existing||{id:legId,type:'line',from:anchor.id,to:target.id,published,calculated:inverse(anchor.position,target.position),source:{kind:'profile-and-plan',evidenceIds:[...station.evidenceIds,...annotation.evidenceIds]},status:'candidate'};
+  const leg=existing||{id:legId,type:'line',from:anchor.id,to:target.id,published,calculated:inverse(anchor.position,target.position),source:{kind:annotation.origin==='published-localizer-final-and-profile'?'published-localizer-profile':'profile-and-plan',evidenceIds:[...station.evidenceIds,...annotation.evidenceIds]},status:'candidate'};
   if(profile.visual){leg.flightRules='visual-transition-review';leg.visualReference=profile.visual;model.issues.push(problem('visual-boundary-'+leg.id,'ambiguity','PROSSIGA VMC identificado na final. Os limites do trecho visual ainda precisam de conferência; a ligação inteira não foi classificada como instrumental nem visual.',[leg.id],{evidenceIds:profile.visual.evidenceIds}));}
   if(!existing)model.legs.push(leg);
 }

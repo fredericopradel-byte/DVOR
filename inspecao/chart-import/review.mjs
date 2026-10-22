@@ -1,3 +1,4 @@
+import {splitProfileLegs} from './profile-association.mjs';
 import {interpret} from './decea.mjs';
 import {reconstructThreshold} from './profile.mjs';
 import {validateModel, associateLegs, finishModel} from './reconstruct.mjs';
@@ -75,7 +76,7 @@ function action(model,issueId,kind,answer){
 function scrub(model){
   // Regenerate only checks/associations whose inputs can change. Coverage and
   // unsupported structures are never cleared by a generic acknowledgement.
-  const dynamic=/^(coordinate-|association-|unassociated-|conflict-|geometry-|definition-|endpoints-|native-|projection-|range-|sequence-review$|qualifier-|derived-|threshold-|visual-boundary-)/;
+  const dynamic=/^(profile-split-|profile-route-|coordinate-|association-|unassociated-|conflict-|geometry-|definition-|endpoints-|native-|projection-|range-|sequence-review$|qualifier-|derived-|threshold-|visual-boundary-)/;
   model.issues=model.issues.filter(i=>i.id.startsWith('threshold-database-')||!dynamic.test(i.id));
   for(const p of model.points)if(p.coordinateSource?.kind==='chart-derived'){p.position=null;p.coordinateState='missing';p.coordinateSource=null;}
 }
@@ -104,7 +105,7 @@ function splitVisual(model,n){const a=n.answer,leg=model.legs.find(l=>l.id===a.e
 export function replayReview(model,session,work=ledger(model)){
   if(!same(binding(model),{sha256:session.source.sha256,page:session.page,module:session.module})||!same(work.binding,binding(model)))throw Error('Decisões pertencem a outra carta, página ou módulo.');
   const m=clone(work.base),p=interpret(session.extraction,session.recognition),nodes=activeNodes(work),outcomes=[],deferred=[],bindings={};
-  scrub(m);
+  scrub(m);if(m.profileGeometry)m.profileGeometry={parents:[]};
   for(const n of nodes){try{
     const a=n.answer;
     if(n.kind==='position')setPosition(m,n);
@@ -127,6 +128,7 @@ export function replayReview(model,session,work=ledger(model)){
   const layout=new Map(m.points.map(point=>[point.id,p.plan.filter(r=>new RegExp('(^|[^A-Z0-9])'+point.name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'([^A-Z0-9]|$)').test(r.text))]));
   associateLegs(m,p,layout,{truncated:session.extraction.truncated,bindings});
   if(!m.issues.some(i=>i.id==='threshold-database-ambiguity'))reconstructThreshold(m,p,{thresholds:[]},{truncated:session.extraction.truncated});
+  splitProfileLegs(m);
   for(const point of m.points){
     if(!point.position&&!m.issues.some(i=>i.id==='coordinate-'+point.id))m.issues.push({id:'coordinate-'+point.id,category:point.candidates?.length?'ambiguity':'missing',critical:true,message:'Coordenada de '+point.name+' ainda não determinada.',entities:[point.id],options:point.candidates||[]});
     const s=point.coordinateSource?.selectedSource||point.coordinateSource,date=m.source.chart.publishedDate?.value;
