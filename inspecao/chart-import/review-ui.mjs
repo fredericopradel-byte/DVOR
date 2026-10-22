@@ -1,5 +1,5 @@
 import {pendingGroups, question, decide, historyStep, checkout, evidenceFor, activeNodes} from './review.mjs';
-const labels={position:'Coordenada',altitude:'Altitude',reference:'Referência dos cursos',leg:'Associação da perna',visual:'Limite visual','confirm-coordinate':'Conferência da coordenada'};
+const labels={'confirm-arc':'Representação horizontal do arco DME',position:'Coordenada',altitude:'Altitude',reference:'Referência dos cursos',leg:'Associação da perna',visual:'Limite visual','confirm-coordinate':'Conferência da coordenada'};
 const raw=(n,r=1)=>Number(n).toFixed(Math.max(0,Math.min(9,Math.round(-Math.log10(r)))));
 export function createReview({container,node,original,getSession,onModel,isBusy}){
   let selected=null;
@@ -28,7 +28,7 @@ export function createReview({container,node,original,getSession,onModel,isBusy}
     if(!model.native.points.length){node('p',target,'Sem coordenadas para destacar este elemento.');return;}
     const svg=window.IVProcedurePreview.render(model.native);svg.id='chart-issue-drawing';target.append(svg);
     const ids=new Set(issue.entities||[]);for(const option of issue.options||[]){if(option.from)ids.add(option.from);if(option.to)ids.add(option.to);}
-    for(const leg of model.legs.filter(l=>ids.has(l.id))){ids.add(leg.from);ids.add(leg.to);}
+    for(const leg of model.legs.filter(l=>ids.has(l.id))){ids.add(leg.from);ids.add(leg.to);ids.add(leg.center);for(const id of leg.via||[])ids.add(id);for(const id of model.nativeMapping?.legs?.[leg.id]||[])ids.add(id);}
     const focus=[];
     for(const g of svg.querySelectorAll('g[data-point]'))if(ids.has(g.dataset.point)){
       const c=g.querySelector('circle'),x=Number(c.getAttribute('cx')),y=Number(c.getAttribute('cy'));focus.push({x,y});
@@ -41,10 +41,18 @@ export function createReview({container,node,original,getSession,onModel,isBusy}
   function form(q,issue,m,parent){
     const actions=node('div',parent,undefined,{class:'ci-review-form'});
     if(q.kind==='position'){
+      if(/^dme-(radius|via)-/.test(issue.id))for(const id of issue.entities||[])if(id!==q.entity&&m.points.some(p=>p.id===id))button(actions,'Conferir coordenada de '+m.points.find(p=>p.id===id).name,()=>{actions.replaceChildren();form({kind:'position',entity:id,options:[]},issue,m,actions);});
       node('p',actions,'Coordenadas WGS84 em graus decimais. Não use pixels da carta. A fonte anterior ficará preservada no histórico.');
       for(const [index,row]of(q.options||[]).entries())button(actions,(row.name||row.designator||'Coordenada publicada')+' · '+row.position.lat+', '+row.position.lon+' · '+(row.source?.version||row.datum||'fonte local')+(row.source?.validFrom?' · edição '+row.source.validFrom.slice(0,10):''),()=>answer('position',{entity:q.entity,lat:row.position.lat,lon:row.position.lon,origin:row.source?'Base local · '+(row.source.version||'cadastro')+' · registro '+(row.source.recordId||row.id||'selecionado'):'Coordenada WGS84 publicada · '+(row.raw||'conferida na carta'),choice:index}));
       const point=m.points.find(p=>p.id===q.entity),lat=input(actions,'Latitude',point?.position?.lat??'',{type:'text',inputmode:'text',maxlength:'32'}),lon=input(actions,'Longitude',point?.position?.lon??'',{type:'text',inputmode:'text',maxlength:'32'}),origin=input(actions,'Origem da coordenada','',{type:'text',maxlength:'500'});
       button(actions,'Usar coordenada conferida',()=>answer('position',{entity:q.entity,lat:lat.value,lon:lon.value,origin:origin.value}));
+    }else if(q.kind==='confirm-arc'){
+      const leg=m.legs.find(l=>l.id===q.entity),name=id=>m.points.find(p=>p.id===id)?.name||id;
+      node('p',actions,[leg.from,...(leg.via||[]),leg.to].map(name).join(' → ')+' · '+(leg.turn==='right'?'direita':'esquerda')+' · auxílio '+name(leg.center));
+      node('p',actions,'DME publicado: '+leg.publishedDME.raw.join(' / ')+'. Raio horizontal calculado das coordenadas: '+leg.radiusNM.toFixed(4)+' NM. Os valores e coordenadas de origem permanecem preservados.');
+      node('p',actions,'A curva é uma representação horizontal para edição. Não calcula a distância inclinada em cada altitude nem certifica o seguimento do arco DME. Confira também as conexões e eventuais fixos intermediários.',{class:'ci-warning'});
+      button(actions,'Aceitar representação horizontal neste rascunho',()=>answer('confirm-arc',{}));
+      for(const id of [...new Set([leg.center,leg.from,...(leg.via||[]),leg.to])])button(actions,'Corrigir coordenada de '+name(id),()=>{actions.replaceChildren();form({kind:'position',entity:id,options:[]},issue,m,actions);});
     }else if(q.kind==='confirm-coordinate'){
       node('p',actions,'Confira a origem e a posição no conjunto. Aceitar para este rascunho não comprova vigência nem transforma uma coordenada derivada em oficial.');
       button(actions,'Aceitar coordenada neste rascunho',()=>answer(q.kind,{}));
@@ -95,7 +103,7 @@ export function createReview({container,node,original,getSession,onModel,isBusy}
     for(const n of [...(work?.nodes||[])].reverse()){
       const row=node('div',history,undefined,{class:'ci-review-history-row'}),outcome=work.outcomes.find(o=>o.id===n.id);
       node('p',row,new Date(n.at).toLocaleString('pt-BR')+' · '+labels[n.kind]+' · '+(active.has(n.id)?outcome?.applied?'aplicada':'precisa de nova conferência':'fora da sequência atual'));
-      const a=n.answer,description=n.kind==='position'?'Coordenada: '+a.lat+', '+a.lon+' · '+a.origin:n.kind==='altitude'?'Restrição: '+({at:'exatamente',above:'mínima',below:'máxima',between:'janela'}[a.qualifier])+' '+a.value+(a.upper!==undefined?' a '+a.upper:'')+' FT MSL':n.kind==='leg'?(work.base.points.find(p=>p.id===a.from)?.name||a.from)+' → '+(work.base.points.find(p=>p.id===a.to)?.name||a.to)+' · '+a.course.raw+'° '+a.reference+' · '+a.distance.raw+' NM':n.kind==='visual'?'Visual nos últimos '+a.distanceNM+' NM':n.kind==='reference'?a.reference+(a.variation?' · VAR '+a.variation.raw:''):'Posição e origem conferidas para este rascunho.';
+      const a=n.answer,description=n.kind==='position'?'Coordenada: '+a.lat+', '+a.lon+' · '+a.origin:n.kind==='altitude'?'Restrição: '+({at:'exatamente',above:'mínima',below:'máxima',between:'janela'}[a.qualifier])+' '+a.value+(a.upper!==undefined?' a '+a.upper:'')+' FT MSL':n.kind==='leg'?(work.base.points.find(p=>p.id===a.from)?.name||a.from)+' → '+(work.base.points.find(p=>p.id===a.to)?.name||a.to)+' · '+a.course.raw+'° '+a.reference+' · '+a.distance.raw+' NM':n.kind==='confirm-arc'?'Representação horizontal e origens do arco conferidas para este rascunho.':n.kind==='visual'?'Visual nos últimos '+a.distanceNM+' NM':n.kind==='reference'?a.reference+(a.variation?' · VAR '+a.variation.raw:''):'Posição e origem conferidas para este rascunho.';
       node('p',row,description,{class:'ci-muted'});if(outcome?.reason)node('p',row,outcome.reason,{class:'ci-warning'});
       button(row,'Rever resposta',()=>update(s=>checkout(s.reconstruction,s,n.parent),n.issueId));button(row,'Restaurar até aqui',()=>update(s=>checkout(s.reconstruction,s,n.id),n.issueId));
     }
