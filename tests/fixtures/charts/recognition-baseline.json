@@ -1,0 +1,1374 @@
+{
+  "schema": "ivplanner-recognition-audit-v1",
+  "codeTree": "9d9e43acd9c838489f2c7e56a00b02d53f31788f",
+  "upstreamMain": "cb1f04ce8d984d3f3b836bc70944d19141485226",
+  "browser": "Chromium 154.0.8037.57",
+  "database": "packages/aixm/AIXM-BR-2026-09-03/aixm-core.json",
+  "scope": "Diagnostic subsets, not full-chart accuracy; no model training, no geographic coordinates inferred from pixels. Independent per-page execution mirrors current page-select import, not multipage integration.",
+  "results": [
+    {
+      "file": "sbgl_rnp-a-rwy-33_iac_20240613.pdf",
+      "sha256": "36d2dd860ddffaa772bfa17edaf411df92c7b3d72cdcbdb7556c49b6cff116f7",
+      "namedReferenceFound": [
+        "GL027",
+        "GL053",
+        "GL086",
+        "GL087",
+        "GL091",
+        "KETUX",
+        "LIXUG",
+        "SEDBU"
+      ],
+      "namedReferenceMissing": [],
+      "referenceLegs": [
+        {
+          "start": "SEDBU",
+          "end": "LIXUG",
+          "course": 188,
+          "distanceNM": 5.5,
+          "matched": true
+        },
+        {
+          "start": "KETUX",
+          "end": "LIXUG",
+          "course": 277,
+          "distanceNM": 5.5,
+          "matched": true
+        },
+        {
+          "start": "LIXUG",
+          "end": "GL027",
+          "course": 257,
+          "distanceNM": 5.0,
+          "matched": true
+        },
+        {
+          "start": "GL027",
+          "end": "GL053",
+          "course": 257,
+          "distanceNM": 4.3,
+          "matched": true
+        },
+        {
+          "start": "GL086",
+          "end": "GL087",
+          "course": 97,
+          "distanceNM": 5.5,
+          "matched": true
+        }
+      ],
+      "referenceAltitudes": [
+        {
+          "point": "LIXUG",
+          "value": 2800,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": true
+        },
+        {
+          "point": "GL027",
+          "value": 2100,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": true
+        },
+        {
+          "point": "GL091",
+          "value": 1900,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": true
+        },
+        {
+          "point": "KETUX",
+          "value": 5000,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": true
+        }
+      ],
+      "pages": [
+        {
+          "page": 1,
+          "metadata": {
+            "icao": "SBGL",
+            "kind": "IAC",
+            "procedure": "RNP A RWY 33",
+            "runway": "33",
+            "airport": "RIO DE JANEIRO / Galeão - Antônio Carlos Jobim, INTL (SBGL)",
+            "revision": "AIRAC AMDT 2406A1 13 JUN 24",
+            "publishedDate": "2024-06-13"
+          },
+          "textItems": 368,
+          "vectorOps": 18446,
+          "points": [
+            {
+              "name": "PONTE",
+              "roles": [],
+              "coordinateState": "missing"
+            },
+            {
+              "name": "LIXUG",
+              "roles": [
+                "IF"
+              ],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "GL053",
+              "roles": [
+                "MAPT"
+              ],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "KETUX",
+              "roles": [
+                "IAF",
+                "MAHF"
+              ],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "GL086",
+              "roles": [],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "GL087",
+              "roles": [],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "GL091",
+              "roles": [],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "SEDBU",
+              "roles": [
+                "IAF"
+              ],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "GL027",
+              "roles": [
+                "FAF"
+              ],
+              "coordinateState": "resolved"
+            }
+          ],
+          "legs": [
+            {
+              "start": "p-KETUX",
+              "end": "p-LIXUG",
+              "type": "line",
+              "course": 277,
+              "distanceNM": 5.5
+            },
+            {
+              "start": "p-SEDBU",
+              "end": "p-LIXUG",
+              "type": "line",
+              "course": 188,
+              "distanceNM": 5.5
+            },
+            {
+              "start": "p-LIXUG",
+              "end": "p-GL027",
+              "type": "line",
+              "course": 257,
+              "distanceNM": 5
+            },
+            {
+              "start": "p-GL086",
+              "end": "p-GL087",
+              "type": "line",
+              "course": 97,
+              "distanceNM": 5.5
+            },
+            {
+              "start": "p-GL087",
+              "end": "p-KETUX",
+              "type": "line",
+              "course": 188,
+              "distanceNM": 7.5
+            },
+            {
+              "start": "p-GL027",
+              "end": "p-GL053",
+              "type": "line",
+              "course": 257,
+              "distanceNM": 4.3
+            }
+          ],
+          "nativeSegments": 6,
+          "criticalIssues": [
+            {
+              "id": "coordinate-p-PONTE",
+              "message": "Coordenada de PONTE não disponível com segurança."
+            },
+            {
+              "id": "qualifier-profile-p-GL027",
+              "message": "Qualificador da altitude de GL027 ainda não confirmado."
+            },
+            {
+              "id": "structure-holding",
+              "message": "Espera identificada: parâmetros e sequência ainda não determinados. Não foi substituída por polilinha."
+            },
+            {
+              "id": "coverage-review",
+              "message": "Prévia parcial: símbolos, transições, aproximação perdida e cobertura integral ainda exigem conferência. Nenhuma missão foi alterada."
+            },
+            {
+              "id": "sequence-review",
+              "message": "Sequências múltiplas, incompletas ou cíclicas: nenhum ramo foi escolhido automaticamente."
+            }
+          ],
+          "verticalConstraints": [
+            {
+              "id": "vertical-p-LIXUG",
+              "entity": "p-LIXUG",
+              "value": 2800,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "above",
+              "evidenceIds": [
+                "page-1-text-50"
+              ],
+              "source": "chart-label",
+              "status": "extracted"
+            },
+            {
+              "id": "vertical-p-KETUX",
+              "entity": "p-KETUX",
+              "value": 5000,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "above",
+              "evidenceIds": [
+                "page-1-text-156"
+              ],
+              "source": "chart-label",
+              "status": "extracted"
+            },
+            {
+              "id": "vertical-p-GL086",
+              "entity": "p-GL086",
+              "value": 4000,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "below",
+              "evidenceIds": [
+                "page-1-text-218"
+              ],
+              "source": "chart-label",
+              "status": "extracted"
+            },
+            {
+              "id": "vertical-p-GL091",
+              "entity": "p-GL091",
+              "value": 1900,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "above",
+              "evidenceIds": [
+                "page-1-text-199"
+              ],
+              "source": "chart-label",
+              "status": "extracted"
+            },
+            {
+              "id": "vertical-p-SEDBU",
+              "entity": "p-SEDBU",
+              "value": 5000,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "above",
+              "evidenceIds": [
+                "page-1-text-215"
+              ],
+              "source": "chart-label",
+              "status": "extracted"
+            },
+            {
+              "id": "profile-p-GL027",
+              "entity": "p-GL027",
+              "value": 2100,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "unspecified",
+              "evidenceIds": [
+                "page-1-text-274",
+                "page-1-text-275"
+              ],
+              "source": "chart-profile",
+              "status": "review"
+            },
+            {
+              "id": "gradient-6",
+              "value": 5.2,
+              "unit": "percent",
+              "scope": "unresolved",
+              "evidenceIds": [
+                "page-1-text-261",
+                "page-1-text-262",
+                "page-1-text-263",
+                "page-1-text-264",
+                "page-1-text-265",
+                "page-1-text-266",
+                "page-1-text-267",
+                "page-1-text-268",
+                "page-1-text-269",
+                "page-1-text-270"
+              ],
+              "type": "climb-or-descent-gradient",
+              "status": "review"
+            }
+          ],
+          "validated": false
+        },
+        {
+          "page": 2,
+          "metadata": {
+            "icao": "SBGL",
+            "kind": "IAC",
+            "procedure": "RNP A RWY 33",
+            "runway": "33",
+            "airport": "RIO DE JANEIRO / Galeão - Antônio Carlos Jobim, INTL (SBGL)",
+            "revision": "AIRAC AMDT 2406A1 13 JUN 24",
+            "publishedDate": "2024-06-13"
+          },
+          "textItems": 168,
+          "vectorOps": 14493,
+          "points": [
+            {
+              "name": "PONTE",
+              "roles": [],
+              "coordinateState": "missing"
+            },
+            {
+              "name": "GL053",
+              "roles": [
+                "MAPT"
+              ],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "GL091",
+              "roles": [],
+              "coordinateState": "resolved"
+            }
+          ],
+          "legs": [],
+          "nativeSegments": 0,
+          "criticalIssues": [
+            {
+              "id": "coordinate-p-PONTE",
+              "message": "Coordenada de PONTE não disponível com segurança."
+            },
+            {
+              "id": "unassociated-annotation-0",
+              "message": "Curso/distância reconhecidos sem extremidades determinadas com segurança."
+            },
+            {
+              "id": "unassociated-annotation-1",
+              "message": "Curso/distância reconhecidos sem extremidades determinadas com segurança."
+            },
+            {
+              "id": "qualifier-vertical-p-GL091",
+              "message": "Qualificador da altitude de GL091 ainda não confirmado."
+            },
+            {
+              "id": "coverage-review",
+              "message": "Prévia parcial: símbolos, transições, aproximação perdida e cobertura integral ainda exigem conferência. Nenhuma missão foi alterada."
+            },
+            {
+              "id": "sequence-review",
+              "message": "Sequências múltiplas, incompletas ou cíclicas: nenhum ramo foi escolhido automaticamente."
+            }
+          ],
+          "verticalConstraints": [
+            {
+              "id": "vertical-p-GL091",
+              "entity": "p-GL091",
+              "value": 1900,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "unspecified",
+              "evidenceIds": [
+                "page-2-text-132"
+              ],
+              "source": "chart-label",
+              "status": "review"
+            },
+            {
+              "id": "gradient-1",
+              "value": 10,
+              "unit": "percent",
+              "scope": "unresolved",
+              "evidenceIds": [
+                "page-2-text-97"
+              ],
+              "type": "climb-or-descent-gradient",
+              "status": "review"
+            },
+            {
+              "id": "gradient-2",
+              "value": 10,
+              "unit": "percent",
+              "scope": "unresolved",
+              "evidenceIds": [
+                "page-2-text-126"
+              ],
+              "type": "climb-or-descent-gradient",
+              "status": "review"
+            }
+          ],
+          "validated": false
+        }
+      ]
+    },
+    {
+      "file": "sbgl_rnp-z-rwy-33--ar-_iac_20231102.pdf",
+      "sha256": "c29c1afac1d86d766c94791e5400a4394742a16d0d52205629d50005769be73e",
+      "namedReferenceFound": [
+        "GL027",
+        "GL032",
+        "GL042",
+        "GL043",
+        "GL052",
+        "GL086",
+        "GL087",
+        "GL091",
+        "KETUX",
+        "LIXUG",
+        "SEDBU"
+      ],
+      "namedReferenceMissing": [
+        "RWY33"
+      ],
+      "referenceLegs": [
+        {
+          "start": "SEDBU",
+          "end": "LIXUG",
+          "course": 188,
+          "distanceNM": 5.5,
+          "matched": true
+        },
+        {
+          "start": "KETUX",
+          "end": "LIXUG",
+          "course": 277,
+          "distanceNM": 5.5,
+          "matched": true
+        },
+        {
+          "start": "LIXUG",
+          "end": "GL027",
+          "course": 257,
+          "distanceNM": 5.0,
+          "matched": true
+        },
+        {
+          "start": "GL027",
+          "end": "GL052",
+          "course": 257,
+          "distanceNM": 3.1,
+          "matched": true
+        },
+        {
+          "start": "GL052",
+          "end": "GL043",
+          "course": 257,
+          "distanceNM": 1.7,
+          "matched": true
+        },
+        {
+          "start": "GL032",
+          "end": "GL086",
+          "course": 91,
+          "distanceNM": 12.9,
+          "matched": true
+        },
+        {
+          "start": "GL086",
+          "end": "GL087",
+          "course": 97,
+          "distanceNM": 5.5,
+          "matched": false
+        }
+      ],
+      "referenceAltitudes": [
+        {
+          "point": "LIXUG",
+          "value": 2800,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": true
+        },
+        {
+          "point": "GL027",
+          "value": 2100,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": true
+        },
+        {
+          "point": "GL052",
+          "value": 1660,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": true
+        },
+        {
+          "point": "GL043",
+          "value": 1116,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": true
+        },
+        {
+          "point": "GL042",
+          "value": 543,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": true
+        }
+      ],
+      "pages": [
+        {
+          "page": 1,
+          "metadata": {
+            "icao": "SBGL",
+            "kind": "IAC",
+            "procedure": "RNP Z RWY 33",
+            "runway": "33",
+            "airport": "RIO DE JANEIRO / Galeão - Antônio Carlos Jobim, INTL (SBGL)",
+            "revision": "AIRAC AMDT 2311A1 02 NOV 23",
+            "publishedDate": "2023-11-02"
+          },
+          "textItems": 409,
+          "vectorOps": 19613,
+          "points": [
+            {
+              "name": "GL043",
+              "roles": [],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "PONTE",
+              "roles": [],
+              "coordinateState": "missing"
+            },
+            {
+              "name": "GL086",
+              "roles": [],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "GL087",
+              "roles": [],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "GL091",
+              "roles": [],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "GL032",
+              "roles": [],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "AFTER",
+              "roles": [],
+              "coordinateState": "missing"
+            },
+            {
+              "name": "KETUX",
+              "roles": [
+                "IAF",
+                "MAHF"
+              ],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "GL042",
+              "roles": [],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "GL052",
+              "roles": [
+                "FAF"
+              ],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "SEDBU",
+              "roles": [
+                "IAF"
+              ],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "GL027",
+              "roles": [],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "LIXUG",
+              "roles": [
+                "IF"
+              ],
+              "coordinateState": "resolved"
+            }
+          ],
+          "legs": [
+            {
+              "start": "p-KETUX",
+              "end": "p-LIXUG",
+              "type": "line",
+              "course": 277,
+              "distanceNM": 5.5
+            },
+            {
+              "start": "p-SEDBU",
+              "end": "p-LIXUG",
+              "type": "line",
+              "course": 188,
+              "distanceNM": 5.5
+            },
+            {
+              "start": "p-LIXUG",
+              "end": "p-GL027",
+              "type": "line",
+              "course": 257,
+              "distanceNM": 5
+            },
+            {
+              "start": "p-GL087",
+              "end": "p-KETUX",
+              "type": "line",
+              "course": 188,
+              "distanceNM": 7.5
+            },
+            {
+              "start": "p-GL027",
+              "end": "p-GL052",
+              "type": "line",
+              "course": 257,
+              "distanceNM": 3.1
+            },
+            {
+              "start": "p-GL032",
+              "end": "p-GL086",
+              "type": "line",
+              "course": 91,
+              "distanceNM": 12.9
+            },
+            {
+              "start": "p-GL052",
+              "end": "p-GL043",
+              "type": "line",
+              "course": 257,
+              "distanceNM": 1.7
+            }
+          ],
+          "nativeSegments": 7,
+          "criticalIssues": [
+            {
+              "id": "coordinate-p-PONTE",
+              "message": "Coordenada de PONTE não disponível com segurança."
+            },
+            {
+              "id": "coordinate-p-AFTER",
+              "message": "Coordenada de AFTER não disponível com segurança."
+            },
+            {
+              "id": "association-annotation-3",
+              "message": "A anotação publicada pode ligar mais de um par de pontos."
+            },
+            {
+              "id": "unassociated-annotation-6",
+              "message": "Curso/distância reconhecidos sem extremidades determinadas com segurança."
+            },
+            {
+              "id": "unassociated-annotation-8",
+              "message": "Curso/distância reconhecidos sem extremidades determinadas com segurança."
+            },
+            {
+              "id": "qualifier-vertical-p-GL086",
+              "message": "Qualificador da altitude de GL086 ainda não confirmado."
+            },
+            {
+              "id": "qualifier-vertical-p-GL087",
+              "message": "Qualificador da altitude de GL087 ainda não confirmado."
+            },
+            {
+              "id": "qualifier-vertical-p-AFTER",
+              "message": "Qualificador da altitude de AFTER ainda não confirmado."
+            },
+            {
+              "id": "qualifier-vertical-p-KETUX",
+              "message": "Qualificador da altitude de KETUX ainda não confirmado."
+            },
+            {
+              "id": "qualifier-vertical-p-SEDBU",
+              "message": "Qualificador da altitude de SEDBU ainda não confirmado."
+            },
+            {
+              "id": "qualifier-profile-p-GL043",
+              "message": "Qualificador da altitude de GL043 ainda não confirmado."
+            },
+            {
+              "id": "qualifier-profile-p-GL042",
+              "message": "Qualificador da altitude de GL042 ainda não confirmado."
+            },
+            {
+              "id": "qualifier-profile-p-GL052",
+              "message": "Qualificador da altitude de GL052 ainda não confirmado."
+            },
+            {
+              "id": "structure-holding",
+              "message": "Espera identificada: parâmetros e sequência ainda não determinados. Não foi substituída por polilinha."
+            },
+            {
+              "id": "runway-waypoint",
+              "message": "Referência de pista identificada. Não foi equiparada automaticamente a um MAPt ou waypoint sem coordenada publicada."
+            },
+            {
+              "id": "coverage-review",
+              "message": "Prévia parcial: símbolos, transições, aproximação perdida e cobertura integral ainda exigem conferência. Nenhuma missão foi alterada."
+            },
+            {
+              "id": "sequence-review",
+              "message": "Sequências múltiplas, incompletas ou cíclicas: nenhum ramo foi escolhido automaticamente."
+            }
+          ],
+          "verticalConstraints": [
+            {
+              "id": "vertical-p-GL086",
+              "entity": "p-GL086",
+              "value": 4000,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "below",
+              "evidenceIds": [
+                "page-1-text-324"
+              ],
+              "source": "chart-label",
+              "status": "extracted"
+            },
+            {
+              "id": "vertical-p-GL086",
+              "entity": "p-GL086",
+              "value": 600,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "unspecified",
+              "evidenceIds": [
+                "page-1-text-3",
+                "page-1-text-4",
+                "page-1-text-5",
+                "page-1-text-6"
+              ],
+              "source": "chart-label",
+              "status": "review"
+            },
+            {
+              "id": "vertical-p-GL087",
+              "entity": "p-GL087",
+              "value": 600,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "unspecified",
+              "evidenceIds": [
+                "page-1-text-3",
+                "page-1-text-4",
+                "page-1-text-5",
+                "page-1-text-6"
+              ],
+              "source": "chart-label",
+              "status": "review"
+            },
+            {
+              "id": "vertical-p-AFTER",
+              "entity": "p-AFTER",
+              "value": 600,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "unspecified",
+              "evidenceIds": [
+                "page-1-text-3",
+                "page-1-text-4",
+                "page-1-text-5",
+                "page-1-text-6"
+              ],
+              "source": "chart-label",
+              "status": "review"
+            },
+            {
+              "id": "vertical-p-KETUX",
+              "entity": "p-KETUX",
+              "value": 600,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "unspecified",
+              "evidenceIds": [
+                "page-1-text-3",
+                "page-1-text-4",
+                "page-1-text-5",
+                "page-1-text-6"
+              ],
+              "source": "chart-label",
+              "status": "review"
+            },
+            {
+              "id": "vertical-p-KETUX",
+              "entity": "p-KETUX",
+              "value": 5000,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "unspecified",
+              "evidenceIds": [
+                "page-1-text-325"
+              ],
+              "source": "chart-label",
+              "status": "review"
+            },
+            {
+              "id": "vertical-p-SEDBU",
+              "entity": "p-SEDBU",
+              "value": 5000,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "unspecified",
+              "evidenceIds": [
+                "page-1-text-329"
+              ],
+              "source": "chart-label",
+              "status": "review"
+            },
+            {
+              "id": "vertical-p-GL027",
+              "entity": "p-GL027",
+              "value": 2100,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "above",
+              "evidenceIds": [
+                "page-1-text-342"
+              ],
+              "source": "chart-label",
+              "status": "extracted"
+            },
+            {
+              "id": "vertical-p-LIXUG",
+              "entity": "p-LIXUG",
+              "value": 2800,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "above",
+              "evidenceIds": [
+                "page-1-text-346"
+              ],
+              "source": "chart-label",
+              "status": "extracted"
+            },
+            {
+              "id": "profile-p-GL043",
+              "entity": "p-GL043",
+              "value": 1116,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "unspecified",
+              "evidenceIds": [
+                "page-1-text-247",
+                "page-1-text-257"
+              ],
+              "source": "chart-profile",
+              "status": "review"
+            },
+            {
+              "id": "profile-p-GL042",
+              "entity": "p-GL042",
+              "value": 543,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "unspecified",
+              "evidenceIds": [
+                "page-1-text-246",
+                "page-1-text-256"
+              ],
+              "source": "chart-profile",
+              "status": "review"
+            },
+            {
+              "id": "profile-p-GL052",
+              "entity": "p-GL052",
+              "value": 1660,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "unspecified",
+              "evidenceIds": [
+                "page-1-text-248",
+                "page-1-text-251"
+              ],
+              "source": "chart-profile",
+              "status": "review"
+            },
+            {
+              "id": "gradient-12",
+              "value": 5.2,
+              "unit": "percent",
+              "scope": "unresolved",
+              "evidenceIds": [
+                "page-1-text-291",
+                "page-1-text-292",
+                "page-1-text-293",
+                "page-1-text-294",
+                "page-1-text-295",
+                "page-1-text-296",
+                "page-1-text-297",
+                "page-1-text-298",
+                "page-1-text-299",
+                "page-1-text-300"
+              ],
+              "type": "climb-or-descent-gradient",
+              "status": "review"
+            }
+          ],
+          "validated": false
+        }
+      ]
+    },
+    {
+      "file": "sbgl_vor-y-rwy-15_iac_20241003.pdf",
+      "sha256": "7c0d5251426951f43ed24741e9f43f5c261a2dd86d984f4b4bd2001065d93abf",
+      "namedReferenceFound": [],
+      "namedReferenceMissing": [
+        "CXI",
+        "SISER",
+        "SOTNU",
+        "UMBEV",
+        "UMGTI",
+        "UTKUP"
+      ],
+      "referenceLegs": [
+        {
+          "start": "SOTNU",
+          "end": "UMGTI",
+          "course": 155,
+          "distanceNM": 6.5,
+          "matched": false
+        }
+      ],
+      "referenceAltitudes": [
+        {
+          "point": "UMBEV",
+          "value": 6000,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": false
+        },
+        {
+          "point": "SOTNU",
+          "value": 3300,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": false
+        },
+        {
+          "point": "UMGTI",
+          "value": 1660,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": false
+        },
+        {
+          "point": "UTKUP",
+          "value": 3000,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": false
+        },
+        {
+          "point": "SISER",
+          "value": 5000,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": false
+        }
+      ],
+      "pages": [
+        {
+          "page": 1,
+          "metadata": {
+            "icao": "SBGL",
+            "kind": "IAC",
+            "procedure": "VOR Y RWY 15",
+            "runway": "15",
+            "airport": "RIO DE JANEIRO / Galeão - Antônio Carlos Jobim, INTL (SBGL)",
+            "revision": "AIRAC AMDT 2410A1 03 OCT 24",
+            "publishedDate": "2024-10-03"
+          },
+          "textItems": 397,
+          "vectorOps": 27591,
+          "points": [],
+          "legs": [],
+          "nativeSegments": 0,
+          "criticalIssues": [
+            {
+              "id": "layout-missing",
+              "message": "Limites do plano horizontal não reconhecidos. Associação geométrica automática suspensa."
+            },
+            {
+              "id": "structure-holding",
+              "message": "Espera identificada: parâmetros e sequência ainda não determinados. Não foi substituída por polilinha."
+            },
+            {
+              "id": "coverage-review",
+              "message": "Prévia parcial: símbolos, transições, aproximação perdida e cobertura integral ainda exigem conferência. Nenhuma missão foi alterada."
+            },
+            {
+              "id": "sequence-review",
+              "message": "Sequências múltiplas, incompletas ou cíclicas: nenhum ramo foi escolhido automaticamente."
+            }
+          ],
+          "verticalConstraints": [
+            {
+              "id": "gradient-0",
+              "value": 5,
+              "unit": "percent",
+              "scope": "unresolved",
+              "evidenceIds": [
+                "page-1-text-64",
+                "page-1-text-313",
+                "page-1-text-68",
+                "page-1-text-314"
+              ],
+              "type": "climb-or-descent-gradient",
+              "status": "review"
+            },
+            {
+              "id": "gradient-1",
+              "value": 5,
+              "unit": "percent",
+              "scope": "unresolved",
+              "evidenceIds": [
+                "page-1-text-316",
+                "page-1-text-65",
+                "page-1-text-317",
+                "page-1-text-66",
+                "page-1-text-318"
+              ],
+              "type": "climb-or-descent-gradient",
+              "status": "review"
+            },
+            {
+              "id": "gradient-2",
+              "value": 5.2,
+              "unit": "percent",
+              "scope": "unresolved",
+              "evidenceIds": [
+                "page-1-text-327",
+                "page-1-text-328",
+                "page-1-text-329",
+                "page-1-text-330",
+                "page-1-text-331",
+                "page-1-text-332",
+                "page-1-text-333",
+                "page-1-text-334",
+                "page-1-text-335",
+                "page-1-text-336"
+              ],
+              "type": "climb-or-descent-gradient",
+              "status": "review"
+            }
+          ],
+          "validated": false
+        }
+      ]
+    },
+    {
+      "file": "sbgl_ils-t-or-loc-t-rwy-10_iac_20250710.pdf",
+      "sha256": "ae8394d5a863fabbb0bcf868a429a158f773ef47dbf23d4c9bed95703c228eab",
+      "namedReferenceFound": [
+        "BITOX",
+        "CXI",
+        "GAVUG",
+        "GL167",
+        "ITB",
+        "PCX",
+        "SUNSI"
+      ],
+      "namedReferenceMissing": [
+        "GL008"
+      ],
+      "referenceLegs": [
+        {
+          "start": "BITOX",
+          "end": "SUNSI",
+          "course": 97,
+          "distanceNM": 6.8,
+          "matched": true
+        },
+        {
+          "start": "GAVUG",
+          "end": "GL167",
+          "course": 97,
+          "distanceNM": 5.7,
+          "matched": true
+        }
+      ],
+      "referenceAltitudes": [
+        {
+          "point": "BITOX",
+          "value": 6400,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": true
+        },
+        {
+          "point": "SUNSI",
+          "value": 3900,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": true
+        },
+        {
+          "point": "GAVUG",
+          "value": 3500,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": true
+        },
+        {
+          "point": "GL008",
+          "value": 2800,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": false
+        },
+        {
+          "point": "GL167",
+          "value": 1670,
+          "unit": "FT",
+          "reference": "MSL",
+          "matched": true
+        }
+      ],
+      "pages": [
+        {
+          "page": 1,
+          "metadata": {
+            "icao": "SBGL",
+            "kind": "IAC",
+            "procedure": "ILS T OR LOC T RWY 10",
+            "runway": "10",
+            "airport": "RIO DE JANEIRO / Galeão - Antônio Carlos Jobim, INTL (SBGL)",
+            "revision": "AIRAC AMDT 2507A1 10 JUL 25",
+            "publishedDate": "2025-07-10"
+          },
+          "textItems": 420,
+          "vectorOps": 22692,
+          "points": [
+            {
+              "name": "BITOX",
+              "roles": [
+                "IAF"
+              ],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "GL167",
+              "roles": [
+                "FAF"
+              ],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "GAVUG",
+              "roles": [
+                "IF"
+              ],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "ITB",
+              "roles": [],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "SUNSI",
+              "roles": [],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "PCX",
+              "roles": [],
+              "coordinateState": "resolved"
+            },
+            {
+              "name": "CXI",
+              "roles": [],
+              "coordinateState": "resolved"
+            }
+          ],
+          "legs": [
+            {
+              "start": "p-BITOX",
+              "end": "p-SUNSI",
+              "type": "line",
+              "course": 97,
+              "distanceNM": 6.8
+            },
+            {
+              "start": "p-GAVUG",
+              "end": "p-GL167",
+              "type": "line",
+              "course": 97,
+              "distanceNM": 5.7
+            },
+            {
+              "start": "p-SUNSI",
+              "end": "p-GAVUG",
+              "type": "line",
+              "course": 97,
+              "distanceNM": 1.5
+            }
+          ],
+          "nativeSegments": 3,
+          "criticalIssues": [
+            {
+              "id": "conflict-annotation-2",
+              "message": "Distância publicada incompatível com as coordenadas candidatas. Nenhum fixo foi deslocado."
+            },
+            {
+              "id": "qualifier-vertical-p-BITOX",
+              "message": "Qualificador da altitude de BITOX ainda não confirmado."
+            },
+            {
+              "id": "qualifier-vertical-p-GAVUG",
+              "message": "Qualificador da altitude de GAVUG ainda não confirmado."
+            },
+            {
+              "id": "qualifier-vertical-p-SUNSI",
+              "message": "Qualificador da altitude de SUNSI ainda não confirmado."
+            },
+            {
+              "id": "qualifier-vertical-p-CXI",
+              "message": "Qualificador da altitude de CXI ainda não confirmado."
+            },
+            {
+              "id": "qualifier-profile-p-GL167",
+              "message": "Qualificador da altitude de GL167 ainda não confirmado."
+            },
+            {
+              "id": "structure-holding",
+              "message": "Espera identificada: parâmetros e sequência ainda não determinados. Não foi substituída por polilinha."
+            },
+            {
+              "id": "coverage-review",
+              "message": "Prévia parcial: símbolos, transições, aproximação perdida e cobertura integral ainda exigem conferência. Nenhuma missão foi alterada."
+            }
+          ],
+          "verticalConstraints": [
+            {
+              "id": "vertical-p-BITOX",
+              "entity": "p-BITOX",
+              "value": 6400,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "unspecified",
+              "evidenceIds": [
+                "page-1-text-198"
+              ],
+              "source": "chart-label",
+              "status": "review"
+            },
+            {
+              "id": "vertical-p-GAVUG",
+              "entity": "p-GAVUG",
+              "value": 3500,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "unspecified",
+              "evidenceIds": [
+                "page-1-text-415"
+              ],
+              "source": "chart-label",
+              "status": "review"
+            },
+            {
+              "id": "vertical-p-SUNSI",
+              "entity": "p-SUNSI",
+              "value": 3900,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "unspecified",
+              "evidenceIds": [
+                "page-1-text-232"
+              ],
+              "source": "chart-label",
+              "status": "review"
+            },
+            {
+              "id": "vertical-p-CXI",
+              "entity": "p-CXI",
+              "value": 170,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "unspecified",
+              "evidenceIds": [
+                "page-1-text-229"
+              ],
+              "source": "chart-label",
+              "status": "review"
+            },
+            {
+              "id": "profile-p-GL167",
+              "entity": "p-GL167",
+              "value": 1670,
+              "unit": "FT",
+              "reference": "MSL",
+              "qualifier": "unspecified",
+              "evidenceIds": [
+                "page-1-text-39",
+                "page-1-text-41"
+              ],
+              "source": "chart-profile",
+              "status": "review"
+            },
+            {
+              "id": "gradient-5",
+              "value": 5.2,
+              "unit": "percent",
+              "scope": "unresolved",
+              "evidenceIds": [
+                "page-1-text-396",
+                "page-1-text-397",
+                "page-1-text-398",
+                "page-1-text-399",
+                "page-1-text-400",
+                "page-1-text-401",
+                "page-1-text-402",
+                "page-1-text-403",
+                "page-1-text-404",
+                "page-1-text-405"
+              ],
+              "type": "climb-or-descent-gradient",
+              "status": "review"
+            }
+          ],
+          "validated": false
+        }
+      ]
+    }
+  ],
+  "databaseSha256": "c3291a53e3987513d2a4277e4496a5ec92f2d0dbe6290c8ea9324c874107c317"
+}

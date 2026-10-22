@@ -1,3 +1,4 @@
+import {labelType, roleNames, roleSupports, altitudeSupports, altitudeBar} from './semantics.mjs';
 import {interpret, center, supportedLayout} from './decea.mjs';
 import {resolveEntity} from './aeronautical.mjs';
 import {inverse, destination, position, normalize, angleDifference} from './geodesy.mjs';
@@ -8,7 +9,6 @@ export const MODEL_SCHEMA='ivplanner-chart-geometry-v1';
 const norm=value=>String(value||'').trim().toUpperCase();
 const id=value=>norm(value).replace(/[^A-Z0-9_-]/g,'_');
 const issue=(id,category,message,entities=[],extra={})=>({id,category,message,entities,critical:true,...extra});
-function occurrences(name,runs){return runs.filter(run=>new RegExp('(^|[^A-Z0-9])'+name+'([^A-Z0-9]|$)').test(norm(run.text)));}
 function temporal(source,date){return !!date && ((source.validFrom&&source.validFrom.slice(0,10)>date)||(source.validTo&&source.validTo.slice(0,10)<date));}
 export function validateModel(model) {
   if(!model||model.schema!==MODEL_SCHEMA||!['ndb','procedimentos'].includes(model.module)||!Array.isArray(model.points)||!Array.isArray(model.legs)||model.points.length>500||model.legs.length>700)throw Error('Modelo intermediário incompatível.');
@@ -66,15 +66,15 @@ export function reconstruct(session,database) {
   const airports=officialAirports.length?officialAirports:fallback,airport=airports.length===1?airports[0]:null;
   if(!airport)issues.push(issue('airport-context','ambiguity','Localidade de referência ausente ou ambígua; a associação espacial automática foi suspensa.'));
   const knownNames=new Set(database.entities.map(p=>p.name)),names=new Set(),aidNames=new Map();
-  for(const aid of interpreted.aids)aidNames.set(aid.name,aid);
+  for(const aid of interpreted.aids)if(interpreted.plan.some(r=>r.evidenceIds.some(e=>aid.evidenceIds.includes(e)))){aidNames.set(aid.name,aid);names.add(aid.name);}
   for(const publication of interpreted.positions)names.add(publication.name);
-  for(const run of interpreted.plan) for(const name of norm(run.text).match(/[A-Z][A-Z0-9]{1,5}/g)||[])if(knownNames.has(name)||aidNames.has(name))names.add(name);
-  const roles=interpreted.plan.filter(r=>/^\(?(?:IAF|IF|FAF|FAP|MAPT|MAHF|DER)(?:\/(?:IAF|IF|FAF|FAP|MAPT|MAHF|DER))*\)?$/.test(norm(r.text)));
-  // Retain role-associated identifiers missing from the installed database.
-  for(const role of roles){const c=center(role.bbox),near=interpreted.plan.filter(r=>/^[A-Z]{3,5}\d{0,3}$/.test(norm(r.text))&&!/^(?:IAF|FAF|FAP|MAPT|MAHF|NOTES|SCALE|NATAL)$/.test(norm(r.text))).map(r=>({r,d:Math.hypot(center(r.bbox).x-c.x,center(r.bbox).y-c.y)})).filter(v=>v.d<18).sort((a,b)=>a.d-b.d);if(near[0])names.add(norm(near[0].r.text));}
+  for(const run of interpreted.plan)if(labelType(run)==='identifier-candidate'&&(knownNames.has(norm(run.text))||aidNames.has(norm(run.text))))names.add(norm(run.text));
+  const roles=interpreted.plan.filter(r=>roleNames(r).length);
+  // Missing database entries need a function-label association, not merely a nearby word.
+  for(const role of roles){const near=interpreted.plan.filter(r=>roleSupports(role,r)).map(r=>({r,d:Math.hypot(center(r.bbox).x-center(role.bbox).x,center(r.bbox).y-center(role.bbox).y)})).sort((a,b)=>a.d-b.d);if(near[0]&&(!near[1]||near[1].d-near[0].d>role.height*.25))names.add(norm(near[0].r.text));}
   const layout=new Map();
   for(const name of names){
-    const seen=occurrences(name,interpreted.plan),aid=aidNames.get(name),resolution=airport?resolveEntity(name,database,{type:aid?.type,frequency:aid?.frequency,airport}):{status:'missing',candidates:[]};
+    const aid=aidNames.get(name),seen=interpreted.plan.filter(r=>(labelType(r)==='identifier-candidate'&&norm(r.text)===name)||(aid&&r.evidenceIds.some(e=>aid.evidenceIds.includes(e)))),resolution=airport?resolveEntity(name,database,{type:aid?.type,frequency:aid?.frequency,airport}):{status:'missing',candidates:[]};
     const pointId='p-'+id(name),point={id:pointId,name,kind:aid?'aid':'fix',roles:[],position:null,coordinateState:resolution.status,coordinateSource:null,evidenceIds:seen.flatMap(r=>r.evidenceIds),candidates:resolution.candidates};
     if(resolution.status==='resolved'){
       const row=resolution.candidates[0];point.position={...row.position};point.coordinateSource={...row.source,originalPosition:{...row.position}};point.kind=row.type;point.candidates=[];
@@ -88,15 +88,15 @@ export function reconstruct(session,database) {
         const missing=issues.findIndex(i=>i.id==='coordinate-'+pointId);if(missing>=0)issues.splice(missing,1);
       }else issues.push(issue('published-coordinate-'+pointId,unique.length>1?'ambiguity':'missing',unique.length>1?'Coordenadas publicadas conflitantes para '+name+'.':'Datum da coordenada publicada não identificado para '+name+'.',[pointId]));
     }
+    point.labelEvidence=seen.map(r=>({type:labelType(r),evidenceIds:r.evidenceIds}));
     const maxHeight=Math.max(...seen.map(r=>r.height),0),main=seen.filter(r=>r.height>=maxHeight*.85);
-    for(const occurrence of main.filter(r=>norm(r.text)===name)){const c=center(occurrence.bbox);for(const role of roles){const rc=center(role.bbox);if(Math.hypot(rc.x-c.x,rc.y-c.y)<Math.max(16,occurrence.height*2.5))point.roles.push(...norm(role.text).replace(/[()]/g,'').split('/'));}}
+    for(const occurrence of main.filter(r=>norm(r.text)===name))for(const role of roles)if(roleSupports(role,occurrence))point.roles.push(...roleNames(role));
     point.roles=[...new Set(point.roles)];
     // Under/overlines carry published altitude semantics; absence is not silently 'at'.
-    for(const occurrence of main){const b=occurrence.bbox,c=center(b);const nearby=interpreted.plan.filter(r=>/^\d{3,5}['’]$/.test(r.text)&&r.bbox[1]>=b[1]+b[3]-1&&r.bbox[1]<=b[1]+b[3]+22&&Math.abs(center(r.bbox).x-c.x)<Math.max(b[2]/2,12));
-      if(nearby.length===1){const alt=nearby[0],ab=alt.bbox,span=line=>Math.min(line.a.x,line.b.x)<=ab[0]+ab[2]*.2&&Math.max(line.a.x,line.b.x)>=ab[0]+ab[2]*.8;
-        const below=interpreted.lines.some(l=>span(l)&&l.a.y>=ab[1]+ab[3]-1&&l.a.y<=ab[1]+ab[3]+2.5),above=interpreted.lines.some(l=>span(l)&&l.a.y>=ab[1]-2.5&&l.a.y<=ab[1]+1);
+    for(const occurrence of main){const nearby=interpreted.plan.filter(r=>altitudeSupports(occurrence,r,{roles,lines:interpreted.lines,aid:!!aid}));
+      if(nearby.length===1){const alt=nearby[0],bars=interpreted.lines.map(l=>altitudeBar(l,alt)),below=bars.includes('below'),above=bars.includes('above');
         const qualifier=below&&above?'at':below?'above':above?'below':'unspecified';
-        if(!model.verticalConstraints.some(r=>r.entity===pointId&&r.value===parseInt(alt.text)))model.verticalConstraints.push({id:'vertical-'+pointId,entity:pointId,value:parseInt(alt.text),unit:'FT',reference:'MSL',qualifier,evidenceIds:alt.evidenceIds,source:'chart-label',status:qualifier==='unspecified'?'review':'extracted'});
+        if(!model.verticalConstraints.some(r=>r.entity===pointId&&r.value===parseInt(alt.text)))model.verticalConstraints.push({id:'vertical-'+pointId+(model.verticalConstraints.some(r=>r.entity===pointId)?'-'+parseInt(alt.text):''),entity:pointId,value:parseInt(alt.text),unit:'FT',reference:'MSL',qualifier,evidenceIds:alt.evidenceIds,source:'chart-label',status:qualifier==='unspecified'?'review':'extracted'});
       }else if(nearby.length>1)issues.push(issue('altitude-'+pointId,'ambiguity','Mais de uma altitude próxima de '+name+'. Associação vertical pendente.',[pointId]));
     }
     layout.set(pointId,seen);model.points.push(point);
@@ -106,7 +106,7 @@ export function reconstruct(session,database) {
   if(interpreted.frame){
     const bottom=interpreted.frame.bbox[1]+interpreted.frame.bbox[3],profile=interpreted.runs.filter(r=>r.bbox[1]>bottom&&r.bbox[1]<bottom+extraction.height*.13);
     for(const p of model.points)for(const label of profile.filter(r=>norm(r.text)===p.name)){
-      const c=center(label.bbox),near=profile.filter(r=>/^\d{3,5}['’]$/.test(r.text)&&r.bbox[1]>label.bbox[1]&&r.bbox[1]<label.bbox[1]+60&&Math.abs(center(r.bbox).x-c.x)<Math.max(18,label.bbox[2]*.7));
+      const c=center(label.bbox),near=profile.filter(r=>/^\d{3,5}['’]$/.test(r.text)&&r.bbox[1]>label.bbox[1]&&r.bbox[1]<label.bbox[1]+label.height*4&&Math.abs(center(r.bbox).x-c.x)<Math.max(18,label.bbox[2]*.7));
       const values=[...new Map(near.map(r=>[parseInt(r.text),r])).entries()];
       if(values.length===1){const [value,alt]=values[0],prior=model.verticalConstraints.find(r=>r.entity===p.id);
         if(prior&&prior.value!==value)issues.push(issue('profile-altitude-'+p.id,'inconsistency','Altitudes do plano e do perfil divergem em '+p.name+'.',[p.id]));
@@ -115,7 +115,7 @@ export function reconstruct(session,database) {
     }
   }
   for(const r of model.verticalConstraints)if(r.qualifier==='unspecified')issues.push(issue('qualifier-'+r.id,'ambiguity','Qualificador da altitude de '+model.points.find(p=>p.id===r.entity)?.name+' ainda não confirmado.',[r.entity]));
-  for(const structure of recognition.structures.filter(s=>s.type!=='radial')){model.structures.push({...structure,status:'unresolved'});issues.push(issue('structure-'+structure.type,'missing',structure.type==='dme-arc'?'Arco DME identificado: centro, extremidades, varredura e sentido precisam de associação confirmada. Não foi substituído por reta.':'Espera identificada: parâmetros e sequência ainda não determinados. Não foi substituída por polilinha.',[],{evidenceIds:structure.evidenceIds}));}
+  for(const structure of recognition.structures.filter(s=>s.type!=='radial')){model.structures.push({...structure,status:'unresolved'});issues.push(issue('structure-'+structure.type,'missing',structure.type==='dme-arc'?'Arco DME identificado: centro, extremidades, varredura e sentido precisam de associação confirmada. Não foi substituído por reta.':structure.type==='rf-leg'?'Curva RF identificada: parâmetros e associação ainda não determinados. Não foi equiparada a arco DME nem substituída por reta.':'Espera identificada: parâmetros e sequência ainda não determinados. Não foi substituída por polilinha.',[],{evidenceIds:structure.evidenceIds}));}
   for(const gradient of interpreted.gradients)model.verticalConstraints.push({id:'gradient-'+model.verticalConstraints.length,...gradient,type:'climb-or-descent-gradient',status:'review'});
   // A runway-named waypoint is not automatically the runway threshold (MAPt may differ).
   if(!model.profileReferences?.some(p=>model.points.some(point=>point.name===p.target&&point.position))&&/\bRW(?:Y)?\s?\d{2}[LRC]?\b/.test(interpreted.plan.map(r=>r.text).join(' ')))issues.push(issue('runway-waypoint','missing','Referência de pista identificada. Não foi equiparada automaticamente a um MAPt ou waypoint sem coordenada publicada.'));

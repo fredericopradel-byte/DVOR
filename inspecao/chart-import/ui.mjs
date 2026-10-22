@@ -103,7 +103,7 @@ function showSummary() {
   node('p', summary, 'Navegação identificada no título: ' + (recognition.navigation.join(' / ') || 'Não determinada'));
   if (recognition.aids.length) node('p', summary, 'Auxílios candidatos no texto: ' + recognition.aids.map(a => a.ident + ' · ' + a.frequency + ' ' + a.unit).join('; ') + '. Confira associações e pendências abaixo.');
   node('p', summary, 'Requisitos publicados identificados: ' + (recognition.requirements.map(r => r.value).join(' · ') || 'Nenhum identificado no texto'));
-  if (recognition.structures.length) node('p', summary, 'Indícios textuais: ' + recognition.structures.map(s => ({'dme-arc': 'arco DME', holding: 'espera', radial: 'radiais'})[s.type]).join(', ') + '. Topologia e geometria ainda não interpretadas.');
+  if (recognition.structures.length) node('p', summary, 'Indícios textuais: ' + recognition.structures.map(s => ({'dme-arc': 'arco DME', holding: 'espera', radial: 'radiais', 'rf-leg': 'curva RF'})[s.type]).join(', ') + '. Topologia e geometria ainda não interpretadas.');
   node('p', summary, 'Vigência não verificada. A data publicada não comprova que esta carta esteja vigente.', {class: 'ci-warning'});
   const pending = node('details', summary);node('summary', pending, 'Pendências · ' + issues.length);
   const list = node('ul', pending);
@@ -217,7 +217,7 @@ rebuildButton.onclick=async()=>{
   try{const database=await loadLocalDatabase();if(token!==generation)return;
     if(session.reconstruction?.reviewWork?.nodes.length){message('Este rascunho tem respostas registradas. Use Resolver pendências para corrigi-las ou importe novamente para iniciar outra reconstrução. Histórico preservado.',true);return;}
     if(session.reconstruction&&!database.available){message('Base estruturada indisponível. A prévia salva foi preservada.',true);return;}
-    const model=reconstruct(session,database);if(session.reconstruction)(session.previousReconstructions??=[]).push(session.reconstruction);session.reconstruction=model;persisted=false;showSummary();await persist(token);
+    const recognition=recognize(session.extraction),model=reconstruct({...session,recognition},database);session.recognition=recognition;if(session.reconstruction)(session.previousReconstructions??=[]).push(session.reconstruction);session.reconstruction=model;persisted=false;showSummary();await persist(token);
   }catch(error){if(token===generation)message(error.message,true);}finally{if(token===generation)setBusy(false);}
 };
 exportButton.onclick = async () => {

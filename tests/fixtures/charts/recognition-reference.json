@@ -1,0 +1,487 @@
+{
+  "schema": "ivplanner-recognition-reference-v1",
+  "baselineTree": "9d9e43acd9c838489f2c7e56a00b02d53f31788f",
+  "source": "Owner-supplied historical DECEA charts; no currency assertion",
+  "scope": "Four manually inspected cases, five PDF pages. Partial verifiable reference, not complete geometric ground truth; no percentage of full-chart recognition can be inferred.",
+  "coordinates": "No chart-pixel geographic coordinates. Courses/distances manually transcribed; official coordinates not independently verified.",
+  "split": "All four cases are diagnostic/development. Other SBGL variants are not independent holdout; reserve other airports/families before evaluating generalization.",
+  "cases": [
+    {
+      "file": "sbgl_rnp-a-rwy-33_iac_20240613.pdf",
+      "pages": 2,
+      "title": "RNP A RWY 33",
+      "date": "2024-06-13",
+      "points": [
+        "SEDBU",
+        "KETUX",
+        "LIXUG",
+        "GL027",
+        "GL053",
+        "GL091",
+        "GL086",
+        "GL087"
+      ],
+      "legs": [
+        [
+          "SEDBU",
+          "LIXUG",
+          188,
+          5.5
+        ],
+        [
+          "KETUX",
+          "LIXUG",
+          277,
+          5.5
+        ],
+        [
+          "LIXUG",
+          "GL027",
+          257,
+          5.0
+        ],
+        [
+          "GL027",
+          "GL053",
+          257,
+          4.3
+        ],
+        [
+          "GL086",
+          "GL087",
+          97,
+          5.5
+        ]
+      ],
+      "markers": [
+        "TRAJETÓRIA VISUAL DEFINIDA",
+        "IAS MAX 160",
+        "JOAO GOULART"
+      ],
+      "features": [
+        "visual-prescribed-track",
+        "multi-page-procedure",
+        "missed-approach",
+        "holding"
+      ],
+      "evidence": [
+        {
+          "page": 1,
+          "region": [
+            0.06,
+            0.17,
+            0.96,
+            0.26
+          ],
+          "description": "Aproximação perdida com GL091, GL086, GL087 e KETUX; 4000 e 5000 ft."
+        },
+        {
+          "page": 1,
+          "region": [
+            0.06,
+            0.26,
+            0.96,
+            0.78
+          ],
+          "description": "Planta e perfil: GL027 a GL053 257°/4.3 NM; distâncias do perfil relativas ao MAPt."
+        },
+        {
+          "page": 2,
+          "region": [
+            0.06,
+            0.13,
+            0.96,
+            0.96
+          ],
+          "description": "TVD, limite 160 KT, referências visuais e arremetida com condição de gradiente de 10%; não substituir pela distância direta entre extremos."
+        }
+      ],
+      "sha256": "36d2dd860ddffaa772bfa17edaf411df92c7b3d72cdcbdb7556c49b6cff116f7",
+      "icao": "SBGL",
+      "kind": "IAC",
+      "courseReference": "magnetic",
+      "referenceStatus": "manual-visual-transcription-not-operational-certification",
+      "pointsScope": "Named reference subset, not exhaustive chart or expected coordinate inventory",
+      "legsScope": "Published straight-segment subset; never use these endpoints to flatten visual/RF/holding trajectories",
+      "altitudeValues": [
+        {
+          "point": "LIXUG",
+          "value": 2800,
+          "unit": "FT",
+          "reference": "MSL"
+        },
+        {
+          "point": "GL027",
+          "value": 2100,
+          "unit": "FT",
+          "reference": "MSL"
+        },
+        {
+          "point": "GL091",
+          "value": 1900,
+          "unit": "FT",
+          "reference": "MSL"
+        },
+        {
+          "point": "KETUX",
+          "value": 5000,
+          "unit": "FT",
+          "reference": "MSL"
+        }
+      ],
+      "altitudeScope": "Numeric association subset only; qualifier, conditional scope, minima and full vertical trajectory must be assessed separately.",
+      "regressionFloor": {
+        "matchedReferenceLegs": 5,
+        "matchedAltitudeValues": 4
+      }
+    },
+    {
+      "file": "sbgl_rnp-z-rwy-33--ar-_iac_20231102.pdf",
+      "pages": 1,
+      "title": "RNP Z RWY 33 (AR)",
+      "date": "2023-11-02",
+      "points": [
+        "SEDBU",
+        "KETUX",
+        "LIXUG",
+        "GL027",
+        "GL052",
+        "GL043",
+        "GL042",
+        "RWY33",
+        "GL091",
+        "GL032",
+        "GL086",
+        "GL087"
+      ],
+      "legs": [
+        [
+          "SEDBU",
+          "LIXUG",
+          188,
+          5.5
+        ],
+        [
+          "KETUX",
+          "LIXUG",
+          277,
+          5.5
+        ],
+        [
+          "LIXUG",
+          "GL027",
+          257,
+          5.0
+        ],
+        [
+          "GL027",
+          "GL052",
+          257,
+          3.1
+        ],
+        [
+          "GL052",
+          "GL043",
+          257,
+          1.7
+        ],
+        [
+          "GL032",
+          "GL086",
+          91,
+          12.9
+        ],
+        [
+          "GL086",
+          "GL087",
+          97,
+          5.5
+        ]
+      ],
+      "markers": [
+        "RNP AR APCH",
+        "RF REQ",
+        "AUTORIZAÇÃO ESPECIAL"
+      ],
+      "features": [
+        "rf-required",
+        "special-authorization",
+        "curved-final",
+        "missed-approach",
+        "holding"
+      ],
+      "evidence": [
+        {
+          "page": 1,
+          "region": [
+            0.06,
+            0.17,
+            0.96,
+            0.63
+          ],
+          "description": "Planta: RF REQ; final com curva entre GL043 e GL042, seguida de alinhamento 329°; curva não é uma reta nem um arco DME por inferência."
+        },
+        {
+          "page": 1,
+          "region": [
+            0.06,
+            0.63,
+            0.96,
+            0.96
+          ],
+          "description": "Perfil relativo à THR33: GL052 5.0 NM/1660 ft; GL043 3.3 NM/1116 ft; GL042 FROP 1.5 NM/543 ft; DA 381 ft, autorização especial."
+        }
+      ],
+      "sha256": "c29c1afac1d86d766c94791e5400a4394742a16d0d52205629d50005769be73e",
+      "icao": "SBGL",
+      "kind": "IAC",
+      "courseReference": "magnetic",
+      "referenceStatus": "manual-visual-transcription-not-operational-certification",
+      "pointsScope": "Named reference subset, not exhaustive chart or expected coordinate inventory",
+      "legsScope": "Published straight-segment subset; never use these endpoints to flatten visual/RF/holding trajectories",
+      "altitudeValues": [
+        {
+          "point": "LIXUG",
+          "value": 2800,
+          "unit": "FT",
+          "reference": "MSL"
+        },
+        {
+          "point": "GL027",
+          "value": 2100,
+          "unit": "FT",
+          "reference": "MSL"
+        },
+        {
+          "point": "GL052",
+          "value": 1660,
+          "unit": "FT",
+          "reference": "MSL"
+        },
+        {
+          "point": "GL043",
+          "value": 1116,
+          "unit": "FT",
+          "reference": "MSL"
+        },
+        {
+          "point": "GL042",
+          "value": 543,
+          "unit": "FT",
+          "reference": "MSL"
+        }
+      ],
+      "altitudeScope": "Numeric association subset only; qualifier, conditional scope, minima and full vertical trajectory must be assessed separately.",
+      "regressionFloor": {
+        "matchedReferenceLegs": 7,
+        "matchedAltitudeValues": 5
+      }
+    },
+    {
+      "file": "sbgl_vor-y-rwy-15_iac_20241003.pdf",
+      "pages": 1,
+      "title": "VOR Y RWY 15",
+      "date": "2024-10-03",
+      "points": [
+        "UMBEV",
+        "SOTNU",
+        "UMGTI",
+        "UTKUP",
+        "SISER",
+        "CXI"
+      ],
+      "legs": [
+        [
+          "SOTNU",
+          "UMGTI",
+          155,
+          6.5
+        ]
+      ],
+      "markers": [
+        "DME REQ",
+        "SBR330",
+        "5%"
+      ],
+      "features": [
+        "radial-dme",
+        "holding",
+        "missed-approach",
+        "dual-distance-reference"
+      ],
+      "evidence": [
+        {
+          "page": 1,
+          "region": [
+            0.06,
+            0.17,
+            0.96,
+            0.65
+          ],
+          "description": "UMBEV D11.8 CXI, órbita 128°/308°; SISER D23 CXI, órbita 295°/115°; perdida RDL115 CXI via UTKUP, subida 5000 ft e gradiente mínimo 5%."
+        },
+        {
+          "page": 1,
+          "region": [
+            0.06,
+            0.65,
+            0.96,
+            0.91
+          ],
+          "description": "Perfil com duas escalas: SOTNU 11.5 NM THR/11.8 DME CXI; UMGTI 5.0/5.3; THR 0.0/0.3. MAPt D1.3 CXI não é cabeceira. MDA500 ft."
+        }
+      ],
+      "sha256": "7c0d5251426951f43ed24741e9f43f5c261a2dd86d984f4b4bd2001065d93abf",
+      "icao": "SBGL",
+      "kind": "IAC",
+      "courseReference": "magnetic",
+      "referenceStatus": "manual-visual-transcription-not-operational-certification",
+      "pointsScope": "Named reference subset, not exhaustive chart or expected coordinate inventory",
+      "legsScope": "Published straight-segment subset; never use these endpoints to flatten visual/RF/holding trajectories",
+      "altitudeValues": [
+        {
+          "point": "UMBEV",
+          "value": 6000,
+          "unit": "FT",
+          "reference": "MSL"
+        },
+        {
+          "point": "SOTNU",
+          "value": 3300,
+          "unit": "FT",
+          "reference": "MSL"
+        },
+        {
+          "point": "UMGTI",
+          "value": 1660,
+          "unit": "FT",
+          "reference": "MSL"
+        },
+        {
+          "point": "UTKUP",
+          "value": 3000,
+          "unit": "FT",
+          "reference": "MSL"
+        },
+        {
+          "point": "SISER",
+          "value": 5000,
+          "unit": "FT",
+          "reference": "MSL"
+        }
+      ],
+      "altitudeScope": "Numeric association subset only; qualifier, conditional scope, minima and full vertical trajectory must be assessed separately.",
+      "regressionFloor": {
+        "matchedReferenceLegs": 1,
+        "matchedAltitudeValues": 4
+      }
+    },
+    {
+      "file": "sbgl_ils-t-or-loc-t-rwy-10_iac_20250710.pdf",
+      "pages": 1,
+      "title": "ILS T OR LOC T RWY 10",
+      "date": "2025-07-10",
+      "points": [
+        "BITOX",
+        "SUNSI",
+        "GAVUG",
+        "GL008",
+        "GL167",
+        "ITB",
+        "CXI",
+        "PCX"
+      ],
+      "legs": [
+        [
+          "BITOX",
+          "SUNSI",
+          97,
+          6.8
+        ],
+        [
+          "GAVUG",
+          "GL167",
+          97,
+          5.7
+        ]
+      ],
+      "markers": [
+        "DME REQ",
+        "7000",
+        "2000"
+      ],
+      "features": [
+        "ils-loc-variants",
+        "holding",
+        "missed-approach",
+        "dual-distance-reference"
+      ],
+      "evidence": [
+        {
+          "page": 1,
+          "region": [
+            0.06,
+            0.17,
+            0.96,
+            0.64
+          ],
+          "description": "BITOX e PCX com esperas, perdida curso097 até condição 2000 ft e curva direita direto PCX; altitude final7000 ft. Não inferir ponto de curva por posição gráfica."
+        },
+        {
+          "page": 1,
+          "region": [
+            0.06,
+            0.64,
+            0.96,
+            0.91
+          ],
+          "description": "Perfil: GAVUG10.7 NM THR/13.0 DME ITB; GL0088.7/11.0; GL1675.0/7.3; THR0.0/2.3. DA ILS216 ft e MDA LOC450 ft separadas."
+        }
+      ],
+      "sha256": "ae8394d5a863fabbb0bcf868a429a158f773ef47dbf23d4c9bed95703c228eab",
+      "icao": "SBGL",
+      "kind": "IAC",
+      "courseReference": "magnetic",
+      "referenceStatus": "manual-visual-transcription-not-operational-certification",
+      "pointsScope": "Named reference subset, not exhaustive chart or expected coordinate inventory",
+      "legsScope": "Published straight-segment subset; never use these endpoints to flatten visual/RF/holding trajectories",
+      "altitudeValues": [
+        {
+          "point": "BITOX",
+          "value": 6400,
+          "unit": "FT",
+          "reference": "MSL"
+        },
+        {
+          "point": "SUNSI",
+          "value": 3900,
+          "unit": "FT",
+          "reference": "MSL"
+        },
+        {
+          "point": "GAVUG",
+          "value": 3500,
+          "unit": "FT",
+          "reference": "MSL"
+        },
+        {
+          "point": "GL008",
+          "value": 2800,
+          "unit": "FT",
+          "reference": "MSL"
+        },
+        {
+          "point": "GL167",
+          "value": 1670,
+          "unit": "FT",
+          "reference": "MSL"
+        }
+      ],
+      "altitudeScope": "Numeric association subset only; qualifier, conditional scope, minima and full vertical trajectory must be assessed separately.",
+      "regressionFloor": {
+        "matchedReferenceLegs": 2,
+        "matchedAltitudeValues": 4
+      }
+    }
+  ]
+}
