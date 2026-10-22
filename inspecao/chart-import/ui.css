@@ -62,3 +62,13 @@
 #chart-import-dialog .ci-review p,#chart-import-dialog .ci-review button{overflow-wrap:anywhere}
 
 @media(max-width:759px){#chart-import-dialog .ci-mobile-tabs button{flex:1 1 calc(50% - 8px);font-size:14px;padding:8px 6px}}
+
+#chart-import-dialog .ci-final{display:none;grid-column:1/-1}
+#chart-result[data-mobile-view=final]{display:block}
+#chart-result[data-mobile-view=final] .ci-summary,#chart-result[data-mobile-view=final] .ci-preview,#chart-result[data-mobile-view=final] .ci-native{display:none}
+#chart-result[data-mobile-view=final] .ci-final{display:block}
+#chart-import-dialog .ci-final label{display:flex;flex-direction:column;gap:6px;margin:12px 0;font-size:.85rem}
+#chart-import-dialog .ci-final h3{font-size:1rem}
+#chart-origin-status{padding:8px 12px;margin:8px 0;font-size:13px;overflow-wrap:anywhere}
+#chart-origin-status p{margin:4px 0}
+#chart-origin-status pre,#properties pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:220px;overflow:auto}
