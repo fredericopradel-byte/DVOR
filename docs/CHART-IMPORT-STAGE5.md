@@ -96,7 +96,7 @@ conferência, em vez de desaparecerem ou serem promovidas a um cálculo de clear
 
 ## Offline e backup
 
-O service worker principal permanece o único do aplicativo, com cache v117 e os
+O service worker principal permanece o único do aplicativo, com cache v118 e os
 três recursos novos no APP_SHELL. Os modelos aplicados usam a persistência normal
 do editor e abrem/editam offline, sem serviço de reconhecimento ou base AIXM ativa.
 Os formatos anteriores de desenho e rascunhos de importação continuam legíveis.
@@ -193,3 +193,40 @@ autorizados pelo responsável. Sem merge nem implantação.
 Safari/PWA em iPhone e iPad físicos exige validação manual: instalar/atualizar,
 importar e abrir um rascunho, editar e desfazer, suspender/reabrir em modo avião,
 exportar JSON/ivchart, restaurar backup, testar rotação/safe areas e pressão de quota.
+
+
+## Correção do CI da PR #29 — fechamento e retomada
+
+A [execução inicial do GitHub Actions](https://github.com/fredericopradel-byte/DVOR/actions/runs/39650610803)
+executou 196 testes com Chromium 151.0.7922.34: 193 passaram e três falharam.
+Os testes expuseram condições de corrida que as reexecuções locais anteriores
+não haviam eliminado:
+
+- o evento nativo `close` é enfileirado e podia limpar uma importação já reaberta;
+- uma resposta antiga de listagem podia restaurar a opção vazia depois da seleção;
+- uma gravação concluída depois do fechamento podia apresentar erro de salvamento
+  na janela fechada ou na importação seguinte.
+
+O fechamento agora invalida a sessão sincronamente e a limpeza é idempotente.
+Eventos `close` antigos não descartam uma janela reaberta. As listagens usam uma
+sequência própria, conservam a seleção válida e desabilitam seleção/retomada
+apenas enquanto carregam. Respostas e mensagens da conferência final são aplicadas
+somente à sessão que iniciou a operação, inclusive após salvar em IndexedDB.
+Não há alteração de georreferenciamento, dados persistidos ou regras operacionais.
+
+Três testes adicionais controlam explicitamente a ordem dos eventos e das
+transações, sem usar pausas arbitrárias: fechamento/reabertura no mesmo turno,
+resposta antiga de listagem e cancelamento durante a gravação final. O teste de
+cancelamento durante o hash aguarda a operação real terminar e verifica a missão
+intacta e a interface sem mensagens antigas. A preparação dos testes de missão
+aguarda a instalação inicial do worker antes de recarregar os dados fictícios.
+O cache principal usa `v118-chart-lifecycle-20261022`.
+
+Validação local desta correção: os 24 casos de aplicação passaram em 148,996 s;
+o novo caso de cancelamento durante a gravação passou em 14,967 s. Os 15 casos de
+extração/importação passaram na execução combinada de 39 casos. Essa execução
+teve um timeout de preparação do worker no teste de missão nova; a preparação
+foi corrigida para concluir a instalação antes de recarregar, e o teste passou
+na execução de 24 casos. Sintaxe e diff sem erros. A nova execução completa remota
+é acompanhada na PR #29, com 199 casos no conjunto atualizado. A correção
+permanece na mesma branch, sem merge nem implantação.

@@ -42,9 +42,10 @@ class ChartApplicationTests(unittest.TestCase):
         self.assertEqual(d['chartImport']['provenance']['points'],before['points']);self.assertEqual(self.errors,[])
 
     def seed_old(self):
-        self.open();self.page.get_by_role('button',name='Fechar importação',exact=True).click()
+        # Finish the first worker installation before reloading the seeded mission.
+        self.open();self.install_local_fixture();self.page.get_by_role('button',name='Fechar importação',exact=True).click()
         self.page.evaluate("""({key,missions})=>{const d=JSON.parse(localStorage.getItem(key));d.title='Manual anterior';d.mission={...d.mission,name:'Missão anterior',icao:'SBXX',runway:'01',crew:'Tripulação preservada',notes:'Não apagar'};d.points=[{id:'old-a',name:'ANTIGO',x:0,y:0,locked:false},{id:'old-b',name:'FIM',x:0,y:2,locked:false}];d.segments=[{id:'old-leg',type:'line',from:'old-a',to:'old-b',name:''}];localStorage.setItem(key,JSON.stringify(d));localStorage.setItem(missions,JSON.stringify([{id:'previous-saved',document:{...d,missionId:'previous-saved'},updatedAt:'2026-01-01'}]));localStorage.setItem('ivplanner-procedure-editor-ndb-v1',JSON.stringify({...d,module:'ndb'}));}""",dict(key=KEY,missions=MISSIONS))
-        self.page.reload();self.dismiss_database_prompt();self.page.locator('[data-page=drawing]').click();self.page.locator('#import-chart').click();self.install_local_fixture();self.choose(review.CHART)
+        self.page.reload();self.dismiss_database_prompt();self.page.locator('[data-page=drawing]').click();self.page.locator('#import-chart').click();self.choose(review.CHART)
         return self.mission_snapshot()
 
     def test_cancel_and_final_preview_preserve_existing_missions(self):
@@ -134,8 +135,10 @@ class ChartApplicationTests(unittest.TestCase):
     def test_cancel_while_final_preparation_is_pending_does_not_apply(self):
         self.ready();before=self.mission_snapshot()
         self.page.evaluate("""()=>{const original=SubtleCrypto.prototype.digest;SubtleCrypto.prototype.digest=async function(...args){await new Promise(resolve=>window.resumeFinalDigest=resolve);return original.apply(this,args);};}""")
+        self.page.evaluate("()=>{const b=document.querySelector('#chart-final-apply'),run=b.onclick;b.onclick=()=>window.pendingFinal=run();}")
         self.page.locator('#chart-final-apply').click();self.page.get_by_role('button',name='Fechar importação',exact=True).click()
-        self.page.evaluate('window.resumeFinalDigest()');expect(self.page.locator('#chart-status')).to_contain_text('fechada ou alterada')
+        self.page.evaluate('async()=>{window.resumeFinalDigest();await window.pendingFinal;}');expect(self.page.locator('#chart-import-dialog')).not_to_be_visible()
+        expect(self.page.locator('#chart-status')).to_have_text('Selecione uma carta ou retome um rascunho.')
         self.assertEqual(self.mission_snapshot(),before)
 
     def test_native_json_and_general_backup_preserve_chart_metadata(self):
@@ -204,5 +207,30 @@ class ChartApplicationTests(unittest.TestCase):
         self.page.locator('#drawing [data-point]').first.click();self.page.locator('#selection-lock').click();locked=self.drawing();self.assertTrue(locked['points'][0]['locked']);self.assertEqual(locked['chartImport']['modifications'],[])
         self.page.locator('#undo').click();self.assertFalse(self.drawing()['points'][0]['locked']);self.assertEqual(self.errors,[])
         self.assertTrue(self.page.evaluate("d=>{d.chartImport.provenance.mapping=null;try{window.IVProcedurePreview.render(d);return false;}catch{return true;}}",self.drawing()))
+
+    def test_queued_close_event_cannot_clear_reopened_dialog(self):
+        self.ready();record=self.records()[0];before=self.mission_snapshot()
+        self.page.evaluate("""()=>{document.querySelector('[aria-label="Fechar importação"]').click();document.querySelector('#import-chart').click();}""")
+        self.page.locator('#chart-library').select_option(record['id']);self.page.get_by_role('button',name='Retomar',exact=True).click();expect(self.page.locator('#chart-result')).to_be_visible(timeout=25000)
+        self.page.wait_for_function("document.querySelector('#chart-import-dialog').getAttribute('aria-busy')==='false'")
+        expect(self.page.locator('#chart-library')).to_have_value(record['id']);self.assertEqual(self.mission_snapshot(),before);self.assertEqual(self.errors,[])
+
+    def test_old_library_response_cannot_reset_new_selection(self):
+        self.ready();record=self.records()[0];self.page.get_by_role('button',name='Fechar importação',exact=True).click()
+        self.page.evaluate("""()=>{const d=Object.getOwnPropertyDescriptor(IDBTransaction.prototype,'oncomplete');let next=true;Object.defineProperty(IDBTransaction.prototype,'oncomplete',{...d,set(fn){if(next&&this.mode==='readonly'&&this.objectStoreNames.contains('sessions')){next=false;d.set.call(this,event=>{window.releaseOldLibrary=()=>fn.call(this,event);});}else d.set.call(this,fn);}});}""")
+        self.page.locator('#import-chart').click();self.page.wait_for_function('typeof window.releaseOldLibrary==="function"');expect(self.page.locator('#chart-library')).to_be_disabled()
+        self.page.get_by_role('button',name='Fechar importação',exact=True).click();self.page.locator('#import-chart').click();self.page.locator('#chart-library').select_option(record['id'])
+        self.page.evaluate('async()=>{window.releaseOldLibrary();await new Promise(requestAnimationFrame);}')
+        expect(self.page.locator('#chart-library')).to_have_value(record['id']);expect(self.page.get_by_role('button',name='Retomar',exact=True)).to_be_enabled()
+        self.page.get_by_role('button',name='Retomar',exact=True).click();expect(self.page.locator('#chart-result')).to_be_visible(timeout=25000);self.assertEqual(self.errors,[])
+
+    def test_cancel_during_final_save_cannot_modify_reopened_dialog(self):
+        self.ready();record=self.records()[0];before=self.mission_snapshot()
+        self.page.evaluate("""()=>{const d=Object.getOwnPropertyDescriptor(IDBTransaction.prototype,'oncomplete');let next=true;Object.defineProperty(IDBTransaction.prototype,'oncomplete',{...d,set(fn){if(next&&this.mode==='readwrite'&&this.objectStoreNames.contains('sessions')){next=false;d.set.call(this,event=>{window.releaseFinalSave=()=>fn.call(this,event);});}else d.set.call(this,fn);}});const b=document.querySelector('#chart-final-apply'),run=b.onclick;b.onclick=()=>window.pendingFinal=run();}""")
+        self.page.locator('#chart-final-apply').click();self.page.wait_for_function('typeof window.releaseFinalSave==="function"')
+        self.page.once('dialog',lambda d:d.accept());self.page.get_by_role('button',name='Fechar importação',exact=True).click();self.page.locator('#import-chart').click();self.page.locator('#chart-library').select_option(record['id'])
+        self.page.evaluate('async()=>{window.releaseFinalSave();await window.pendingFinal;}')
+        expect(self.page.locator('#chart-status')).to_have_text('Selecione uma carta ou retome um rascunho.');expect(self.page.locator('#chart-library')).to_have_value(record['id']);expect(self.page.get_by_role('button',name='Retomar',exact=True)).to_be_enabled()
+        self.assertEqual(self.mission_snapshot(),before);self.assertEqual(self.errors,[])
 
 if __name__=='__main__':unittest.main()

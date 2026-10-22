@@ -61,27 +61,32 @@ const footer = node('footer', dialog, undefined, {class: 'ci-actions'});
 const save = node('button', footer, 'Salvar rascunho', {type: 'button', disabled: ''});
 const exportButton = node('button', footer, 'Exportar rascunho', {type: 'button', disabled: ''});
 const rebuildButton = node('button', footer, 'Atualizar prévia', {type:'button',disabled:''});
-let session = null, file = null, documentHandle = null, generation = 0, busy = false, persisted = true;
+let session = null, file = null, documentHandle = null, generation = 0, busy = false, persisted = true, libraryLoading = false, libraryGeneration = 0, cleaned = true;
 reviewer=createReview({container:reviewPane,node,original:canvas,getSession:()=>session,isBusy:()=>busy,onModel:async model=>{
   if(busy||!session)return;const token=generation;setBusy(true);
   try{session.reconstruction=model;persisted=false;showSummary();await persist(token);if(!persisted)throw Error('Resposta mantida em memória, mas não salva. Exporte o rascunho antes de fechar.');}finally{if(token===generation){setBusy(false);reviewer.render();}}
 }});
 
-finalReviewer=createFinalReview({container:finalPane,node,getSession:()=>session,setBusy,persist:async()=>{persisted=false;await persist(generation);if(!persisted)throw Error('Conferência não salva. Exporte o rascunho antes de aplicar.');},message,onApplied:()=>dialog.close()});
+finalReviewer=createFinalReview({container:finalPane,node,getSession:()=>session,setBusy,persist:async()=>{const token=generation;persisted=false;await persist(token);if(token!==generation||!dialog.open)throw Error('Importação fechada ou alterada. Nenhuma missão foi modificada.');if(!persisted)throw Error('Conferência não salva. Exporte o rascunho antes de aplicar.');},message,onApplied:()=>closeImport()});
 
 function message(text, error = false) {status.textContent = text;status.classList.toggle('ci-error', error);}
 function setBusy(value) {
   busy = value;reviewPane.inert=finalPane.inert=value;dialog.setAttribute('aria-busy', String(value));
   for (const button of [pick, restore, reopen, process]) button.disabled = value;
-  pages.disabled = value;
+  pages.disabled = value;library.disabled=value||libraryLoading;reopen.disabled=value||libraryLoading;
   save.disabled = exportButton.disabled = value || !session;rebuildButton.disabled=value||!session?.extraction;
 }
 async function refreshLibrary() {
+  const request=++libraryGeneration;libraryLoading=true;setBusy(busy);
   try {
-    const rows = await storage.list(module);library.replaceChildren();
-    library.add(new Option(rows.length ? 'Selecionar rascunho' : 'Nenhum rascunho salvo', ''));
-    for (const row of rows) library.add(new Option(row.name + ' · ' + new Date(row.updatedAt).toLocaleString('pt-BR'), row.id));
-  } catch {library.replaceChildren(new Option('Armazenamento indisponível', ''));}
+    const rows=await storage.list(module);
+    if(request!==libraryGeneration||!dialog.open)return;
+    const selected=library.value;library.replaceChildren();
+    library.add(new Option(rows.length?'Selecionar rascunho':'Nenhum rascunho salvo',''));
+    for(const row of rows)library.add(new Option(row.name+' · '+new Date(row.updatedAt).toLocaleString('pt-BR'),row.id));
+    if(rows.some(row=>row.id===selected))library.value=selected;
+  }catch{if(request===libraryGeneration&&dialog.open)library.replaceChildren(new Option('Armazenamento indisponível',''));}
+  finally{if(request===libraryGeneration){libraryLoading=false;setBusy(busy);}}
 }
 function showSummary() {
   summary.replaceChildren();
@@ -182,7 +187,7 @@ async function acceptFile(original, existing = null, selectedPage = 1, restoredM
   finally {if (token === generation) setBusy(false);}
 }
 
-trigger.addEventListener('click', () => {dialog.showModal();void refreshLibrary();});
+trigger.addEventListener('click', () => {if(dialog.open)return;resetImport();cleaned=false;generation++;dialog.showModal();void refreshLibrary();});
 pick.onclick = () => fileInput.click();restore.onclick = () => archiveInput.click();
 toggleLibrary.onclick = () => {libraryLabel.hidden = !libraryLabel.hidden;toggleLibrary.setAttribute('aria-expanded', String(!libraryLabel.hidden));};
 fileInput.onchange = async () => {const selected = fileInput.files[0];fileInput.value = '';if (selected) await acceptFile(selected);};
@@ -225,11 +230,14 @@ exportButton.onclick = async () => {
   } catch {if (token === generation) message('Não foi possível exportar o rascunho.', true);} finally {if (token === generation) setBusy(false);}
 };
 function canClose() {return persisted || confirm('Este rascunho ainda não está salvo. Fechar mesmo assim? A missão permanece intacta.');}
-close.onclick = () => {if (canClose()) dialog.close();};
-dialog.addEventListener('cancel', event => {if (!canClose()) event.preventDefault();});
-dialog.addEventListener('close', () => {
-  generation++;const previous = documentHandle;documentHandle = null;
-  if (previous) void previous.destroy();
-  reviewer.reset();session = null;file = null;result.hidden = pageRow.hidden = true;nativePane.replaceChildren();libraryLabel.hidden = false;toggleLibrary.setAttribute('aria-expanded', 'true');canvas.width = canvas.height = 0;setBusy(false);message('Selecione uma carta ou retome um rascunho.');
-  trigger.focus();
-});
+function resetImport(){
+  if(cleaned)return;cleaned=true;generation++;libraryGeneration++;libraryLoading=false;
+  const previous=documentHandle;documentHandle=null;
+  if(previous)void previous.destroy();
+  reviewer.reset();session=null;file=null;persisted=true;result.hidden=pageRow.hidden=true;nativePane.replaceChildren();libraryLabel.hidden=false;toggleLibrary.setAttribute('aria-expanded','true');canvas.width=canvas.height=0;setBusy(false);message('Selecione uma carta ou retome um rascunho.');
+}
+function closeImport(){dialog.close();resetImport();trigger.focus();}
+close.onclick=()=>{if(canClose())closeImport();};
+dialog.addEventListener('cancel',event=>{event.preventDefault();if(canClose())closeImport();});
+// Native close events are queued. An old event must never dispose a reopened dialog.
+dialog.addEventListener('close',()=>{if(!dialog.open)resetImport();});
