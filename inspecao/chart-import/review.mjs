@@ -1,3 +1,4 @@
+import {reconstructDmeArcs,arcSubject} from './dme-arcs.mjs';
 import {splitProfileLegs} from './profile-association.mjs';
 import {interpret} from './decea.mjs';
 import {reconstructThreshold} from './profile.mjs';
@@ -11,7 +12,7 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 export function pointSubject(p){return {position:p.position,source:p.coordinateSource};}
 function legSubject(m,l){return {from:pointSubject(m.points.find(p=>p.id===l.from)),to:pointSubject(m.points.find(p=>p.id===l.to)),published:l.published};}
 const category={missing:'Dado ausente',ambiguity:'Ambiguidade',inconsistency:'Inconsistência'};
-function priority(i){return /^(coordinate-|published-coordinate-|magnetic-reference)/.test(i.id)?0:/^(association-|unassociated-|conflict-|geometry-)/.test(i.id)?1:/^(qualifier-|altitude-|profile-altitude-)/.test(i.id)?2:/^visual-boundary-/.test(i.id)?3:/^(date-|derived-)/.test(i.id)?4:8;}
+function priority(i){return /^(coordinate-|published-coordinate-|magnetic-reference)/.test(i.id)?0:/^(dme-|association-|unassociated-|conflict-|geometry-)/.test(i.id)?1:/^(qualifier-|altitude-|profile-altitude-)/.test(i.id)?2:/^visual-boundary-/.test(i.id)?3:/^(date-|derived-)/.test(i.id)?4:8;}
 export function pendingGroups(model){
   const groups=new Map();
   for(const issue of model.issues){const entity=issue.entities?.[0],key=issue.category+':'+(entity||issue.id),leg=model.legs.find(l=>l.id===entity),name=model.points.find(p=>p.id===entity)?.name||(leg?(model.points.find(p=>p.id===leg.from)?.name||'Início')+' → '+(model.points.find(p=>p.id===leg.to)?.name||'Fim'):'');
@@ -22,11 +23,12 @@ export function pendingGroups(model){
 }
 export function question(model,issue){
   const entity=issue.entities?.[0],point=model.points.find(p=>p.id===entity);
-  if(point&&/^(coordinate-|published-coordinate-|chart-base-coordinate-|threshold-database-ambiguity|threshold-source-conflict)/.test(issue.id))return {kind:'position',entity,options:[...(issue.options||point.candidates||[]),...(point.databaseCandidates||[]),...(point.coordinatePublications||[]).filter(p=>p.datum==='WGS84')].filter(p=>position(p.position))};
+  if(point&&/^(dme-radius-|dme-via-|coordinate-|published-coordinate-|chart-base-coordinate-|threshold-database-ambiguity|threshold-source-conflict)/.test(issue.id))return {kind:'position',entity,options:[...(issue.options||point.candidates||[]),...(point.databaseCandidates||[]),...(point.coordinatePublications||[]).filter(p=>p.datum==='WGS84')].filter(p=>position(p.position))};
   if(point&&/^(date-|derived-|threshold-database-review)/.test(issue.id))return {kind:'confirm-coordinate',entity,subject:pointSubject(point)};
   if(point&&/^(qualifier-|altitude-|profile-altitude-)/.test(issue.id))return {kind:'altitude',entity,constraint:model.verticalConstraints.find(r=>r.entity===entity)||null};
   if(issue.id==='magnetic-reference')return {kind:'reference'};
   const leg=model.legs.find(l=>l.id===entity);
+  if(leg?.source?.kind==='dme-arc-association'&&(/^(dme-horizontal-|projection-review-)/.test(issue.id)))return {kind:'confirm-arc',entity:leg.id,subject:arcSubject(model,leg)};
   if(issue.id.startsWith('visual-boundary-')&&leg)return {kind:'visual',entity,subject:legSubject(model,leg),distanceNM:leg.published.distanceNM,options:(model.profileReferences?.[0]?.distanceMarks||[]).filter(m=>m.distanceNM>0&&m.distanceNM<leg.published.distanceNM)};
   if(issue.annotation||leg?.published&&/^(geometry-|definition-)/.test(issue.id))return {kind:'leg',annotation:issue.annotation||leg.published,options:issue.options||(leg?[{from:leg.from,to:leg.to}]:[])};
   return {kind:'information'};
@@ -40,7 +42,7 @@ export function checkedLedger(model){
   const w=model.reviewWork;
   if(!w||w.version!==1||!same(w.binding,binding(model))||!same(binding(w.base),w.binding)||!Array.isArray(w.nodes)||!Array.isArray(w.outcomes)||w.base.reviewWork||w.nodes.length>1000)throw Error('Histórico incompatível com a carta, página ou módulo. Dados preservados.');
   validateModel(w.base);const seen=new Set();
-  for(const n of w.nodes){if(typeof n.id!=='string'||seen.has(n.id)||(n.parent!==null&&!seen.has(n.parent))||!['position','confirm-coordinate','altitude','reference','leg','visual'].includes(n.kind)||typeof n.issueId!=='string'||typeof n.answer!=='object'||n.answer===null||typeof n.at!=='string')throw Error('Histórico de decisões inválido.');seen.add(n.id);}
+  for(const n of w.nodes){if(typeof n.id!=='string'||seen.has(n.id)||(n.parent!==null&&!seen.has(n.parent))||!['position','confirm-coordinate','altitude','reference','leg','visual','confirm-arc'].includes(n.kind)||typeof n.issueId!=='string'||typeof n.answer!=='object'||n.answer===null||typeof n.at!=='string')throw Error('Histórico de decisões inválido.');seen.add(n.id);}
   if(w.head!==null&&!seen.has(w.head))throw Error('Posição do histórico inválida.');return w;
 }
 export function activeNodes(w){let at=w.head;const map=new Map(w.nodes.map(n=>[n.id,n])),out=[];while(at!==null){const n=map.get(at);if(!n)throw Error('Decisão inexistente.');out.unshift(n);at=n.parent;}return out;}
@@ -70,7 +72,7 @@ function action(model,issueId,kind,answer){
     if(!['true','magnetic'].includes(a.reference))throw Error('Referência do curso ausente.');
   }else if(kind==='visual'){
     a.entity=q.entity;a.distanceNM=number(a.distanceNM,.000000001,q.distanceNM);subject=q.subject;
-  }else if(kind==='confirm-coordinate'){a.entity=q.entity;subject=q.subject;}
+  }else if(kind==='confirm-arc'){a.entity=q.entity;subject=q.subject;}else if(kind==='confirm-coordinate'){a.entity=q.entity;subject=q.subject;}
   return {kind,issueId,answer:a,subject};
 }
 function scrub(model){
@@ -129,6 +131,7 @@ export function replayReview(model,session,work=ledger(model)){
   associateLegs(m,p,layout,{truncated:session.extraction.truncated,bindings});
   if(!m.issues.some(i=>i.id==='threshold-database-ambiguity'))reconstructThreshold(m,p,{thresholds:[]},{truncated:session.extraction.truncated});
   splitProfileLegs(m);
+  reconstructDmeArcs(m,p,session.extraction);
   for(const point of m.points){
     if(!point.position&&!m.issues.some(i=>i.id==='coordinate-'+point.id))m.issues.push({id:'coordinate-'+point.id,category:point.candidates?.length?'ambiguity':'missing',critical:true,message:'Coordenada de '+point.name+' ainda não determinada.',entities:[point.id],options:point.candidates||[]});
     const s=point.coordinateSource?.selectedSource||point.coordinateSource,date=m.source.chart.publishedDate?.value;
@@ -136,7 +139,10 @@ export function replayReview(model,session,work=ledger(model)){
   }
   for(const r of m.verticalConstraints)if(r.qualifier==='unspecified')m.issues.push({id:'qualifier-'+r.id,category:'ambiguity',critical:true,message:'Confirme o qualificador da altitude publicada.',entities:[r.entity]});
   for(const n of deferred){try{
-    if(n.kind==='visual'){
+    if(n.kind==='confirm-arc'){
+      const leg=m.legs.find(l=>l.id===n.answer.entity);if(!leg||!same(n.subject,arcSubject(m,leg)))throw Error('O arco ou suas coordenadas mudaram. Confira novamente a representação horizontal.');
+      leg.horizontalReview={subject:clone(n.subject),decision:n.id};leg.status='horizontal-confirmed';m.issues=m.issues.filter(i=>i.id!=='dme-horizontal-'+leg.id);
+    }else if(n.kind==='visual'){
       splitVisual(m,n);m.issues=m.issues.filter(i=>i.id!=='visual-boundary-'+n.answer.entity);
     }else{
       const point=m.points.find(p=>p.id===n.answer.entity);if(!point||!same(n.subject,pointSubject(point)))throw Error('A coordenada/origem mudou. Confira novamente esta decisão.');
@@ -157,6 +163,6 @@ export function checkout(model,session,head){const w=clone(ledger(model));if(hea
 export function historyStep(model,session,direction){const w=ledger(model),n=w.nodes.find(n=>n.id===w.head),head=direction==='undo'?n?.parent:w.nodes.filter(n=>n.parent===w.head).at(-1)?.id;if(head===undefined)return model;return checkout(model,session,head);}
 export function evidenceFor(issue,model,extraction){
   const ids=new Set([...(issue.evidenceIds||[]),...(issue.annotation?.evidenceIds||[])]);
-  for(const entity of issue.entities||[]){const point=model.points.find(p=>p.id===entity),leg=model.legs.find(l=>l.id===entity);for(const id of [...(point?.evidenceIds||[]),...(point?.coordinateSource?.evidenceIds||[]),...(leg?.published?.evidenceIds||[]),...(leg?.visualReference?.evidenceIds||[])])ids.add(id);for(const r of model.verticalConstraints.filter(r=>r.entity===entity))for(const id of r.evidenceIds||[])ids.add(id);}
+  for(const entity of issue.entities||[]){const point=model.points.find(p=>p.id===entity),leg=model.legs.find(l=>l.id===entity);for(const id of [...(point?.evidenceIds||[]),...(point?.coordinateSource?.evidenceIds||[]),...(leg?.source?.evidenceIds||[]),...(leg?.published?.evidenceIds||[]),...(leg?.visualReference?.evidenceIds||[])])ids.add(id);for(const r of model.verticalConstraints.filter(r=>r.entity===entity))for(const id of r.evidenceIds||[])ids.add(id);}
   return extraction.text.filter(t=>ids.has(t.id));
 }

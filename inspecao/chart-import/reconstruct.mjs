@@ -1,3 +1,4 @@
+import {reconstructDmeArcs} from './dme-arcs.mjs';
 import {profileData} from './profile-data.mjs';
 import {associateProfileStations,splitProfileLegs} from './profile-association.mjs';
 import {labelType, roleNames, roleSupports, altitudeSupports, altitudeBar} from './semantics.mjs';
@@ -32,11 +33,13 @@ export function validateModel(model) {
     }else if(leg.type==='arc'){
       const c=points.get(leg.center);if(!c?.position||!['left','right'].includes(leg.turn)||!Number.isFinite(leg.radiusNM)||leg.radiusNM<=0||!Number.isFinite(leg.radiusResolution)||leg.radiusResolution<=0){results.push({entity:leg.id,passed:false,reason:'incomplete-arc'});issues.push(issue('arc-'+leg.id,'missing','Arco sem centro, raio ou sentido confirmado.',[leg.id]));continue;}
       const ra=inverse(c.position,a.position),rb=inverse(c.position,b.position),tolerance=(leg.radiusResolution||.1)/2+1e-6;
-      const sweep=normalize((leg.turn==='right'?1:-1)*(rb.trueCourse-ra.trueCourse));
+      const measuredSweep=normalize((leg.turn==='right'?1:-1)*(rb.trueCourse-ra.trueCourse)),sweep=measuredSweep<1e-8&&leg.sweepDegrees===360?360:measuredSweep;
       if(sweep<1e-8&&leg.sweepDegrees!==360){results.push({entity:leg.id,passed:false,reason:'missing-sweep'});issues.push(issue('sweep-'+leg.id,'missing','Extensão angular do arco não confirmada.',[leg.id]));continue;}
-      const passed=Math.abs(ra.distanceNM-leg.radiusNM)<=tolerance&&Math.abs(rb.distanceNM-leg.radiusNM)<=tolerance;
+      const via=(leg.via||[]).map(id=>points.get(id));let previous=0;
+      const ordered=via.every(p=>{if(!p?.position)return false;const r=inverse(c.position,p.position),along=normalize((leg.turn==='right'?1:-1)*(r.trueCourse-ra.trueCourse)),ok=along>previous&&along<sweep&&Math.abs(r.distanceNM-leg.radiusNM)<=tolerance;previous=along;return ok;});
+      const passed=ordered&&Math.abs(ra.distanceNM-leg.radiusNM)<=tolerance&&Math.abs(rb.distanceNM-leg.radiusNM)<=tolerance;
       results.push({id:'geometry-'+leg.id,entity:leg.id,passed,radialStart:ra.distanceNM,radialEnd:rb.distanceNM,radiusTolerance:tolerance});
-      if(!passed)issues.push(issue('geometry-'+leg.id,'inconsistency','Extremidades incompatíveis com o raio publicado do arco.',[leg.id]));
+      if(!passed)issues.push(issue('geometry-'+leg.id,'inconsistency','Extremidades ou fixos intermediários incompatíveis com a geometria do arco.',[leg.id]));
     }else {results.push({entity:leg.id,passed:false,reason:'unsupported-type'});issues.push(issue('unsupported-'+leg.id,'missing','Tipo de trajetória não suportado pelo conversor: '+leg.type+'.',[leg.id]));}
   }
   for(const r of model.verticalConstraints||[]) if(r.upper!==undefined&&r.lower!==undefined&&r.upper<r.lower)issues.push(issue('vertical-'+r.id,'inconsistency','Janela vertical invertida.',[r.entity]));
@@ -125,6 +128,7 @@ export function reconstruct(session,database) {
   for(const gradient of interpreted.gradients)model.verticalConstraints.push({id:'gradient-'+model.verticalConstraints.length,...gradient,type:'climb-or-descent-gradient',status:'review'});
   // A runway-named waypoint is not automatically the runway threshold (MAPt may differ).
   if(!model.profileReferences?.some(p=>model.points.some(point=>point.name===p.target&&point.position))&&/\bRW(?:Y)?\s?\d{2}[LRC]?\b/.test(interpreted.plan.map(r=>r.text).join(' ')))issues.push(issue('runway-waypoint','missing','Referência de pista identificada. Não foi equiparada automaticamente a um MAPt ou waypoint sem coordenada publicada.'));
+  reconstructDmeArcs(model,interpreted,extraction,database);
   issues.push(issue('coverage-review','missing','Prévia parcial: símbolos, transições, aproximação perdida e cobertura integral ainda exigem conferência. Nenhuma missão foi alterada.'));
   return finishModel(model);
 }

@@ -44,7 +44,7 @@ class ChartGeometryTests(unittest.TestCase):
         for case in GOLDENS:
             with self.subTest(chart=case['file']):
                 m=self.build(case['file']);byid={p['id']:p for p in m['points']}
-                actual={(byid[l['from']]['name'],byid[l['to']]['name']):(l['published']['course'],l['published']['distanceNM']) for l in m['legs']}
+                actual={(byid[l['from']]['name'],byid[l['to']]['name']):(l['published']['course'],l['published']['distanceNM']) for l in m['legs'] if l['type']=='line'}
                 for start,end,course,distance in case['legs']:
                     self.assertIn((start,end),actual);self.assertEqual(actual[start,end],(course,distance))
                 for name,position in case.get('coordinateSnapshots',{}).items():
@@ -55,7 +55,8 @@ class ChartGeometryTests(unittest.TestCase):
                 self.assertFalse(m['review']['validated']);self.assertEqual(m['status'],'partial')
                 self.assertTrue(all(c['passed'] for c in m['checks']))
                 self.assertEqual(m['source']['extractionMethod'],'pdfjs-4.10.38')
-                self.assertEqual(len(m['native']['segments']),len(m['legs']))
+                self.assertEqual(sum(s['type']=='line' for s in m['native']['segments']),sum(l['type']=='line' for l in m['legs']))
+                self.assertTrue(all(l['id'] in m['nativeMapping']['legs'] for l in m['legs']))
                 if case.get('blockedLeg'):
                     a,b,_,distance=case['blockedLeg'];self.assertNotIn((a,b),actual)
                     conflicts=[i for i in m['issues'] if i['id'].startswith('conflict-')]
@@ -67,7 +68,7 @@ class ChartGeometryTests(unittest.TestCase):
 
     def test_sid_uses_actual_definitions_without_filling_missing_branches(self):
         self.open();m=self.build('sbrj_evsob-1d-rwy-20l_sid_20210520.pdf')
-        pairs={(l['from'],l['to']) for l in m['legs']}
+        pairs={(l['from'],l['to']) for l in m['legs'] if l['type']=='line'}
         for pair in [('LOKOD','EVSOB'),('EVSOB','VAMIX'),('VAMIX','TIVRO'),('TIVRO','BITAK')]:self.assertIn(('p-'+pair[0],'p-'+pair[1]),pairs)
         self.assertTrue(any(i['id'].startswith('unassociated-') for i in m['issues']))
         self.assertEqual(m['reference']['variation']['value'],-23)
@@ -87,12 +88,15 @@ class ChartGeometryTests(unittest.TestCase):
         self.assertFalse(any(l['to']=='p-RW16L' for l in m['legs']))
         self.assertEqual(next(p for p in m['points'] if p['name']=='NT364')['coordinateState'],'temporal-review')
 
-    def test_arc_and_holding_limitations_are_not_replaced_by_straight_lines(self):
+    def test_remaining_arc_and_holding_coverage_stays_pending_without_chords(self):
         self.open();m=self.build('sbnt_vor-w-rwy-16l_iac_20250515.pdf')
         self.assertIn('structure-dme-arc',[i['id'] for i in m['issues']])
         self.assertIn('structure-holding',[i['id'] for i in m['issues']])
         self.assertEqual(m['structures'][0]['status'],'unresolved')
-        self.assertFalse(any(l['from']=='p-EGEGI' and l['to']=='p-SALBA' for l in m['legs']))
+        self.assertFalse(any(l['from']=='p-EGEGI' and l['to']=='p-SALBA' and l['type']=='line' for l in m['legs']))
+        arc=next(l for l in m['legs'] if l['from']=='p-EGEGI' and l['to']=='p-SALBA')
+        self.assertEqual(arc['type'],'arc');self.assertEqual(arc['via'],['p-IRUNU'])
+        self.assertEqual(sum(s['type']=='curve' for s in m['native']['segments']),2)
 
     def test_wgs84_reference_values_and_no_silent_antipodal_fallback(self):
         self.open()

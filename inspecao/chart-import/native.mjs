@@ -1,3 +1,4 @@
+import {arcReviewed} from './dme-arcs.mjs';
 import {toNative, inverse, destination, normalize} from './geodesy.mjs';
 
 // Native schema 3 envelope. Provenance remains in the persisted IR/nativeMapping;
@@ -15,16 +16,18 @@ export function toNativeDocument(model) {
       document.segments.push({id:leg.id,type:'line',from:leg.from,to:leg.to,name:'',...(['visual-transition-review','visual'].includes(leg.flightRules)?{flightRules:leg.flightRules,visualReference:structuredClone(leg.visualReference)}:{}),locked:false,lockBearing:false,lockLength:false,lockRadius:false});mapping.legs[leg.id]=[leg.id];
     }else if(leg.type==='arc'){
       const center=points.get(leg.center),a=points.get(leg.from),b=points.get(leg.to);
-      if(!center?.position||!['left','right'].includes(leg.turn)||!Number.isFinite(leg.radiusNM)){issues.push(problem('native-arc-'+leg.id,'Arco incompleto não convertido.',[leg.id]));continue;}
+      if(!center?.position||!['left','right'].includes(leg.turn)||!Number.isFinite(leg.radiusNM)||(leg.via||[]).some(id=>!points.get(id)?.position||!mapping.points[id])){issues.push(problem('native-arc-'+leg.id,'Arco incompleto não convertido.',[leg.id]));continue;}
       const start=inverse(center.position,a.position).trueCourse,end=inverse(center.position,b.position).trueCourse,sign=leg.turn==='right'?1:-1;
       const measuredSweep=normalize(sign*(end-start));
       if(measuredSweep<1e-8&&leg.sweepDegrees!==360){issues.push(problem('arc-sweep-'+leg.id,'Arco sem extensão angular confirmada.',[leg.id]));continue;}
-      const sweep=measuredSweep<1e-8?360:measuredSweep,parts=Math.ceil(sweep/90),midpoints=[],segments=[],ids=[];let previous=document.points.find(p=>p.id===leg.from),failed=false,maxError=0;
+      const sweep=measuredSweep<1e-8?360:measuredSweep,breaks=[{angle:0,id:leg.from},...(leg.via||[]).map(id=>({id,angle:normalize(sign*(inverse(center.position,points.get(id).position).trueCourse-start))})),{angle:sweep,id:leg.to}],steps=[];
+      for(let j=1;j<breaks.length;j++){const a=breaks[j-1],b=breaks[j],parts=Math.ceil((b.angle-a.angle)/90);for(let k=1;k<=parts;k++)steps.push({angle:a.angle+(b.angle-a.angle)*k/parts,id:k===parts?b.id:null});}
+      const midpoints=[],segments=[],ids=[];let previous=document.points.find(p=>p.id===leg.from),failed=false,maxError=0;
       const cp=toNative(center.position,origin);
-      for(let i=1;i<=parts;i++){
+      for(let i=1;i<=steps.length;i++){
         let next;
-        if(i===parts)next=document.points.find(p=>p.id===leg.to);
-        else{const geographic=destination(center.position,start+sign*sweep*i/parts,leg.radiusNM),local=toNative(geographic,origin),nativeId=leg.id+'-split-'+i;next={id:nativeId,name:'ARCO '+i,...local,locked:false};midpoints.push(next);mapping.derived.push({id:nativeId,leg:leg.id,position:geographic,source:'geodesic-arc-subdivision'});}
+        if(steps[i-1].id)next=document.points.find(p=>p.id===steps[i-1].id);
+        else{const geographic=destination(center.position,start+sign*steps[i-1].angle,leg.radiusNM),local=toNative(geographic,origin),nativeId=leg.id+'-split-'+i;next={id:nativeId,name:'ARCO '+i,...local,locked:false};midpoints.push(next);mapping.derived.push({id:nativeId,leg:leg.id,position:geographic,source:'geodesic-arc-subdivision'});}
         const ra=Math.hypot(previous.x-cp.x,previous.y-cp.y),rb=Math.hypot(next.x-cp.x,next.y-cp.y),radius=(ra+rb)/2,d=Math.hypot(next.x-previous.x,next.y-previous.y);
         if(d<.001||radius<d/2){failed=true;break;}
         const side=leg.turn==='right'?1:-1,h=Math.sqrt(Math.max(0,radius*radius-d*d/4)),cx=(previous.x+next.x)/2+(next.y-previous.y)/d*h*side,cy=(previous.y+next.y)/2-(next.x-previous.x)/d*h*side,error=Math.hypot(cx-cp.x,cy-cp.y);
@@ -33,8 +36,8 @@ export function toNativeDocument(model) {
       }
       if(failed){mapping.derived=mapping.derived.filter(p=>p.leg!==leg.id);issues.push(problem('projection-'+leg.id,'O arco geodésico não pode ser representado fielmente no plano local do editor; não foi substituído por reta.',[leg.id]));continue;}
       document.points.push(...midpoints);document.segments.push(...segments);mapping.legs[leg.id]=ids;
-      mapping.projection.push({leg:leg.id,publishedRadiusNM:leg.radiusNM,maxCenterErrorNM:maxError,kind:'local-plane-circle',displayResolutionNM:.1});
-      if(maxError>1e-6)issues.push(problem('projection-review-'+leg.id,'Arco representado como curva local; erro de projeção registrado para conferência.',[leg.id],{maxCenterErrorNM:maxError}));
+      mapping.projection.push({leg:leg.id,...(leg.publishedDME?{publishedDME:structuredClone(leg.publishedDME),horizontalRadiusNM:leg.radiusNM}:{publishedRadiusNM:leg.radiusNM}),maxCenterErrorNM:maxError,kind:'local-plane-circle',displayResolutionNM:.1});
+      if(maxError>1e-6&&!arcReviewed(model,leg))issues.push(problem('projection-review-'+leg.id,'Arco representado como curva local; erro de projeção registrado para conferência.',[leg.id],{maxCenterErrorNM:maxError}));
     }else issues.push(problem('native-type-'+leg.id,'Trajetória sem representação nativa fiel: '+leg.type+'.',[leg.id]));
   }
   const supportedRoles=['IAF','IF','FAF','FAP','MAPT','DER'];
