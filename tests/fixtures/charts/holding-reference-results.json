@@ -1,0 +1,1190 @@
+{
+  "scope": "Diagnostic recognition of racetrack topology only. Drawing dimensions are not inferred from pixels or unprinted defaults. Not a complete chart/holding recognition claim.",
+  "baseMain": "6e29fd2b3c0a33bed414c3e21d4cd66a4fb85d76",
+  "baseTree": "30d54b20e8645b8a10a2207216f0df42692b6f31",
+  "pages": [
+    {
+      "file": "sbbq_ndb-rwy-18_iac_20230518.pdf",
+      "page": 1,
+      "sha256": "691ed5c0c2c1daee91eff1edd66180d8142c105d5162d34b748e9e3aaf404c7e",
+      "priorLegs": 0,
+      "currentLegs": 0,
+      "priorNativeSegments": 0,
+      "currentNativeSegments": 0,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_ils-r-or-loc-r-rwy-15_iac_20241226.pdf",
+      "page": 1,
+      "sha256": "7410e101d403004f498df202b8fbb3cc4bd372f1368d6cca7a427ddf34bbfeae",
+      "priorLegs": 2,
+      "currentLegs": 2,
+      "priorNativeSegments": 2,
+      "currentNativeSegments": 2,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": [
+        {
+          "id": "holding-p-SISER",
+          "anchor": "p-SISER",
+          "purpose": "holding",
+          "turn": "left",
+          "inbound": {
+            "value": 295,
+            "raw": "295",
+            "reference": "magnetic",
+            "resolution": 1,
+            "evidenceIds": [
+              "page-1-text-177",
+              "page-1-text-178",
+              "page-1-text-179"
+            ]
+          },
+          "published": {
+            "inboundCourse": {
+              "value": 295,
+              "raw": "295",
+              "reference": "magnetic",
+              "resolution": 1,
+              "evidenceIds": [
+                "page-1-text-177",
+                "page-1-text-178",
+                "page-1-text-179"
+              ]
+            },
+            "outboundCourse": {
+              "value": 115,
+              "reference": "magnetic",
+              "evidenceIds": [
+                "page-1-text-174",
+                "page-1-text-175",
+                "page-1-text-176"
+              ]
+            },
+            "legDefinition": null,
+            "definitionCandidates": [],
+            "constraintIds": [
+              "vertical-p-SISER"
+            ]
+          },
+          "evidenceIds": [
+            "vector-14979",
+            "vector-14980",
+            "vector-14985",
+            "vector-14986",
+            "vector-14973",
+            "vector-14974",
+            "vector-14997",
+            "vector-14998",
+            "vector-14991",
+            "vector-14992",
+            "vector-15022",
+            "vector-15023",
+            "vector-15028",
+            "vector-15029",
+            "vector-15034",
+            "vector-15035",
+            "page-1-text-432",
+            "page-1-text-177",
+            "page-1-text-178",
+            "page-1-text-179",
+            "page-1-text-174",
+            "page-1-text-175",
+            "page-1-text-176"
+          ],
+          "source": {
+            "kind": "paired-circular-caps-parallel-strokes-and-fix-symbol",
+            "layoutUsedFor": "topology-only"
+          },
+          "status": "dimensions-required"
+        }
+      ]
+    },
+    {
+      "file": "sbgl_ils-t-or-loc-t-rwy-10_iac_20250710.pdf",
+      "page": 1,
+      "sha256": "ae8394d5a863fabbb0bcf868a429a158f773ef47dbf23d4c9bed95703c228eab",
+      "priorLegs": 5,
+      "currentLegs": 5,
+      "priorNativeSegments": 5,
+      "currentNativeSegments": 5,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_ils-u--converging--rwy-28_iac_20211007.pdf",
+      "page": 1,
+      "sha256": "123339f66a1626b9d05f8a568779a6a0959b8882085bd0f10df30e096e7af23e",
+      "priorLegs": 5,
+      "currentLegs": 5,
+      "priorNativeSegments": 5,
+      "currentNativeSegments": 5,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_ils-u--converging--rwy-28_iac_20211007.pdf",
+      "page": 2,
+      "sha256": "123339f66a1626b9d05f8a568779a6a0959b8882085bd0f10df30e096e7af23e",
+      "priorLegs": 0,
+      "currentLegs": 0,
+      "priorNativeSegments": 0,
+      "currentNativeSegments": 0,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_ils-u-cat-ii-rwy-10_iac_20260122.pdf",
+      "page": 1,
+      "sha256": "8930c86527fa3f578646779c6a6548cedec376c2df7178cfebe5463cec182cf7",
+      "priorLegs": 3,
+      "currentLegs": 3,
+      "priorNativeSegments": 3,
+      "currentNativeSegments": 3,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": [
+        {
+          "id": "holding-p-BITOX",
+          "anchor": "p-BITOX",
+          "purpose": "unresolved-racetrack",
+          "turn": "right",
+          "inbound": {
+            "value": 97,
+            "raw": "097",
+            "reference": "magnetic",
+            "resolution": 1,
+            "evidenceIds": [
+              "page-1-text-147",
+              "page-1-text-148",
+              "page-1-text-149"
+            ]
+          },
+          "published": {
+            "inboundCourse": {
+              "value": 97,
+              "raw": "097",
+              "reference": "magnetic",
+              "resolution": 1,
+              "evidenceIds": [
+                "page-1-text-147",
+                "page-1-text-148",
+                "page-1-text-149"
+              ]
+            },
+            "outboundCourse": {
+              "value": 277,
+              "reference": "magnetic",
+              "evidenceIds": [
+                "page-1-text-150",
+                "page-1-text-151",
+                "page-1-text-152"
+              ]
+            },
+            "legDefinition": null,
+            "definitionCandidates": [],
+            "constraintIds": [
+              "vertical-p-BITOX"
+            ]
+          },
+          "evidenceIds": [
+            "vector-16980",
+            "vector-16981",
+            "vector-16986",
+            "vector-16987",
+            "vector-16992",
+            "vector-16993",
+            "vector-16974",
+            "vector-16975",
+            "vector-16998",
+            "vector-16999",
+            "vector-17111",
+            "vector-17112",
+            "vector-17117",
+            "vector-17118",
+            "vector-17123",
+            "vector-17124",
+            "page-1-text-156",
+            "page-1-text-147",
+            "page-1-text-148",
+            "page-1-text-149",
+            "page-1-text-150",
+            "page-1-text-151",
+            "page-1-text-152"
+          ],
+          "source": {
+            "kind": "paired-circular-caps-parallel-strokes-and-fix-symbol",
+            "layoutUsedFor": "topology-only"
+          },
+          "status": "dimensions-required"
+        }
+      ]
+    },
+    {
+      "file": "sbgl_ils-v-or-loc-v-rwy-28_iac_20241226.pdf",
+      "page": 1,
+      "sha256": "e3b1970570806accde034fa25037152ed02f43741a55b5d0bfc9dd65de427216",
+      "priorLegs": 3,
+      "currentLegs": 3,
+      "priorNativeSegments": 3,
+      "currentNativeSegments": 3,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_ils-w-rwy-28_iac_20251127.pdf",
+      "page": 1,
+      "sha256": "e8eeebc7413a0ea6de464f73001e176c4fc702447dd1045a885e277fcb335ca3",
+      "priorLegs": 5,
+      "currentLegs": 5,
+      "priorNativeSegments": 5,
+      "currentNativeSegments": 5,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_ils-x-or-loc-x-rwy-10_iac_20251002.pdf",
+      "page": 1,
+      "sha256": "b411d15dd0ac0fd8ce4b18c982bcfc5829d2a07509494ffca802c45357728d00",
+      "priorLegs": 3,
+      "currentLegs": 3,
+      "priorNativeSegments": 3,
+      "currentNativeSegments": 3,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": [
+        {
+          "id": "holding-p-BITOX",
+          "anchor": "p-BITOX",
+          "purpose": "unresolved-racetrack",
+          "turn": "right",
+          "inbound": {
+            "value": 97,
+            "raw": "097",
+            "reference": "magnetic",
+            "resolution": 1,
+            "evidenceIds": [
+              "page-1-text-181",
+              "page-1-text-182",
+              "page-1-text-183"
+            ]
+          },
+          "published": {
+            "inboundCourse": {
+              "value": 97,
+              "raw": "097",
+              "reference": "magnetic",
+              "resolution": 1,
+              "evidenceIds": [
+                "page-1-text-181",
+                "page-1-text-182",
+                "page-1-text-183"
+              ]
+            },
+            "outboundCourse": {
+              "value": 277,
+              "reference": "magnetic",
+              "evidenceIds": [
+                "page-1-text-184",
+                "page-1-text-185",
+                "page-1-text-186"
+              ]
+            },
+            "legDefinition": null,
+            "definitionCandidates": [],
+            "constraintIds": [
+              "vertical-p-BITOX"
+            ]
+          },
+          "evidenceIds": [
+            "vector-18165",
+            "vector-18166",
+            "vector-18171",
+            "vector-18172",
+            "vector-18177",
+            "vector-18178",
+            "vector-18159",
+            "vector-18160",
+            "vector-18183",
+            "vector-18184",
+            "vector-16802",
+            "vector-16803",
+            "vector-16808",
+            "vector-16809",
+            "vector-16814",
+            "vector-16815",
+            "page-1-text-144",
+            "page-1-text-181",
+            "page-1-text-182",
+            "page-1-text-183",
+            "page-1-text-184",
+            "page-1-text-185",
+            "page-1-text-186"
+          ],
+          "source": {
+            "kind": "paired-circular-caps-parallel-strokes-and-fix-symbol",
+            "layoutUsedFor": "topology-only"
+          },
+          "status": "dimensions-required"
+        }
+      ]
+    },
+    {
+      "file": "sbgl_ils-z-rwy-15_iac_20250904.pdf",
+      "page": 1,
+      "sha256": "9aae41b03366b897e2ae5e892a1af959eee88f376409ba31196c38beb17e5252",
+      "priorLegs": 6,
+      "currentLegs": 6,
+      "priorNativeSegments": 6,
+      "currentNativeSegments": 6,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_nav-apv-rwy-10-_iac_20241031.pdf",
+      "page": 1,
+      "sha256": "d540d9409509fa6fc7101cca9090a5ab23d84f82c418ca673bfb209ed86f828d",
+      "priorLegs": 0,
+      "currentLegs": 0,
+      "priorNativeSegments": 0,
+      "currentNativeSegments": 0,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_nav-apv-rwy-15-_iac_20241031.pdf",
+      "page": 1,
+      "sha256": "e03761590e765301198924afecb06f2f23f36af5a32f5eec925224cd6023f314",
+      "priorLegs": 0,
+      "currentLegs": 0,
+      "priorNativeSegments": 0,
+      "currentNativeSegments": 0,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_nav-apv-rwy-28-_iac_20241031.pdf",
+      "page": 1,
+      "sha256": "b89f9b5d66b92d33e4239bbd5ea5b4443982637d57f13f0fb2fdb7df311f1a29",
+      "priorLegs": 0,
+      "currentLegs": 0,
+      "priorNativeSegments": 0,
+      "currentNativeSegments": 0,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_nav-apv-rwy-33-_iac_20241031.pdf",
+      "page": 1,
+      "sha256": "8156822099c4427655f1d3d8264eaa7390dd929bb2eb35b9b58983d656fdd4b7",
+      "priorLegs": 0,
+      "currentLegs": 0,
+      "priorNativeSegments": 0,
+      "currentNativeSegments": 0,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_rnp-a-rwy-33_iac_20240613.pdf",
+      "page": 1,
+      "sha256": "36d2dd860ddffaa772bfa17edaf411df92c7b3d72cdcbdb7556c49b6cff116f7",
+      "priorLegs": 6,
+      "currentLegs": 6,
+      "priorNativeSegments": 6,
+      "currentNativeSegments": 6,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_rnp-a-rwy-33_iac_20240613.pdf",
+      "page": 2,
+      "sha256": "36d2dd860ddffaa772bfa17edaf411df92c7b3d72cdcbdb7556c49b6cff116f7",
+      "priorLegs": 0,
+      "currentLegs": 0,
+      "priorNativeSegments": 0,
+      "currentNativeSegments": 0,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_rnp-w-rwy-33_iac_20260122.pdf",
+      "page": 1,
+      "sha256": "ebce45d557475a1d943f671740045ba858a729161b9e9db0b3216c43a641d283",
+      "priorLegs": 2,
+      "currentLegs": 2,
+      "priorNativeSegments": 2,
+      "currentNativeSegments": 2,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_rnp-y-rwy-10_iac_20250710.pdf",
+      "page": 1,
+      "sha256": "7bf304582f74a0884b936fc81db54a485e4d9d1d47a658b28249e5c457139cab",
+      "priorLegs": 2,
+      "currentLegs": 2,
+      "priorNativeSegments": 2,
+      "currentNativeSegments": 2,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_rnp-y-rwy-28_iac_20260122.pdf",
+      "page": 1,
+      "sha256": "7974c3129c8082380e083a2850def5d71810a69d8e164b2312bddb1675f5198e",
+      "priorLegs": 5,
+      "currentLegs": 5,
+      "priorNativeSegments": 5,
+      "currentNativeSegments": 5,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_rnp-z--converging--rwy-28_iac_20211230.pdf",
+      "page": 1,
+      "sha256": "fe1be45affa3b712b840b2197814019c3840a3998c6ef2f07edbd826897caecc",
+      "priorLegs": 6,
+      "currentLegs": 6,
+      "priorNativeSegments": 6,
+      "currentNativeSegments": 6,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_rnp-z--converging--rwy-28_iac_20211230.pdf",
+      "page": 2,
+      "sha256": "fe1be45affa3b712b840b2197814019c3840a3998c6ef2f07edbd826897caecc",
+      "priorLegs": 0,
+      "currentLegs": 0,
+      "priorNativeSegments": 0,
+      "currentNativeSegments": 0,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_rnp-z-rwy-15_iac_20250417.pdf",
+      "page": 1,
+      "sha256": "46f60422a6e76a42cf65275791bb0378d3e5ccf3fde1b5e07136dcf9672d62eb",
+      "priorLegs": 7,
+      "currentLegs": 7,
+      "priorNativeSegments": 7,
+      "currentNativeSegments": 7,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_rnp-z-rwy-33--ar-_iac_20231102.pdf",
+      "page": 1,
+      "sha256": "c29c1afac1d86d766c94791e5400a4394742a16d0d52205629d50005769be73e",
+      "priorLegs": 8,
+      "currentLegs": 8,
+      "priorNativeSegments": 8,
+      "currentNativeSegments": 8,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgl_vor-rwy-33_iac_20241226.pdf",
+      "page": 1,
+      "sha256": "0be0335274ba99da2b51231de76bf9639a4d735115c2fdb48935df3ffdd2d4c6",
+      "priorLegs": 1,
+      "currentLegs": 1,
+      "priorNativeSegments": 1,
+      "currentNativeSegments": 1,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": [
+        {
+          "id": "holding-p-IVTAL",
+          "anchor": "p-IVTAL",
+          "purpose": "holding",
+          "turn": "right",
+          "inbound": {
+            "value": 115,
+            "raw": "115",
+            "reference": "magnetic",
+            "resolution": 1,
+            "evidenceIds": [
+              "page-1-text-223"
+            ]
+          },
+          "published": {
+            "inboundCourse": {
+              "value": 115,
+              "raw": "115",
+              "reference": "magnetic",
+              "resolution": 1,
+              "evidenceIds": [
+                "page-1-text-223"
+              ]
+            },
+            "outboundCourse": {
+              "value": 295,
+              "reference": "magnetic",
+              "evidenceIds": [
+                "page-1-text-222"
+              ]
+            },
+            "legDefinition": null,
+            "definitionCandidates": [],
+            "constraintIds": [
+              "vertical-p-IVTAL"
+            ]
+          },
+          "evidenceIds": [
+            "vector-12852",
+            "vector-12853",
+            "vector-12858",
+            "vector-12859",
+            "vector-12864",
+            "vector-12865",
+            "vector-14321",
+            "vector-14322",
+            "vector-12846",
+            "vector-12847",
+            "vector-12870",
+            "vector-12871",
+            "vector-14327",
+            "vector-14328",
+            "vector-14333",
+            "vector-14334",
+            "page-1-text-316",
+            "page-1-text-223",
+            "page-1-text-222"
+          ],
+          "source": {
+            "kind": "paired-circular-caps-parallel-strokes-and-fix-symbol",
+            "layoutUsedFor": "topology-only"
+          },
+          "status": "dimensions-required"
+        }
+      ]
+    },
+    {
+      "file": "sbgl_vor-y-rwy-15_iac_20241003.pdf",
+      "page": 1,
+      "sha256": "7c0d5251426951f43ed24741e9f43f5c261a2dd86d984f4b4bd2001065d93abf",
+      "priorLegs": 1,
+      "currentLegs": 1,
+      "priorNativeSegments": 1,
+      "currentNativeSegments": 1,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": [
+        {
+          "id": "holding-p-SISER",
+          "anchor": "p-SISER",
+          "purpose": "holding",
+          "turn": "left",
+          "inbound": {
+            "value": 295,
+            "raw": "295",
+            "reference": "magnetic",
+            "resolution": 1,
+            "evidenceIds": [
+              "page-1-text-223",
+              "page-1-text-224",
+              "page-1-text-225"
+            ]
+          },
+          "published": {
+            "inboundCourse": {
+              "value": 295,
+              "raw": "295",
+              "reference": "magnetic",
+              "resolution": 1,
+              "evidenceIds": [
+                "page-1-text-223",
+                "page-1-text-224",
+                "page-1-text-225"
+              ]
+            },
+            "outboundCourse": {
+              "value": 115,
+              "reference": "magnetic",
+              "evidenceIds": [
+                "page-1-text-220",
+                "page-1-text-221",
+                "page-1-text-222"
+              ]
+            },
+            "legDefinition": null,
+            "definitionCandidates": [],
+            "constraintIds": [
+              "vertical-p-SISER"
+            ]
+          },
+          "evidenceIds": [
+            "vector-21811",
+            "vector-21812",
+            "vector-21817",
+            "vector-21818",
+            "vector-11752",
+            "vector-11753",
+            "vector-21805",
+            "vector-21806",
+            "vector-21823",
+            "vector-21824",
+            "vector-21841",
+            "vector-21842",
+            "vector-11758",
+            "vector-11759",
+            "vector-11764",
+            "vector-11765",
+            "page-1-text-240",
+            "page-1-text-223",
+            "page-1-text-224",
+            "page-1-text-225",
+            "page-1-text-220",
+            "page-1-text-221",
+            "page-1-text-222"
+          ],
+          "source": {
+            "kind": "paired-circular-caps-parallel-strokes-and-fix-symbol",
+            "layoutUsedFor": "topology-only"
+          },
+          "status": "dimensions-required"
+        }
+      ]
+    },
+    {
+      "file": "sbgl_vor-z-rwy-28_iac_20241226.pdf",
+      "page": 1,
+      "sha256": "0c5ebb4b436b291f9a4f2d492741860872360d363b48cd5a35f576a5653b61a2",
+      "priorLegs": 1,
+      "currentLegs": 1,
+      "priorNativeSegments": 1,
+      "currentNativeSegments": 1,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbgm_rnp-y-rwy-35_iac_20260514.pdf",
+      "page": 1,
+      "sha256": "acc1ba0a20871cfdebe9198f840759df5d1b47cd105df1a5046be0ac00ff2ff6",
+      "priorLegs": 4,
+      "currentLegs": 4,
+      "priorNativeSegments": 4,
+      "currentNativeSegments": 4,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbjp_ndb-y-rwy-16_iac_20221201.pdf",
+      "page": 1,
+      "sha256": "a1d651703e9a6c7733788c005f41db6c8f7a6fc3c55c668df4103927a2ab4bb2",
+      "priorLegs": 0,
+      "currentLegs": 0,
+      "priorNativeSegments": 0,
+      "currentNativeSegments": 0,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbls_ndb-rwy-13_iac_20250220.pdf",
+      "page": 1,
+      "sha256": "c6dec4467fc2e00457962e8e2efe02f79957ac587ed07d2fadacb06192e8fe4c",
+      "priorLegs": 3,
+      "currentLegs": 3,
+      "priorNativeSegments": 3,
+      "currentNativeSegments": 3,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": [
+        {
+          "id": "holding-p-ULVUK",
+          "anchor": "p-ULVUK",
+          "purpose": "unresolved-racetrack",
+          "turn": "right",
+          "inbound": {
+            "value": 170,
+            "raw": "170",
+            "reference": "magnetic",
+            "resolution": 1,
+            "evidenceIds": [
+              "page-1-text-136"
+            ]
+          },
+          "published": {
+            "inboundCourse": {
+              "value": 170,
+              "raw": "170",
+              "reference": "magnetic",
+              "resolution": 1,
+              "evidenceIds": [
+                "page-1-text-136"
+              ]
+            },
+            "outboundCourse": {
+              "value": 350,
+              "reference": "magnetic",
+              "evidenceIds": [
+                "page-1-text-137"
+              ]
+            },
+            "legDefinition": null,
+            "definitionCandidates": [],
+            "constraintIds": [
+              "vertical-p-ULVUK"
+            ]
+          },
+          "evidenceIds": [
+            "vector-13499",
+            "vector-13500",
+            "vector-13505",
+            "vector-13506",
+            "vector-13340",
+            "vector-13341",
+            "vector-13511",
+            "vector-13512",
+            "vector-13493",
+            "vector-13494",
+            "vector-13517",
+            "vector-13518",
+            "vector-13334",
+            "vector-13335",
+            "vector-13346",
+            "vector-13347",
+            "page-1-text-113",
+            "page-1-text-136",
+            "page-1-text-137"
+          ],
+          "source": {
+            "kind": "paired-circular-caps-parallel-strokes-and-fix-symbol",
+            "layoutUsedFor": "topology-only"
+          },
+          "status": "dimensions-required"
+        },
+        {
+          "id": "holding-p-ESIGO",
+          "anchor": "p-ESIGO",
+          "purpose": "holding",
+          "turn": "right",
+          "inbound": {
+            "value": 300,
+            "raw": "300",
+            "reference": "magnetic",
+            "resolution": 1,
+            "evidenceIds": [
+              "page-1-text-138",
+              "page-1-text-139",
+              "page-1-text-140"
+            ]
+          },
+          "published": {
+            "inboundCourse": {
+              "value": 300,
+              "raw": "300",
+              "reference": "magnetic",
+              "resolution": 1,
+              "evidenceIds": [
+                "page-1-text-138",
+                "page-1-text-139",
+                "page-1-text-140"
+              ]
+            },
+            "outboundCourse": {
+              "value": 120,
+              "reference": "magnetic",
+              "evidenceIds": [
+                "page-1-text-141",
+                "page-1-text-142",
+                "page-1-text-143"
+              ]
+            },
+            "legDefinition": null,
+            "definitionCandidates": [],
+            "constraintIds": [
+              "vertical-p-ESIGO"
+            ]
+          },
+          "evidenceIds": [
+            "vector-13541",
+            "vector-13542",
+            "vector-13547",
+            "vector-13548",
+            "vector-13388",
+            "vector-13389",
+            "vector-13553",
+            "vector-13554",
+            "vector-13535",
+            "vector-13536",
+            "vector-13559",
+            "vector-13560",
+            "vector-13394",
+            "vector-13395",
+            "vector-13400",
+            "vector-13401",
+            "page-1-text-114",
+            "page-1-text-138",
+            "page-1-text-139",
+            "page-1-text-140",
+            "page-1-text-141",
+            "page-1-text-142",
+            "page-1-text-143"
+          ],
+          "source": {
+            "kind": "paired-circular-caps-parallel-strokes-and-fix-symbol",
+            "layoutUsedFor": "topology-only"
+          },
+          "status": "dimensions-required"
+        }
+      ]
+    },
+    {
+      "file": "sbnt_ils-w-or-loc-w-rwy-16l_iac_20250515.pdf",
+      "page": 1,
+      "sha256": "4947dc7f88cda21cd42504d386cd46576e7bf68b5f3496f38c9019da2f976c56",
+      "priorLegs": 1,
+      "currentLegs": 1,
+      "priorNativeSegments": 1,
+      "currentNativeSegments": 1,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": [
+        {
+          "id": "holding-p-EGEGI",
+          "anchor": "p-EGEGI",
+          "purpose": "holding",
+          "turn": "right",
+          "inbound": {
+            "value": 59,
+            "raw": "059",
+            "reference": "magnetic",
+            "resolution": 1,
+            "evidenceIds": [
+              "page-1-text-89"
+            ]
+          },
+          "published": {
+            "inboundCourse": {
+              "value": 59,
+              "raw": "059",
+              "reference": "magnetic",
+              "resolution": 1,
+              "evidenceIds": [
+                "page-1-text-89"
+              ]
+            },
+            "outboundCourse": {
+              "value": 239,
+              "reference": "magnetic",
+              "evidenceIds": [
+                "page-1-text-88"
+              ]
+            },
+            "legDefinition": null,
+            "definitionCandidates": [],
+            "constraintIds": [
+              "vertical-p-EGEGI"
+            ]
+          },
+          "evidenceIds": [
+            "vector-13165",
+            "vector-13166",
+            "vector-13171",
+            "vector-13172",
+            "vector-7061",
+            "vector-7062",
+            "vector-7067",
+            "vector-7068",
+            "vector-7073",
+            "vector-7074",
+            "vector-8459",
+            "vector-8460",
+            "vector-8471",
+            "vector-8472",
+            "vector-8483",
+            "vector-8484",
+            "vector-13177",
+            "vector-13178",
+            "vector-13420",
+            "vector-13421",
+            "vector-6953",
+            "vector-6954",
+            "vector-6959",
+            "vector-6960",
+            "vector-6965",
+            "vector-6966",
+            "vector-8243",
+            "vector-8244",
+            "vector-8255",
+            "vector-8256",
+            "vector-8267",
+            "vector-8268",
+            "vector-13159",
+            "vector-13160",
+            "vector-13183",
+            "vector-13184",
+            "vector-13408",
+            "vector-13409",
+            "vector-13414",
+            "vector-13415",
+            "page-1-text-133",
+            "page-1-text-89",
+            "page-1-text-88"
+          ],
+          "source": {
+            "kind": "paired-circular-caps-parallel-strokes-and-fix-symbol",
+            "layoutUsedFor": "topology-only"
+          },
+          "status": "dimensions-required"
+        }
+      ]
+    },
+    {
+      "file": "sbnt_ils-y-rwy-16l_iac_20231228.pdf",
+      "page": 1,
+      "sha256": "237eff7d5f928782fd96b1f8d6c48caaba18ccf4a1dbb3ddcbba40713d433e25",
+      "priorLegs": 4,
+      "currentLegs": 4,
+      "priorNativeSegments": 4,
+      "currentNativeSegments": 4,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbnt_rnp-rwy-16l_iac_20231005-1.pdf",
+      "page": 1,
+      "sha256": "f75eb14b72fcb84b3b8b539bc7107048e19701a263d3ab46d5f08f4928e04869",
+      "priorLegs": 4,
+      "currentLegs": 4,
+      "priorNativeSegments": 4,
+      "currentNativeSegments": 4,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbnt_vor-w-rwy-16l_iac_20250515.pdf",
+      "page": 1,
+      "sha256": "d928373ae14bb73338cc8d2794d385b1651653592e7d693b452007d3b79288f1",
+      "priorLegs": 2,
+      "currentLegs": 2,
+      "priorNativeSegments": 3,
+      "currentNativeSegments": 3,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": [
+        {
+          "id": "holding-p-EGEGI",
+          "anchor": "p-EGEGI",
+          "purpose": "holding",
+          "turn": "right",
+          "inbound": {
+            "value": 59,
+            "raw": "059",
+            "reference": "magnetic",
+            "resolution": 1,
+            "evidenceIds": [
+              "page-1-text-100"
+            ]
+          },
+          "published": {
+            "inboundCourse": {
+              "value": 59,
+              "raw": "059",
+              "reference": "magnetic",
+              "resolution": 1,
+              "evidenceIds": [
+                "page-1-text-100"
+              ]
+            },
+            "outboundCourse": {
+              "value": 239,
+              "reference": "magnetic",
+              "evidenceIds": [
+                "page-1-text-101"
+              ]
+            },
+            "legDefinition": null,
+            "definitionCandidates": [],
+            "constraintIds": [
+              "vertical-p-EGEGI"
+            ]
+          },
+          "evidenceIds": [
+            "vector-16474",
+            "vector-16475",
+            "vector-16480",
+            "vector-16481",
+            "vector-8487",
+            "vector-8488",
+            "vector-8499",
+            "vector-8500",
+            "vector-8511",
+            "vector-8512",
+            "vector-9891",
+            "vector-9892",
+            "vector-9897",
+            "vector-9898",
+            "vector-9903",
+            "vector-9904",
+            "vector-16413",
+            "vector-16414",
+            "vector-16486",
+            "vector-16487",
+            "vector-8271",
+            "vector-8272",
+            "vector-8283",
+            "vector-8284",
+            "vector-8295",
+            "vector-8296",
+            "vector-9783",
+            "vector-9784",
+            "vector-9789",
+            "vector-9790",
+            "vector-9795",
+            "vector-9796",
+            "vector-16468",
+            "vector-16469",
+            "vector-16492",
+            "vector-16493",
+            "vector-16401",
+            "vector-16402",
+            "vector-16407",
+            "vector-16408",
+            "page-1-text-97",
+            "page-1-text-100",
+            "page-1-text-101"
+          ],
+          "source": {
+            "kind": "paired-circular-caps-parallel-strokes-and-fix-symbol",
+            "layoutUsedFor": "topology-only"
+          },
+          "status": "dimensions-required"
+        }
+      ]
+    },
+    {
+      "file": "sbnt_vor-y-rwy-12_iac_20240321.pdf",
+      "page": 1,
+      "sha256": "e254e5410798f6511787fae6bd9af45d57645caebba316305a0f48ccdb265cc7",
+      "priorLegs": 3,
+      "currentLegs": 3,
+      "priorNativeSegments": 4,
+      "currentNativeSegments": 4,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": [
+        {
+          "id": "holding-p-DAKOK",
+          "anchor": "p-DAKOK",
+          "purpose": "holding",
+          "turn": "right",
+          "inbound": {
+            "value": 358,
+            "raw": "358",
+            "reference": "magnetic",
+            "resolution": 1,
+            "evidenceIds": [
+              "page-1-text-238"
+            ]
+          },
+          "published": {
+            "inboundCourse": {
+              "value": 358,
+              "raw": "358",
+              "reference": "magnetic",
+              "resolution": 1,
+              "evidenceIds": [
+                "page-1-text-238"
+              ]
+            },
+            "outboundCourse": {
+              "value": 178,
+              "reference": "magnetic",
+              "evidenceIds": [
+                "page-1-text-239"
+              ]
+            },
+            "legDefinition": null,
+            "definitionCandidates": [],
+            "constraintIds": [
+              "vertical-p-DAKOK"
+            ]
+          },
+          "evidenceIds": [
+            "vector-16457",
+            "vector-16458",
+            "vector-16475",
+            "vector-16476",
+            "vector-24437",
+            "vector-24438",
+            "vector-7197",
+            "vector-7198",
+            "vector-14859",
+            "vector-14860",
+            "vector-16064",
+            "vector-16065",
+            "vector-16451",
+            "vector-16452",
+            "vector-16463",
+            "vector-16464",
+            "vector-16058",
+            "vector-16059",
+            "vector-16070",
+            "vector-16071",
+            "page-1-text-270",
+            "page-1-text-238",
+            "page-1-text-239"
+          ],
+          "source": {
+            "kind": "paired-circular-caps-parallel-strokes-and-fix-symbol",
+            "layoutUsedFor": "topology-only"
+          },
+          "status": "dimensions-required"
+        }
+      ]
+    },
+    {
+      "file": "sbnt_vor-z-rwy-12_iac_20231005.pdf",
+      "page": 1,
+      "sha256": "a17c44604aa77e8ea2a5084b66b3cf8c657a9ae69f35474c2a7deb96b6856506",
+      "priorLegs": 0,
+      "currentLegs": 0,
+      "priorNativeSegments": 0,
+      "currentNativeSegments": 0,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    },
+    {
+      "file": "sbrj_evsob-1d-rwy-20l_sid_20210520.pdf",
+      "page": 1,
+      "sha256": "4176ca57cc8441c2817a8b55a43a288b9929c4fbdf0069aac972b7e8543b84f6",
+      "priorLegs": 5,
+      "currentLegs": 5,
+      "priorNativeSegments": 5,
+      "currentNativeSegments": 5,
+      "retainedPriorLegs": true,
+      "validated": false,
+      "holdings": []
+    }
+  ]
+}

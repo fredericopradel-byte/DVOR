@@ -1,3 +1,4 @@
+import {appendHoldings} from './holdings.mjs';
 import {arcReviewed} from './dme-arcs.mjs';
 import {toNative, inverse, destination, normalize} from './geodesy.mjs';
 
@@ -50,6 +51,7 @@ export function toNativeDocument(model) {
   if(model.paths.length===1&&!model.paths[0].cycle&&model.paths[0].legs.length===model.legs.length&&model.paths[0].legs.every(id=>mapping.legs[id])){
     const route=model.paths[0].legs.flatMap(id=>mapping.legs[id]);if(route.length){document.flight={start:document.segments.find(l=>l.id===route[0]).from,end:document.segments.find(l=>l.id===route.at(-1)).to,segments:route};}
   }
+  appendHoldings(model,document,mapping,issues);
   if(document.points.length>500||document.segments.length>700)throw Error('Conversão acima dos limites do editor. O modelo intermediário deve ser dividido explicitamente.');
   return {document,mapping,issues};
 }

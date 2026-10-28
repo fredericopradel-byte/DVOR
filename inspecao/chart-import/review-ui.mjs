@@ -1,5 +1,5 @@
 import {pendingGroups, question, decide, historyStep, checkout, evidenceFor, activeNodes} from './review.mjs';
-const labels={'confirm-arc':'Representação horizontal do arco DME',position:'Coordenada',altitude:'Altitude',reference:'Referência dos cursos',leg:'Associação da perna',visual:'Limite visual','confirm-coordinate':'Conferência da coordenada'};
+const labels={holding:'Dimensões do hipódromo','confirm-arc':'Representação horizontal do arco DME',position:'Coordenada',altitude:'Altitude',reference:'Referência dos cursos',leg:'Associação da perna',visual:'Limite visual','confirm-coordinate':'Conferência da coordenada'};
 const raw=(n,r=1)=>Number(n).toFixed(Math.max(0,Math.min(9,Math.round(-Math.log10(r)))));
 export function createReview({container,node,original,getSession,onModel,isBusy}){
   let selected=null;
@@ -28,6 +28,7 @@ export function createReview({container,node,original,getSession,onModel,isBusy}
     if(!model.native.points.length){node('p',target,'Sem coordenadas para destacar este elemento.');return;}
     const svg=window.IVProcedurePreview.render(model.native);svg.id='chart-issue-drawing';target.append(svg);
     const ids=new Set(issue.entities||[]);for(const option of issue.options||[]){if(option.from)ids.add(option.from);if(option.to)ids.add(option.to);}
+    const holding=model.holdings?.find(h=>h.id===issue.holdingId);if(holding){ids.add(holding.anchor);for(const id of model.nativeMapping?.holdings?.[holding.id]?.segments||[])ids.add(id);for(const id of model.nativeMapping?.holdings?.[holding.id]?.points||[])ids.add(id);}
     for(const leg of model.legs.filter(l=>ids.has(l.id))){ids.add(leg.from);ids.add(leg.to);ids.add(leg.center);for(const id of leg.via||[])ids.add(id);for(const id of model.nativeMapping?.legs?.[leg.id]||[])ids.add(id);}
     const focus=[];
     for(const g of svg.querySelectorAll('g[data-point]'))if(ids.has(g.dataset.point)){
@@ -40,7 +41,22 @@ export function createReview({container,node,original,getSession,onModel,isBusy}
   }
   function form(q,issue,m,parent){
     const actions=node('div',parent,undefined,{class:'ci-review-form'});
-    if(q.kind==='position'){
+    if(q.kind==='holding'){
+      const h=q.holding,definition=h.published.legDefinition;
+      node('p',actions,'Fixo: '+m.points.find(p=>p.id===h.anchor)?.name+' · curvas à '+(h.turn==='right'?'direita':'esquerda')+(h.inbound?' · aproximação '+h.inbound.value+'° '+h.inbound.reference:''));
+      const purpose=h.purpose==='unresolved-racetrack'?select(actions,'Função publicada',[['','Selecionar'],['holding','Espera'],['course-reversal','Reversão em hipódromo']],''):null;
+      const course=!h.inbound?input(actions,'Curso de aproximação publicado (graus)','',{type:'number',step:'any',inputmode:'decimal'}):null;
+      const reference=!h.inbound?select(actions,'Referência do curso',[['','Selecionar'],['magnetic','Magnética'],['true','Verdadeira']],m.reference.course):null;
+      node('p',actions,definition?'Definição extraída: '+definition.raw+'. O valor publicado será preservado.':'Extensão não identificada. Informe dimensões para o desenho, sem presumir que estejam publicadas.',{class:'ci-warning'});
+      const mode=!definition?select(actions,'Dimensionar a perna do desenho',[['distance','Distância (NM)'],['time','Tempo e GS']],'distance'):null;
+      const distance=input(actions,'Extensão da perna no desenho (NM)',definition?.kind==='distance'?definition.value:'',{type:'number',step:'any',inputmode:'decimal'});
+      const time=input(actions,definition?.kind==='time'?'Tempo publicado (s)':'Tempo da perna no desenho (s)',definition?.kind==='time'?definition.value:'',{type:'number',step:'any',inputmode:'decimal'});
+      const speed=input(actions,'GS para o desenho (kt)','',{type:'number',step:'any',inputmode:'decimal'}),radius=input(actions,'Raio das curvas no desenho (NM)','',{type:'number',step:'any',inputmode:'decimal'});
+      if(definition){(definition.kind==='time'?time:distance).readOnly=true;}
+      const visible=()=>{const kind=definition?.kind||mode.value;distance.parentElement.hidden=kind!=='distance';time.parentElement.hidden=speed.parentElement.hidden=kind!=='time';};if(mode)mode.onchange=visible;visible();
+      node('p',actions,'GS × tempo dimensiona somente a reta do desenho. O raio é explícito; não são presumidos vento, inclinação, razão de curva ou tamanho a partir dos pixels. Não altera velocidades da missão nem cálculos de inspeção.',{class:'ci-muted'});
+      button(actions,'Gerar hipódromo editável',()=>answer('holding',{purpose:purpose?.value,course:course?.value,reference:reference?.value,mode:definition?.kind||mode?.value,legLengthNM:distance.value,timeSeconds:time.value,groundSpeedKT:speed.value,radiusNM:radius.value}));
+    }else if(q.kind==='position'){
       if(/^dme-(radius|via)-/.test(issue.id))for(const id of issue.entities||[])if(id!==q.entity&&m.points.some(p=>p.id===id))button(actions,'Conferir coordenada de '+m.points.find(p=>p.id===id).name,()=>{actions.replaceChildren();form({kind:'position',entity:id,options:[]},issue,m,actions);});
       node('p',actions,'Coordenadas WGS84 em graus decimais. Não use pixels da carta. A fonte anterior ficará preservada no histórico.');
       for(const [index,row]of(q.options||[]).entries())button(actions,(row.name||row.designator||'Coordenada publicada')+' · '+row.position.lat+', '+row.position.lon+' · '+(row.source?.version||row.datum||'fonte local')+(row.source?.validFrom?' · edição '+row.source.validFrom.slice(0,10):''),()=>answer('position',{entity:q.entity,lat:row.position.lat,lon:row.position.lon,origin:row.source?'Base local · '+(row.source.version||'cadastro')+' · registro '+(row.source.recordId||row.id||'selecionado'):'Coordenada WGS84 publicada · '+(row.raw||'conferida na carta'),choice:index}));
@@ -103,7 +119,7 @@ export function createReview({container,node,original,getSession,onModel,isBusy}
     for(const n of [...(work?.nodes||[])].reverse()){
       const row=node('div',history,undefined,{class:'ci-review-history-row'}),outcome=work.outcomes.find(o=>o.id===n.id);
       node('p',row,new Date(n.at).toLocaleString('pt-BR')+' · '+labels[n.kind]+' · '+(active.has(n.id)?outcome?.applied?'aplicada':'precisa de nova conferência':'fora da sequência atual'));
-      const a=n.answer,description=n.kind==='position'?'Coordenada: '+a.lat+', '+a.lon+' · '+a.origin:n.kind==='altitude'?'Restrição: '+({at:'exatamente',above:'mínima',below:'máxima',between:'janela'}[a.qualifier])+' '+a.value+(a.upper!==undefined?' a '+a.upper:'')+' FT MSL':n.kind==='leg'?(work.base.points.find(p=>p.id===a.from)?.name||a.from)+' → '+(work.base.points.find(p=>p.id===a.to)?.name||a.to)+' · '+a.course.raw+'° '+a.reference+' · '+a.distance.raw+' NM':n.kind==='confirm-arc'?'Representação horizontal e origens do arco conferidas para este rascunho.':n.kind==='visual'?'Visual nos últimos '+a.distanceNM+' NM':n.kind==='reference'?a.reference+(a.variation?' · VAR '+a.variation.raw:''):'Posição e origem conferidas para este rascunho.';
+      const a=n.answer,description=n.kind==='position'?'Coordenada: '+a.lat+', '+a.lon+' · '+a.origin:n.kind==='altitude'?'Restrição: '+({at:'exatamente',above:'mínima',below:'máxima',between:'janela'}[a.qualifier])+' '+a.value+(a.upper!==undefined?' a '+a.upper:'')+' FT MSL':n.kind==='leg'?(work.base.points.find(p=>p.id===a.from)?.name||a.from)+' → '+(work.base.points.find(p=>p.id===a.to)?.name||a.to)+' · '+a.course.raw+'° '+a.reference+' · '+a.distance.raw+' NM':n.kind==='holding'?'Hipódromo: '+(a.mode==='time'?a.timeSeconds+' s · GS '+a.groundSpeedKT+' kt':a.legLengthNM+' NM')+' · raio '+a.radiusNM+' NM':n.kind==='confirm-arc'?'Representação horizontal e origens do arco conferidas para este rascunho.':n.kind==='visual'?'Visual nos últimos '+a.distanceNM+' NM':n.kind==='reference'?a.reference+(a.variation?' · VAR '+a.variation.raw:''):'Posição e origem conferidas para este rascunho.';
       node('p',row,description,{class:'ci-muted'});if(outcome?.reason)node('p',row,outcome.reason,{class:'ci-warning'});
       button(row,'Rever resposta',()=>update(s=>checkout(s.reconstruction,s,n.parent),n.issueId));button(row,'Restaurar até aqui',()=>update(s=>checkout(s.reconstruction,s,n.id),n.issueId));
     }
