@@ -1,3 +1,4 @@
+import {reconstructHoldings,validateHoldingRecords} from './holdings.mjs';
 import {reconstructDmeArcs} from './dme-arcs.mjs';
 import {profileData} from './profile-data.mjs';
 import {associateProfileStations,splitProfileLegs} from './profile-association.mjs';
@@ -15,6 +16,7 @@ const issue=(id,category,message,entities=[],extra={})=>({id,category,message,en
 function temporal(source,date){return !!date && ((source.validFrom&&source.validFrom.slice(0,10)>date)||(source.validTo&&source.validTo.slice(0,10)<date));}
 export function validateModel(model) {
   if(!model||model.schema!==MODEL_SCHEMA||!['ndb','procedimentos'].includes(model.module)||!Array.isArray(model.points)||!Array.isArray(model.legs)||model.points.length>500||model.legs.length>700)throw Error('Modelo intermediário incompatível.');
+  validateHoldingRecords(model);
   const results=[],issues=[],points=new Map();
   for(const p of model.points){if(typeof p.id!=='string'||points.has(p.id))throw Error('Identificação de ponto duplicada.');if(p.position&&!position(p.position))throw Error('Coordenada intermediária inválida.');points.set(p.id,p);}
   const ids=new Set();
@@ -129,6 +131,7 @@ export function reconstruct(session,database) {
   // A runway-named waypoint is not automatically the runway threshold (MAPt may differ).
   if(!model.profileReferences?.some(p=>model.points.some(point=>point.name===p.target&&point.position))&&/\bRW(?:Y)?\s?\d{2}[LRC]?\b/.test(interpreted.plan.map(r=>r.text).join(' ')))issues.push(issue('runway-waypoint','missing','Referência de pista identificada. Não foi equiparada automaticamente a um MAPt ou waypoint sem coordenada publicada.'));
   reconstructDmeArcs(model,interpreted,extraction,database);
+  reconstructHoldings(model,interpreted,extraction);
   issues.push(issue('coverage-review','missing','Prévia parcial: símbolos, transições, aproximação perdida e cobertura integral ainda exigem conferência. Nenhuma missão foi alterada.'));
   return finishModel(model);
 }

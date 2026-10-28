@@ -1,3 +1,4 @@
+import {reconstructHoldings,holdingSubject,holdingAnswer,applyHoldingAnswer} from './holdings.mjs';
 import {reconstructDmeArcs,arcSubject} from './dme-arcs.mjs';
 import {splitProfileLegs} from './profile-association.mjs';
 import {interpret} from './decea.mjs';
@@ -22,6 +23,7 @@ export function pendingGroups(model){
   return [...groups.values()].sort((a,b)=>a.priority-b.priority||a.id.localeCompare(b.id));
 }
 export function question(model,issue){
+  const holding=model.holdings?.find(h=>h.id===issue.holdingId);if(holding&&issue.id.startsWith('holding-geometry-'))return {kind:'holding',entity:holding.anchor,holding,subject:holdingSubject(holding,model)};
   const entity=issue.entities?.[0],point=model.points.find(p=>p.id===entity);
   if(point&&/^(dme-radius-|dme-via-|coordinate-|published-coordinate-|chart-base-coordinate-|threshold-database-ambiguity|threshold-source-conflict)/.test(issue.id))return {kind:'position',entity,options:[...(issue.options||point.candidates||[]),...(point.databaseCandidates||[]),...(point.coordinatePublications||[]).filter(p=>p.datum==='WGS84')].filter(p=>position(p.position))};
   if(point&&/^(date-|derived-|threshold-database-review)/.test(issue.id))return {kind:'confirm-coordinate',entity,subject:pointSubject(point)};
@@ -42,7 +44,7 @@ export function checkedLedger(model){
   const w=model.reviewWork;
   if(!w||w.version!==1||!same(w.binding,binding(model))||!same(binding(w.base),w.binding)||!Array.isArray(w.nodes)||!Array.isArray(w.outcomes)||w.base.reviewWork||w.nodes.length>1000)throw Error('Histórico incompatível com a carta, página ou módulo. Dados preservados.');
   validateModel(w.base);const seen=new Set();
-  for(const n of w.nodes){if(typeof n.id!=='string'||seen.has(n.id)||(n.parent!==null&&!seen.has(n.parent))||!['position','confirm-coordinate','altitude','reference','leg','visual','confirm-arc'].includes(n.kind)||typeof n.issueId!=='string'||typeof n.answer!=='object'||n.answer===null||typeof n.at!=='string')throw Error('Histórico de decisões inválido.');seen.add(n.id);}
+  for(const n of w.nodes){if(typeof n.id!=='string'||seen.has(n.id)||(n.parent!==null&&!seen.has(n.parent))||!['position','confirm-coordinate','altitude','reference','leg','visual','confirm-arc','holding'].includes(n.kind)||typeof n.issueId!=='string'||typeof n.answer!=='object'||n.answer===null||typeof n.at!=='string')throw Error('Histórico de decisões inválido.');seen.add(n.id);}
   if(w.head!==null&&!seen.has(w.head))throw Error('Posição do histórico inválida.');return w;
 }
 export function activeNodes(w){let at=w.head;const map=new Map(w.nodes.map(n=>[n.id,n])),out=[];while(at!==null){const n=map.get(at);if(!n)throw Error('Decisão inexistente.');out.unshift(n);at=n.parent;}return out;}
@@ -72,7 +74,7 @@ function action(model,issueId,kind,answer){
     if(!['true','magnetic'].includes(a.reference))throw Error('Referência do curso ausente.');
   }else if(kind==='visual'){
     a.entity=q.entity;a.distanceNM=number(a.distanceNM,.000000001,q.distanceNM);subject=q.subject;
-  }else if(kind==='confirm-arc'){a.entity=q.entity;subject=q.subject;}else if(kind==='confirm-coordinate'){a.entity=q.entity;subject=q.subject;}
+  }else if(kind==='holding'){const value=holdingAnswer(q.holding,a);Object.assign(a,value,{holdingId:q.holding.id,entity:q.entity});subject=q.subject;}else if(kind==='confirm-arc'){a.entity=q.entity;subject=q.subject;}else if(kind==='confirm-coordinate'){a.entity=q.entity;subject=q.subject;}
   return {kind,issueId,answer:a,subject};
 }
 function scrub(model){
@@ -132,6 +134,7 @@ export function replayReview(model,session,work=ledger(model)){
   if(!m.issues.some(i=>i.id==='threshold-database-ambiguity'))reconstructThreshold(m,p,{thresholds:[]},{truncated:session.extraction.truncated});
   splitProfileLegs(m);
   reconstructDmeArcs(m,p,session.extraction);
+  reconstructHoldings(m,p,session.extraction);
   for(const point of m.points){
     if(!point.position&&!m.issues.some(i=>i.id==='coordinate-'+point.id))m.issues.push({id:'coordinate-'+point.id,category:point.candidates?.length?'ambiguity':'missing',critical:true,message:'Coordenada de '+point.name+' ainda não determinada.',entities:[point.id],options:point.candidates||[]});
     const s=point.coordinateSource?.selectedSource||point.coordinateSource,date=m.source.chart.publishedDate?.value;
@@ -139,7 +142,11 @@ export function replayReview(model,session,work=ledger(model)){
   }
   for(const r of m.verticalConstraints)if(r.qualifier==='unspecified')m.issues.push({id:'qualifier-'+r.id,category:'ambiguity',critical:true,message:'Confirme o qualificador da altitude publicada.',entities:[r.entity]});
   for(const n of deferred){try{
-    if(n.kind==='confirm-arc'){
+    if(n.kind==='holding'){
+      const h=m.holdings?.find(h=>h.id===n.answer.holdingId);if(!h||!same(n.subject,holdingSubject(h,m)))throw Error('A espera ou a origem de seus dados mudou. Confira novamente suas dimensões.');
+      const answer=holdingAnswer(h,{...n.answer,course:n.answer.inbound?.value,reference:n.answer.inbound?.reference});
+      applyHoldingAnswer(m,h,answer,n.id);
+    }else if(n.kind==='confirm-arc'){
       const leg=m.legs.find(l=>l.id===n.answer.entity);if(!leg||!same(n.subject,arcSubject(m,leg)))throw Error('O arco ou suas coordenadas mudaram. Confira novamente a representação horizontal.');
       leg.horizontalReview={subject:clone(n.subject),decision:n.id};leg.status='horizontal-confirmed';m.issues=m.issues.filter(i=>i.id!=='dme-horizontal-'+leg.id);
     }else if(n.kind==='visual'){
@@ -162,7 +169,7 @@ export function decide(model,session,issueId,kind,answer){
 export function checkout(model,session,head){const w=clone(ledger(model));if(head!==null&&!w.nodes.some(n=>n.id===head))throw Error('Decisão não encontrada.');w.head=head;return replayReview(model,session,w);}
 export function historyStep(model,session,direction){const w=ledger(model),n=w.nodes.find(n=>n.id===w.head),head=direction==='undo'?n?.parent:w.nodes.filter(n=>n.parent===w.head).at(-1)?.id;if(head===undefined)return model;return checkout(model,session,head);}
 export function evidenceFor(issue,model,extraction){
-  const ids=new Set([...(issue.evidenceIds||[]),...(issue.annotation?.evidenceIds||[])]);
+  const ids=new Set([...(issue.evidenceIds||[]),...(issue.annotation?.evidenceIds||[]),...(model.holdings?.find(h=>h.id===issue.holdingId)?.evidenceIds||[])]);
   for(const entity of issue.entities||[]){const point=model.points.find(p=>p.id===entity),leg=model.legs.find(l=>l.id===entity);for(const id of [...(point?.evidenceIds||[]),...(point?.coordinateSource?.evidenceIds||[]),...(leg?.source?.evidenceIds||[]),...(leg?.published?.evidenceIds||[]),...(leg?.visualReference?.evidenceIds||[])])ids.add(id);for(const r of model.verticalConstraints.filter(r=>r.entity===entity))for(const id of r.evidenceIds||[])ids.add(id);}
   return extraction.text.filter(t=>ids.has(t.id));
 }

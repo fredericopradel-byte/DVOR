@@ -1,4 +1,4 @@
-const CACHE = 'iv-planner-v121-chart-dme-arcs-20261022';
+const CACHE = 'iv-planner-v122-chart-holdings-20261028';
 const OWNED_CACHE_PREFIXES = ['iv-planner-', 'geiv-dvor-vor-'];
 const PACKAGE_DB = 'ivplanner-package-manager-v1';
 const PACKAGE_DB_VERSION = 1;
@@ -68,6 +68,8 @@ const APP_SHELL = [
   './inspecao/chart-import/reconstruct.mjs',
   './inspecao/chart-import/vector-paths.mjs',
   './inspecao/chart-import/dme-arcs.mjs',
+  './inspecao/chart-import/holding-geometry.mjs',
+  './inspecao/chart-import/holdings.mjs',
   './inspecao/chart-import/profile.mjs',
   './inspecao/chart-import/profile-data.mjs',
   './inspecao/chart-import/profile-association.mjs',

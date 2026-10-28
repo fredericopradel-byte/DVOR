@@ -47,3 +47,35 @@ export function circularPath(path){
   if(Math.abs(sweep)<Math.PI/60||Math.abs(sweep)>Math.PI*1.9)return null;
   return {...path,center,radius,sweepDegrees:sweep*180/Math.PI};
 }
+
+// Straight strokes and small closed symbols, used only as page-space evidence.
+export function planPrimitives(extraction){
+  const viewport=extraction.pageTransform||[1,0,0,-1,0,extraction.height],lines=[],symbols=[];
+  let matrix=[1,0,0,1,0,0],dash=[],stack=[],paths=[];
+  for(const op of extraction.vectors||[]){
+    if(op.operator==='save')stack.push({matrix:[...matrix],dash:[...dash]});
+    else if(op.operator==='restore'){const s=stack.pop();matrix=s?.matrix||[1,0,0,1,0,0];dash=s?.dash||[];}
+    else if(op.operator==='transform')matrix=multiply(matrix,op.args);
+    else if(op.operator==='setDash')dash=op.args?.[0]||[];
+    else if(op.operator==='constructPath'){
+      if(op.args[0].length>25000||op.args[1].length>50000)return {lines:[],symbols:[],limited:true};
+      const m=multiply(viewport,matrix),point=(x,y)=>({x:m[0]*x+m[2]*y+m[4],y:m[1]*x+m[3]*y+m[5]});
+      let i=0,p=null;paths=[];
+      for(const code of op.args[0]){
+        if(code===13){p={points:[point(op.args[1][i++],op.args[1][i++])],closed:false,evidenceIds:['vector-'+op.index]};paths.push(p);}
+        else if(code===14)p?.points.push(point(op.args[1][i++],op.args[1][i++]));
+        else if(code===18){if(p)p.closed=true;}
+        else if(code===19){i+=4;p=null;}
+        else{paths=[];break;}
+      }
+    }else if(['stroke','closeStroke','fill','eoFill','fillStroke','eoFillStroke','closeFillStroke','closeEOFillStroke'].includes(op.operator)){
+      for(const p of paths){
+        const evidenceIds=[...p.evidenceIds,'vector-'+op.index],pts=[...p.points],closed=p.closed||op.operator.startsWith('close')||['fill','eoFill','fillStroke','eoFillStroke'].includes(op.operator)||distance(pts[0],pts.at(-1))<1e-5;
+        if(pts.length>1&&distance(pts[0],pts.at(-1))<1e-5)pts.pop();
+        if(!dash.some(n=>n>0)&&!['fill','eoFill'].includes(op.operator))for(let i=1;i<pts.length;i++)lines.push({a:pts[i-1],b:pts[i],evidenceIds});
+        if(closed&&pts.length===3){const lengths=pts.map((a,i)=>distance(a,pts[(i+1)%3]));if(Math.min(...lengths)>1e-6&&Math.max(...lengths)/Math.min(...lengths)<1.5)symbols.push({filled:['fill','eoFill','fillStroke','eoFillStroke'].includes(op.operator),position:{x:pts.reduce((s,a)=>s+a.x,0)/3,y:pts.reduce((s,a)=>s+a.y,0)/3},size:Math.max(...lengths),evidenceIds});}
+      }paths=[];
+      if(lines.length>50000||symbols.length>5000)return {lines:[],symbols:[],limited:true};
+    }else if(op.operator==='endPath')paths=[];
+  }return {lines,symbols,limited:false};
+}

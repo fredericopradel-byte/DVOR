@@ -104,7 +104,7 @@ function showSummary() {
   node('p', summary, 'Navegação identificada no título: ' + (recognition.navigation.join(' / ') || 'Não determinada'));
   if (recognition.aids.length) node('p', summary, 'Auxílios candidatos no texto: ' + recognition.aids.map(a => a.ident + ' · ' + a.frequency + ' ' + a.unit).join('; ') + '. Confira associações e pendências abaixo.');
   node('p', summary, 'Requisitos publicados identificados: ' + (recognition.requirements.map(r => r.value).join(' · ') || 'Nenhum identificado no texto'));
-  if (recognition.structures.length) node('p', summary, 'Indícios textuais: ' + recognition.structures.map(s => ({'dme-arc': 'arco DME', holding: 'espera', radial: 'radiais', 'rf-leg': 'curva RF'})[s.type]).join(', ') + '. Topologia e geometria ainda não interpretadas.');
+  if (recognition.structures.length) node('p', summary, 'Indícios textuais: ' + recognition.structures.map(s => ({'dme-arc': 'arco DME', holding: 'espera', radial: 'radiais', 'rf-leg': 'curva RF'})[s.type]).join(', ') + '. Consulte a prévia e as pendências para conferir quais estruturas foram reconstruídas.');
   node('p', summary, 'Vigência não verificada. A data publicada não comprova que esta carta esteja vigente.', {class: 'ci-warning'});
   const pending = node('details', summary);node('summary', pending, 'Pendências · ' + issues.length);
   const list = node('ul', pending);
